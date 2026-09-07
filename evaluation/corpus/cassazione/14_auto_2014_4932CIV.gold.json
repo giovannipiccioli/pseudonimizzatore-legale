@@ -1,0 +1,23 @@
+{
+ "source": "cassazione/2014/ECLI_IT_CASS_2014_4932CIV.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BELLOCCIO ANASTASIA",
+  "FUMAGALLI ARISTIDE",
+  "PICCININI GUALTIERO",
+  "PIZZIGONI ROSALINDA",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni",
+  "TAGLIAFERRI NICODEMO"
+ ],
+ "must_keep": [
+  "PONTREMOLI CLOTILDE",
+  "QUARANTOTTO ILDEGARDA",
+  "ROMA",
+  "Ranieri Grimaldi",
+  "Roma",
+  "Severino Ranieri Grimaldi",
+  "n. 5145/2010"
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "source": "cassazione/2024/ECLI_IT_CASS_2024_23504PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "Fumagalli"
+ ],
+ "must_keep": [
+  "RANIERI GRIMALDI SEVERINO",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi"
+ ]
+}

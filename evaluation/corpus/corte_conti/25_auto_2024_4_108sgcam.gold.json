@@ -1,0 +1,20 @@
+{
+ "source": "corte_conti/2024/pdf.zip::ECLI_IT_CONT_2024_108SGCAM.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Ferruccio Malaspina",
+  "Gervasio Spadaccini",
+  "Malaspina",
+  "Spadaccini"
+ ],
+ "must_keep": [
+  "CORTE DEI CONTI",
+  "I.N.P.S.",
+  "INPS",
+  "Mastrogiacomo",
+  "Napoli",
+  "n. 339/2010",
+  "n. 54/2020"
+ ]
+}

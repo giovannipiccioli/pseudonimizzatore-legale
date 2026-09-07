@@ -1,0 +1,34 @@
+{
+ "source": "bdgt/2025/Sentenza_V43_7016_2025.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BELLOCCIO ANASTASIA",
+  "BNVCST77T44G273N",
+  "FMGRTD58L07D612B",
+  "MLSFRC71D14F205X",
+  "PIZZIGONI ROSALINDA",
+  "QUARANTOTTO ILDEGARDA",
+  "RCCBDS65B23H501Q",
+  "SNSLDC90E48A662W",
+  "SPADACCINI GERVASIO",
+  "TGLNDM62P19C351M",
+  "TRENTACOSTE ERMENEGILDO",
+  "VENTIMIGLIA TEODORO",
+  "VMRRNS83M52L219K",
+  "ZANGHERATTI MIRANDOLINA",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "b.rocchetti@legalmail.it",
+  "studio.trentacoste@pec.ordineavvocatilucca.it"
+ ],
+ "must_keep": [
+  "Agenzia delle Entrate",
+  "IVA",
+  "PONTREMOLI CLOTILDE",
+  "RANIERI GRIMALDI SEVERINO",
+  "TREVISANATO ORNELLA",
+  "n. 1457/2025",
+  "n. 4534/2025",
+  "n. 7016/2025"
+ ]
+}

@@ -1,0 +1,11 @@
+{
+ "source": "CGUE/cgue_txt_ita/2024/62024CC0790_IT.txt (party initialism filled, then de-identified)",
+ "note": "EU appeal between two organisations — the run must be a near no-op.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "C-790/24 P",
+  "CORBELLINI AUGUSTO",
+  "Commissione europea"
+ ]
+}

@@ -1,0 +1,25 @@
+{
+ "source": "cassazione/2025/ECLI_IT_CASS_2025_15211CIV.txt (all real names replaced with invented ones)",
+ "note": "IRPEF detrazioni. The party is named ALL-CAPS surname-first in the header, mixed-case reversed in the body, and by bare surname alone. The core local-consistency case.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Ferruccio Malaspina",
+  "MALASPINA FERRUCCIO",
+  "Malaspina"
+ ],
+ "must_keep": [
+  "AGENZIA DELLE ENTRATE",
+  "Agenzia delle Entrate",
+  "Avvocatura Generale dello Stato",
+  "CORBELLINI AUGUSTO",
+  "IRPEF",
+  "MASTROGIACOMO VITTORINA",
+  "Mastrogiacomo",
+  "Roma",
+  "Vittorina Mastrogiacomo",
+  "n. 17382/2023",
+  "n. 274/2023"
+ ]
+}

@@ -1,0 +1,28 @@
+{
+ "source": "corte_conti/2010/pdf.zip::ECLI_IT_CONT_2010_1000SRCLOM-PRSE.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Ermenegildo Trentacoste",
+  "Scaramuzza",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "CORTE DEI CONTI",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "Federico Maria Sbaraglia",
+  "Mastrogiacomo",
+  "Napoli",
+  "Ornella Trevisanato",
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Sbaraglia",
+  "Severino Ranieri Grimaldi",
+  "Trevisanato",
+  "Vittorina Mastrogiacomo",
+  "n. 14/2000"
+ ]
+}

@@ -1,0 +1,22 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_CDS_2025_5723SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Ermenegildo Trentacoste",
+  "Ludovica Sanseverino",
+  "Sanseverino",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Consiglio di Stato",
+  "Napoli",
+  "Pontremoli",
+  "n. 07116/2024",
+  "n. 3669/2023",
+  "n.15/2020"
+ ]
+}

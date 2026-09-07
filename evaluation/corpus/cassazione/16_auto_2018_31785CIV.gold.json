@@ -1,0 +1,23 @@
+{
+ "source": "cassazione/2018/ECLI_IT_CASS_2018_31785CIV.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BELLOCCIO ANASTASIA",
+  "DELLA ROVERE AMEDEO",
+  "DI BENEDETTO OSVALDO",
+  "VENTIMIGLIA TEODORO"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "Mastrogiacomo",
+  "Pontremoli",
+  "ROMA",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "Vittorina Mastrogiacomo",
+  "n. 123/2016"
+ ]
+}

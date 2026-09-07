@@ -1,0 +1,23 @@
+{
+ "source": "bdgt/2022/Sentenza_V31_2016_2022.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "02956140374",
+  "MLSFRC71D14F205X",
+  "PICCININI GUALTIERO",
+  "QUARANTOTTO ILDEGARDA",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "Ag. Entrate",
+  "Agenzia delle Entrate",
+  "CORBELLINI AUGUSTO",
+  "IVA",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 2016/2022",
+  "n. 2364/2019"
+ ]
+}

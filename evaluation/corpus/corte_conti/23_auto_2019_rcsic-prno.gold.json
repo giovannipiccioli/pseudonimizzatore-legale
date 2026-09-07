@@ -1,0 +1,17 @@
+{
+ "source": "corte_conti/2019/pdf.zip::ECLI_IT_CONT_2019_128SRCSIC-PRNO.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Ornella Trevisanato",
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "Trevisanato",
+  "n. 102/2017",
+  "n. 142/2016",
+  "n. 165/2018"
+ ]
+}

@@ -1,0 +1,19 @@
+{
+ "source": "merito_civile/2020/pdf.zip::2020__Corte_D_Appello_di_Cagliari__n_456__25525478.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2020. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Della Rovere",
+  "Ildegarda Quarantotto",
+  "Lo Strano",
+  "Malinverni",
+  "Pizzigoni",
+  "Quarantotto"
+ ],
+ "must_keep": []
+}

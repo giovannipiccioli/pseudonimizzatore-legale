@@ -1,0 +1,22 @@
+{
+ "source": "corte_conti/2022/pdf/ECLI_IT_CONT_2022_1000SGCAM.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Pension case. The PDF extractor letter-spaces the headings ('S E N T E N Z A'), the party is (OMISSIS) in the header, and the source leaks a full name in the body — the leak is the point.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "Fumagalli",
+  "Nicodemo Tagliaferri",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Avellino",
+  "Guardia di Finanza",
+  "INPS",
+  "ISTITUTO NAZIONALE DELLA PREVIDENZA SOCIALE",
+  "Napoli",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi"
+ ]
+}

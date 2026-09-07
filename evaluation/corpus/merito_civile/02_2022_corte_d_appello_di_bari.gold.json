@@ -1,0 +1,14 @@
+{
+ "source": "merito_civile/2022/pdf.zip::2022__Corte_D_Appello_di_Bari__n_2247__83929827.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2022. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Ferruccio Malaspina",
+  "Ildegarda Quarantotto",
+  "Malaspina",
+  "Quarantotto",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
+ ],
+ "must_keep": []
+}

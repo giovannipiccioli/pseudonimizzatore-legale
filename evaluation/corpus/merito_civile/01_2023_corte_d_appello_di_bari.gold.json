@@ -1,0 +1,28 @@
+{
+ "source": "merito_civile/2023/pdf.zip::2023__Corte_D_Appello_di_Bari__n_459__88162910.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2023. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Della Rovere",
+  "Di Benedetto",
+  "Gualtiero Piccinini",
+  "Ildegarda Quarantotto",
+  "Osvaldo Di Benedetto",
+  "Ornella Trevisanato",
+  "Piccinini",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rosalinda Pizzigoni",
+  "Trevisanato"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Mastrogiacomo",
+  "Sbaraglia",
+  "Vittorina Mastrogiacomo",
+  "n. 1905/2020"
+ ]
+}

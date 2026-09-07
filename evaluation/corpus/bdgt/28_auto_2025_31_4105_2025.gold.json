@@ -1,0 +1,28 @@
+{
+ "source": "bdgt/2025/Sentenza_Z31_4105_2025.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "07412963058",
+  "Baldassarre Rocchetti",
+  "MLSFRC71D14F205X",
+  "PIZZIGONI ROSALINDA",
+  "QUARANTOTTO ILDEGARDA",
+  "ROCCHETTI BALDASSARRE",
+  "Rocchetti",
+  "VMRRNS83M52L219K",
+  "b.rocchetti@legalmail.it",
+  "ortensia.vimercati@pec.avvocatiferrara.it"
+ ],
+ "must_keep": [
+  "Ag. Entrate",
+  "Agenzia delle Entrate",
+  "CORBELLINI AUGUSTO",
+  "IRPEF",
+  "IVA",
+  "MASTROGIACOMO VITTORINA",
+  "n. 2232/2022",
+  "n. 338/2022",
+  "n. 4105/2025"
+ ]
+}

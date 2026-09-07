@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pseudonimizzatore-legale"
+version = "0.2.0"
+description = "Local, offline pseudonymization of Italian legal documents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Giovanni Piccioli" }]
+keywords = ["anonymization", "pseudonymization", "gdpr", "italian", "legal", "nlp"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Legal Industry",
+    "License :: OSI Approved :: MIT License",
+    "Natural Language :: Italian",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Operating System :: OS Independent",
+    "Topic :: Text Processing :: Linguistic",
+]
+
+# `regex`, not the standard library's `re`: the patterns need \p{Lu} character classes
+# and variable-width lookbehind, and neither is available in `re`.
+dependencies = ["regex>=2023.0"]
+
+[project.urls]
+Homepage = "https://github.com/giovannipiccioli/pseudonimizzatore-legale"
+Repository = "https://github.com/giovannipiccioli/pseudonimizzatore-legale.git"
+Issues = "https://github.com/giovannipiccioli/pseudonimizzatore-legale/issues"
+"Original project" = "https://github.com/avvocati-e-mac/anonimator"
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+notebooks = ["jupyter>=1.0", "ipython>=8.0", "nbclient>=0.10"]
+# Optional transformer NER (`anonymize(text, ner=...)`). Kept out of the base install
+# on purpose: it pulls in torch, and the library is otherwise one small dependency.
+# XLM-R-based models need the tokenizer/runtime packages too.
+ner = [
+    "transformers>=4.40",
+    "torch>=2.0",
+    "huggingface-hub>=0.20",
+    "sentencepiece>=0.2",
+    "protobuf>=4.25",
+]
+# Needed only to rebuild PDF-derived evaluation fixtures from private source archives.
+eval = ["PyMuPDF>=1.24"]
+
+[tool.setuptools.packages.find]
+include = ["pseudonimizzatore_legale*"]
+
+[tool.setuptools.package-data]
+pseudonimizzatore_legale = ["resources/*.json"]
+
+[tool.pytest.ini_options]
+# The package is included so that docstring examples are executed too — a `>>>` that
+# stops being true is a documentation bug, and this is the cheapest way to catch it.
+testpaths = ["tests", "pseudonimizzatore_legale"]
+addopts = "--doctest-modules"

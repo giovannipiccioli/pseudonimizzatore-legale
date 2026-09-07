@@ -1,0 +1,237 @@
+"""End-to-end behaviour of `anonymize()`.
+
+The fixture is a redacted-shape Cassazione header: same structure as the real files,
+invented names.
+"""
+import regex as re
+
+from pseudonimizzatore_legale import Config, anonymize
+
+DECISION = """Civile Ord. Sez. 5 Num. 15211 Anno 2025
+Presidente: CATALDI MICHELE
+Relatore: CHIECA DANILO
+Data pubblicazione: 07/06/2025
+ORDINANZA
+sul ricorso iscritto al n. 17382/2023 R.G. proposto da
+AGENZIA DELLE ENTRATE, in persona del Direttore pro tempore,
+domiciliata in Roma alla via dei Portoghesi n. 12 presso gli uffici
+dell'Avvocatura Generale dello Stato
+ -ricorrente-
+ contro
+BENATTI ROSSELLA, rappresentata e difesa dall'avv. Gallusi Sandro
+(domicilio digitale: sandro.gallusi@ordineavvocati.it)
+ -controricorrente-
+avverso la SENTENZA della CORTE DI GIUSTIZIA TRIBUTARIA n. 274/2023
+FATTI DI CAUSA
+A seguito di controllo formale della dichiarazione presentata da Rossella Benatti
+ai fini dell'IRPEF per l'anno 2013, la Direzione Provinciale di Reggio nell'Emilia
+procedeva all'iscrizione a ruolo. La Benatti impugnava la cartella.
+"""
+
+
+class TestLocalConsistency:
+    """A party named three ways must end up as one tag.
+
+    The single most important behaviour in the library: a document whose header is
+    pseudonymized but whose body still says "La Benatti" is not anonymized at all.
+    """
+
+    def test_all_surface_forms_of_a_party_collapse_to_one_tag(self):
+        out, rep = anonymize(DECISION)
+        assert "BENATTI" not in out and "Benatti" not in out
+        tags = {t for t in re.findall(r"\b(?:Ricorrente|Resistente)_\d+", out)}
+        assert len(tags) == 1, f"header and body mentions disagree: {tags}"
+
+    def test_reversed_token_order_is_the_same_person(self):
+        out, _ = anonymize(DECISION)
+        # "BENATTI ROSSELLA" (header) and "Rossella Benatti" (body) are one entity
+        assert "Rossella" not in out
+
+    def test_counsel_is_pseudonymized(self):
+        out, _ = anonymize(DECISION)
+        assert "Gallusi" not in out
+        assert "Difensore_1" in out
+
+
+class TestLateKeepPolicy:
+    def test_judges_stay_in_clear(self):
+        out, rep = anonymize(DECISION)
+        assert "CATALDI MICHELE" in out
+        assert "CHIECA DANILO" in out
+        assert "CATALDI MICHELE" in rep.protected
+
+    def test_public_bodies_stay_in_clear(self):
+        out, _ = anonymize(DECISION)
+        assert "AGENZIA DELLE ENTRATE" in out
+        assert "Avvocatura Generale dello Stato" in out
+
+    def test_case_numbers_stay_in_clear(self):
+        out, _ = anonymize(DECISION)
+        assert "n. 274/2023" in out
+        assert "17382/2023" in out
+
+    def test_places_stay_in_clear(self):
+        out, _ = anonymize(DECISION)
+        assert "Roma" in out
+        assert "Reggio nell'Emilia" in out
+
+    def test_case_numbers_can_be_turned_off(self):
+        out, _ = anonymize(DECISION, Config(keep_case_numbers=False))
+        assert "n. 274/2023" in out  # still kept: nothing claims that span
+
+
+class TestStructuredIdentifiers:
+    def test_email_removed(self):
+        out, _ = anonymize(DECISION)
+        assert "sandro.gallusi@ordineavvocati.it" not in out
+        assert "Email_1" in out
+
+    def test_codice_fiscale_removed(self):
+        out, _ = anonymize("Il sig. Mario Rossi, C.F. RSSMRA80A01H501U, ricorre.")
+        assert "RSSMRA80A01H501U" not in out
+        assert re.search(r"CF_\d+", out)
+
+    def test_email_inside_an_institution_domain_is_still_removed(self):
+        # An unbounded institution match used to shield this address.
+        text = "ope legis domicilia (pec.: ags.rm@mailcert.avvocaturastato.it);"
+        out, _ = anonymize(text)
+        assert "ags.rm@mailcert.avvocaturastato.it" not in out
+
+
+class TestNoCorruption:
+    """Ordinary Italian must survive.
+
+    Propagating a name whose surname collides with a common word is how an anonymizer
+    silently destroys the corpus it was meant to produce — every "del" in the document
+    replaced by a tag.
+    """
+
+    def test_function_words_are_never_substituted(self):
+        out, _ = anonymize(DECISION)
+        for word in ("del", "della", "causa", "ricorso", "sentenza"):
+            assert re.search(rf"(?<![\p{{L}}]){word}(?![\p{{L}}])", out, re.I), \
+                f"{word!r} disappeared from the text"
+
+    def test_section_headings_are_not_people(self):
+        out, _ = anonymize(DECISION)
+        assert "FATTI DI CAUSA" in out
+
+    def test_a_name_capture_stops_at_the_next_section_heading(self):
+        # Patterns that tolerate a line break inside a name ran into the heading below:
+        # "Gallusi Sandro\nFATTI DI CAUSA" became the person "Gallusi Sandro FATTI DI",
+        # and the heading vanished from the output.
+        text = ("BENATTI ROSSELLA, difesa dall'avv. Gallusi Sandro\n"
+                "FATTI DI CAUSA\nLa Benatti impugnava la cartella.")
+        out, rep = anonymize(text)
+        assert "FATTI DI CAUSA" in out
+        assert "Gallusi" not in out
+        assert all("fatti" not in k for k in rep.mapping)
+
+    def test_an_institution_fragment_is_not_a_person(self):
+        text = ("sul ricorso proposto da\n"
+                "MINISTERO DELL'ECONOMIA E DELLE FINANZE\n -ricorrente-\n")
+        out, rep = anonymize(text)
+        assert "DELLE FINANZE" in out
+        assert rep.entities == 0
+
+    def test_tail_of_an_institution_in_a_party_block_is_not_a_person(self):
+        text = (
+            "sul ricorso proposto da\nBANCA NAZIONALE DEL LAVORO\n"
+            "-ricorrente-\n"
+        )
+        out, rep = anonymize(text)
+        assert "BANCA NAZIONALE DEL LAVORO" in out
+        assert rep.entities == 0
+
+    def test_tail_of_a_public_body_in_a_party_block_is_not_a_person(self):
+        text = (
+            "sul ricorso proposto da\n"
+            "ISTITUTO NAZIONALE DELLA PREVIDENZA SOCIALE\n-ricorrente-\n"
+        )
+        out, rep = anonymize(text)
+        assert "ISTITUTO NAZIONALE DELLA PREVIDENZA SOCIALE" in out
+        assert rep.entities == 0
+
+
+class TestCompanies:
+    def test_companies_are_opt_in(self):
+        text = "La Alfa Costruzioni S.r.l. impugna la cartella."
+        assert "Alfa Costruzioni" in anonymize(text)[0]
+        assert "Alfa Costruzioni" not in anonymize(text, Config(companies=True))[0]
+
+    def test_public_bodies_are_not_companies(self):
+        text = "AGENZIA DELLE ENTRATE S.p.A. non esiste ma il prefisso conta."
+        out, _ = anonymize(text, Config(companies=True))
+        assert "AGENZIA DELLE ENTRATE" in out
+
+
+class TestReport:
+    def test_report_counts(self):
+        _, rep = anonymize(DECISION)
+        assert rep.entities >= 3
+        assert rep.replacements >= rep.entities
+        assert len(rep.replacement_spans) == rep.replacements
+        assert 0.0 <= rep.risk <= 1.0
+
+    def test_report_exposes_original_offsets_of_actual_replacements(self):
+        text = "Il sig. Mario Rossi, C.F. RSSMRA80A01H501U, ricorre."
+        _, rep = anonymize(text)
+        assert rep.replacement_spans == [(8, 19), (26, 42)]
+        assert [text[start:end] for start, end in rep.replacement_spans] == [
+            "Mario Rossi",
+            "RSSMRA80A01H501U",
+        ]
+
+    def test_risk_flags_a_long_document_with_no_detections(self):
+        _, rep = anonymize("parola " * 400)
+        assert rep.risk >= 0.5
+
+    def test_risk_does_not_flag_text_already_anonymized_at_source(self):
+        # The older Cassazione feed ships initials and "(Omissis)". Finding nothing
+        # there is correct, and flagging it buried the real cases in the triage queue.
+        text = ("il Tribunale ha riconosciuto B.S.M. e Bu.Fr. responsabili; "
+                "V.G. conveniva l'Ospedale in data (Omissis). " + "parola " * 400)
+        _, rep = anonymize(text)
+        assert rep.risk == 0.0
+
+
+class TestIdempotence:
+    """Running twice must be a no-op: batches get resumed and re-run after rule changes."""
+
+    def test_running_twice_changes_nothing_more(self):
+        once, _ = anonymize(DECISION)
+        twice, rep = anonymize(once)
+        assert twice == once, "a second pass rewrote already-pseudonymized text"
+
+    def test_output_tags_are_never_detected_as_names(self):
+        text = "rappresentato e difeso dagli Nominativo_1 (CF_2), Nominativo_2 (CF_3)"
+        out, rep = anonymize(text)
+        assert out == text
+        assert rep.entities == 0
+
+    def test_underscore_runs_survive(self):
+        # Scan noise like "Rep. _____" was collapsed to "Rep. _" by the emphasis pass.
+        text = "ha pronunciato la seguente Rep. _____ \nORDINANZA"
+        assert "_____" in anonymize(text)[0]
+
+
+class TestSharedFirstNames:
+    def test_a_party_sharing_a_first_name_with_a_judge_is_still_removed(self):
+        # "LUCA" from the Sostituto Procuratore used to veto the defendant outright.
+        text = ("Presidente: CIAMPI FRANCESCO MARIA\n"
+                "sul ricorso proposto da: \n"
+                "APOLLONI GIAN LUCA nato a ROMA il 12/03/1974 \n"
+                "udito il Sostituto Procuratore LUCA TAMPIERI\n"
+                "RITENUTO IN FATTO\n"
+                "la pena inflitta ad Apolloni Gian Luca è rideterminata.\n")
+        out, _ = anonymize(text)
+        assert "LUCA TAMPIERI" in out, "the prosecutor must stay in clear"
+        assert "APOLLONI" not in out and "Apolloni" not in out
+
+
+class TestQueryProfile:
+    def test_short_query(self):
+        q = "La Alfa S.r.l., P.IVA 01234567890, con l'avv. Laura Bianchi, ricorre"
+        out, _ = anonymize(q, Config(profile="query", companies=True))
+        assert "Laura Bianchi" not in out
+        assert "01234567890" not in out

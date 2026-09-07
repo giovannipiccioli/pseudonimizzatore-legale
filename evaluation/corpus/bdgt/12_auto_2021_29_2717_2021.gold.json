@@ -1,0 +1,20 @@
+{
+ "source": "bdgt/2021/Sentenza_Z29_2717_2021.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BELLOCCIO ANASTASIA",
+  "ROCCHETTI BALDASSARRE",
+  "SPADACCINI GERVASIO",
+  "Via Ippolito Nievo n. 47, 44121 Ferrara"
+ ],
+ "must_keep": [
+  "AGENZIA DELLE ENTRATE",
+  "CORBELLINI AUGUSTO",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 1372/2019",
+  "n. 2555/2018",
+  "n. 2717/2021"
+ ]
+}

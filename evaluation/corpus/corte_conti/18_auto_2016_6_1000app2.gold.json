@@ -1,0 +1,34 @@
+{
+ "source": "corte_conti/2016/pdf.zip::ECLI_IT_CONT_2016_1000APP2.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Di Benedetto",
+  "Ferruccio Malaspina",
+  "Ildegarda Quarantotto",
+  "Malaspina",
+  "Osvaldo Di Benedetto",
+  "PIZZIGONI ROSALINDA",
+  "Quarantotto",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "CORTE DEI CONTI",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "Federico Maria Sbaraglia",
+  "INPS",
+  "Ornella Trevisanato",
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Roma",
+  "Sbaraglia",
+  "Severino Ranieri Grimaldi",
+  "Trevisanato",
+  "n. 10978/1996",
+  "n. 6442/1998",
+  "n. 786/2009"
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "source": "giustizia_amministrativa/2026/ECLI_IT_TARCT_2026_77SENB.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "Fumagalli",
+  "Ildegarda Quarantotto",
+  "Nicodemo Tagliaferri",
+  "Quarantotto",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Guardia di Finanza",
+  "n. 152/1991",
+  "n. 203/1991"
+ ]
+}

@@ -1,0 +1,10 @@
+{
+ "source": "CGUE/cgue_txt_ita/2019/62019CC0866_IT.txt (party initialism filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "TREVISANATO ORNELLA",
+  "n. 883/2004"
+ ]
+}

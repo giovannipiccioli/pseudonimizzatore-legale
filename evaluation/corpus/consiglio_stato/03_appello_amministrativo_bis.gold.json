@@ -1,0 +1,20 @@
+{
+ "source": "giustizia_amministrativa/ECLI_IT_CDS_2025_10001SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Administrative appeal, for header variety.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Cavalcanti",
+  "Della Rovere",
+  "Ildegarda Quarantotto",
+  "Quarantotto",
+  "Serafina Cavalcanti"
+ ],
+ "must_keep": [
+  "Avvocatura Generale dello Stato",
+  "Consiglio di Stato",
+  "Federico Maria Sbaraglia",
+  "Roma",
+  "Sbaraglia"
+ ]
+}

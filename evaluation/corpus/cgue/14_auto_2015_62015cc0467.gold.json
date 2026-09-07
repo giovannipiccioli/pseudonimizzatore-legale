@@ -1,0 +1,12 @@
+{
+ "source": "CGUE/cgue_txt_ita/2015/62015CC0467_IT.txt (party initialism filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Commissione europea",
+  "TREVISANATO ORNELLA",
+  "n. 659/1999",
+  "n. 794/2004"
+ ]
+}

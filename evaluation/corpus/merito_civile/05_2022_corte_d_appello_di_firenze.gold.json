@@ -1,0 +1,18 @@
+{
+ "source": "merito_civile/2022/pdf.zip::2022__Corte_D_Appello_di_Firenze__n_1951__109803505.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2022. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Clotilde Pontremoli",
+  "Ermenegildo Trentacoste",
+  "Ludovica Sanseverino",
+  "Pontremoli",
+  "Sanseverino",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "Firenze",
+  "n. 1380/2018",
+  "n.183/2018"
+ ]
+}

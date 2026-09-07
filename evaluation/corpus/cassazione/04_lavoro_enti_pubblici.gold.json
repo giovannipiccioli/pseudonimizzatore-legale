@@ -1,0 +1,29 @@
+{
+ "source": "cassazione/2025/ECLI_IT_CASS_2025_14726CIV.txt (all real names replaced with invented ones)",
+ "note": "INPS against a public university and hospital, four counsel listed after 'avvocati'. Institutions dominate; only natural persons may be touched.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "BELLOCCIO ANASTASIA",
+  "Belloccio",
+  "DELLA ROVERE AMEDEO",
+  "DI BENEDETTO OSVALDO",
+  "PICCININI GUALTIERO",
+  "QUARANTOTTO ILDEGARDA",
+  "TAGLIAFERRI NICODEMO"
+ ],
+ "must_keep": [
+  "AZIENDA OSPEDALIERA UNIVERSITARIA FEDERICO II",
+  "CORBELLINI AUGUSTO",
+  "I.N.P.S.",
+  "INPS",
+  "ISTITUTO NAZIONALE DELLA PREVIDENZA SOCIALE",
+  "MASTROGIACOMO VITTORINA",
+  "NAPOLI",
+  "Napoli",
+  "ROMA",
+  "UNIVERSITA' DEGLI STUDI DI NAPOLI FEDERICO II",
+  "Università degli Studi di Napoli",
+  "n. 7409/2018"
+ ]
+}

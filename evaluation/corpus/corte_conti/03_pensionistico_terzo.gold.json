@@ -1,0 +1,20 @@
+{
+ "source": "corte_conti/2022/pdf/ECLI_IT_CONT_2022_1010SGCAM.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Pension case before the Corte dei Conti.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Della Rovere",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni",
+  "Scaramuzza"
+ ],
+ "must_keep": [
+  "CORTE DEI CONTI",
+  "INPS",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "n. 1010/2022",
+  "n. 1092/1973"
+ ]
+}

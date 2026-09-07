@@ -1,0 +1,21 @@
+{
+ "source": "cassazione/2024/ECLI_IT_CASS_2024_21034PEN.txt (all real names replaced with invented ones)",
+ "note": "Criminal decision: the defendant shares a first name with the Sostituto Procuratore, plus 'nato a … il …' and counsel introduced with 'l'avvocato'.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "FUMAGALLI ARISTIDE",
+  "Fumagalli",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "PONTREMOLI CLOTILDE",
+  "Pontremoli",
+  "RANIERI GRIMALDI SEVERINO",
+  "ROMA",
+  "Roma",
+  "n. 74/2000"
+ ]
+}

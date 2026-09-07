@@ -1,0 +1,22 @@
+{
+ "source": "merito_civile/2019/pdf.zip::2019__Corte_D_Appello_di_Ancona__n_1003__23900548.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2019. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Della Rovere",
+  "Di Benedetto",
+  "Gualtiero Piccinini",
+  "Ildegarda Quarantotto",
+  "Osvaldo Di Benedetto",
+  "Piccinini",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "n. 1710/2015"
+ ]
+}

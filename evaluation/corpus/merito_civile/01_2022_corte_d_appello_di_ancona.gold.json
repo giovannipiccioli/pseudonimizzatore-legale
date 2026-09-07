@@ -1,0 +1,22 @@
+{
+ "source": "merito_civile/2022/pdf.zip::2022__Corte_D_Appello_di_Ancona__n_1000__41354759.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2022. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Gervasio Spadaccini",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni",
+  "Spadaccini"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Mastrogiacomo",
+  "Sbaraglia",
+  "Vittorina Mastrogiacomo",
+  "n. 1610/2018",
+  "n. 170/2018",
+  "n. 4109/2014"
+ ]
+}

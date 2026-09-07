@@ -1,0 +1,22 @@
+{
+ "source": "corte_conti/2022/pdf/ECLI_IT_CONT_2022_1001SGCAM.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Pension case before the Corte dei Conti.",
+ "config": {},
+ "must_remove": [
+  "Arcangelo Monteleone",
+  "Cavalcanti",
+  "Gervasio Spadaccini",
+  "Gualtiero Piccinini",
+  "Monteleone",
+  "Piccinini",
+  "Serafina Cavalcanti",
+  "Spadaccini"
+ ],
+ "must_keep": [
+  "INPS",
+  "ISTITUTO NAZIONALE DELLA PREVIDENZA SOCIALE",
+  "Mastrogiacomo",
+  "Napoli",
+  "Vittorina Mastrogiacomo"
+ ]
+}

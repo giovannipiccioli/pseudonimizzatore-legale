@@ -1,0 +1,23 @@
+{
+ "source": "cassazione/2019/ECLI_IT_CASS_2019_26322CIV.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Ferruccio Malaspina",
+  "Malaspina",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "Mastrogiacomo",
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Roma",
+  "Severino Ranieri Grimaldi",
+  "Vittorina Mastrogiacomo",
+  "n. 7998/2016"
+ ]
+}

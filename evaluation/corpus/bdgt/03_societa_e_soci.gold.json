@@ -1,0 +1,26 @@
+{
+ "source": "bdgt/Sentenza_U01_100_2025.txt (official role tags filled with invented identities, then de-identified)",
+ "note": "Collegiate panel, a company party and a second shareholder named in the body.",
+ "config": {},
+ "must_remove": [
+  "MALINVERNI ISOTTA",
+  "MLSFRC71D14F205X",
+  "Piazza Guido Cavalcanti 3, 50122 Firenze",
+  "TAGLIAFERRI NICODEMO",
+  "studio.trentacoste@pec.ordineavvocatilucca.it"
+ ],
+ "must_keep": [
+  "ALESSANDRIA",
+  "Ag. Entrate",
+  "Agenzia delle Entrate",
+  "Alessandria",
+  "Firenze",
+  "IRPEF",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "TREVISANATO ORNELLA",
+  "n. 100/2025",
+  "n. 173/02",
+  "n. 286/2023"
+ ]
+}

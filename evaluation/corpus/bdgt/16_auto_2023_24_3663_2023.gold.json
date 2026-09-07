@@ -1,0 +1,25 @@
+{
+ "source": "bdgt/2023/Sentenza_U24_3663_2023.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "MLSFRC71D14F205X",
+  "QUARANTOTTO ILDEGARDA",
+  "VENTIMIGLIA TEODORO",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "CORBELLINI AUGUSTO",
+  "Corbellini",
+  "MASTROGIACOMO VITTORINA",
+  "Mastrogiacomo",
+  "Milano",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 3663/2023",
+  "n. 5271/2022",
+  "n. 546/1992"
+ ]
+}

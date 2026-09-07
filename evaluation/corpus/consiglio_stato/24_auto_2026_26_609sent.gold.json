@@ -1,0 +1,20 @@
+{
+ "source": "giustizia_amministrativa/2026/ECLI_IT_TARMAR_2026_609SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Della Rovere",
+  "Di Benedetto",
+  "Ildegarda Quarantotto",
+  "Osvaldo Di Benedetto",
+  "Quarantotto"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Ornella Trevisanato",
+  "Sbaraglia",
+  "Trevisanato",
+  "n. 35/2025"
+ ]
+}

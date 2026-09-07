@@ -1,0 +1,11 @@
+{
+ "source": "cassazione/2021/ECLI_IT_CASS_2021_42357PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "ZANGHERATTI MIRANDOLINA"
+ ],
+ "must_keep": [
+  "MASTROGIACOMO VITTORINA"
+ ]
+}

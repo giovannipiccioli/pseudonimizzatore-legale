@@ -1,0 +1,33 @@
+{
+ "source": "bdgt/2024/Sentenza_Z18_2275_2024.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "02956140374",
+  "BELLOCCIO ANASTASIA",
+  "DI BENEDETTO OSVALDO",
+  "MLSFRC71D14F205X",
+  "PIZZIGONI ROSALINDA",
+  "QUARANTOTTO ILDEGARDA",
+  "RCCBDS65B23H501Q",
+  "SNSLDC90E48A662W",
+  "TRENTACOSTE ERMENEGILDO",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "Ag. Entrate",
+  "IRPEF",
+  "IVA",
+  "PONTREMOLI CLOTILDE",
+  "RANIERI GRIMALDI SEVERINO",
+  "ROMA",
+  "Roma",
+  "TREVISANATO ORNELLA",
+  "n. 2275/2024",
+  "n. 3051/2021",
+  "n. 3540/2021"
+ ]
+}

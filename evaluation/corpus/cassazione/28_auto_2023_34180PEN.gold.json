@@ -1,0 +1,18 @@
+{
+ "source": "cassazione/2023/ECLI_IT_CASS_2023_34180PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Teodoro Ventimiglia",
+  "VENTIMIGLIA TEODORO",
+  "Ventimiglia"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "PONTREMOLI CLOTILDE",
+  "Pontremoli",
+  "RANIERI GRIMALDI SEVERINO"
+ ]
+}

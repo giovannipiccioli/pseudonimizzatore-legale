@@ -1,0 +1,21 @@
+{
+ "source": "merito_civile/2023/pdf.zip::2023__Corte_D_Appello_di_Catanzaro__n_59__54382476.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2023. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "INPS",
+  "Ornella Trevisanato",
+  "Trevisanato",
+  "n.80/92"
+ ]
+}

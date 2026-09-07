@@ -1,0 +1,22 @@
+{
+ "source": "bdgt/2025/Sentenza_V22_1921_2025.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "DI BENEDETTO OSVALDO",
+  "MLSFRC71D14F205X",
+  "QUARANTOTTO ILDEGARDA",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "CORBELLINI AUGUSTO",
+  "IMU",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 1921/2025",
+  "n. 3034/2023",
+  "n. 600/1973"
+ ]
+}

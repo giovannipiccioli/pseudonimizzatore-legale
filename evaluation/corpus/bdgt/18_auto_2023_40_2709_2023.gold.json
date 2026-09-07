@@ -1,0 +1,24 @@
+{
+ "source": "bdgt/2023/Sentenza_V40_2709_2023.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "FUMAGALLI ARISTIDE",
+  "MLSFRC71D14F205X",
+  "QUARANTOTTO ILDEGARDA",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "Ag. Entrate",
+  "Agenzia delle Entrate",
+  "CORBELLINI AUGUSTO",
+  "IRPEF",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 2709/2023",
+  "n. 289/2002",
+  "n. 7665/2017"
+ ]
+}

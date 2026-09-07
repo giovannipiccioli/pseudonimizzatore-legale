@@ -1,0 +1,25 @@
+{
+ "source": "giustizia_amministrativa/2026/ECLI_IT_TARLAZ_2026_4584SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Arcangelo Monteleone",
+  "Cavalcanti",
+  "Gervasio Spadaccini",
+  "Isotta Malinverni",
+  "Lo Strano",
+  "Malinverni",
+  "Monteleone",
+  "Perpetua Lo Strano",
+  "Scaramuzza",
+  "Serafina Cavalcanti",
+  "Spadaccini"
+ ],
+ "must_keep": [
+  "Avvocatura Generale dello Stato",
+  "Clotilde Pontremoli",
+  "Pontremoli",
+  "Roma"
+ ]
+}

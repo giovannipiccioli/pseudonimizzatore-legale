@@ -1,0 +1,20 @@
+{
+ "source": "corte_conti/1995/pdf.zip::ECLI_IT_CONT_1995_10SGCAL.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Arcangelo Monteleone",
+  "Cavalcanti",
+  "Lo Strano",
+  "Monteleone",
+  "Perpetua Lo Strano",
+  "Serafina Cavalcanti"
+ ],
+ "must_keep": [
+  "CORTE DEI CONTI",
+  "Ornella Trevisanato",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "Trevisanato"
+ ]
+}

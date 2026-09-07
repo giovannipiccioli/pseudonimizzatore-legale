@@ -1,0 +1,19 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARBA_2025_626SENB.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Cavalcanti",
+  "Ildegarda Quarantotto",
+  "Nicodemo Tagliaferri",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rosalinda Pizzigoni",
+  "Serafina Cavalcanti",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Sbaraglia"
+ ]
+}

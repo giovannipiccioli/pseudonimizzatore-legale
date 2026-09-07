@@ -1,0 +1,24 @@
+{
+ "source": "merito_civile/2019/pdf.zip::2019__Corte_D_Appello_di_Campobasso__n_99__4810815.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2019. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Mirandolina Zangheratti",
+  "Scaramuzza",
+  "Spadaccini",
+  "Trentacoste",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "n. 261/2018"
+ ]
+}

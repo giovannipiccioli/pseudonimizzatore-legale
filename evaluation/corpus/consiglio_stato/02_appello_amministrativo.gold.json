@@ -1,0 +1,21 @@
+{
+ "source": "giustizia_amministrativa/ECLI_IT_CDS_2025_10003SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Administrative appeal, for header variety.",
+ "config": {},
+ "must_remove": [
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Spadaccini",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Consiglio di Stato",
+  "Napoli",
+  "Pontremoli",
+  "n. 2778/2016",
+  "n. 833/2021"
+ ]
+}

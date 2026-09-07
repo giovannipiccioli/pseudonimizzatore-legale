@@ -1,0 +1,26 @@
+{
+ "source": "bdgt/2024/Sentenza_V10_592_2024.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "MLSFRC71D14F205X",
+  "MONTELEONE ARCANGELO",
+  "PIZZIGONI ROSALINDA",
+  "RCCBDS65B23H501Q",
+  "SCARAMUZZA ADELASIA",
+  "VMRRNS83M52L219K",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "ortensia.vimercati@pec.avvocatiferrara.it"
+ ],
+ "must_keep": [
+  "Agenzia delle Entrate",
+  "NAPOLI",
+  "Napoli",
+  "Ornella Trevisanato",
+  "TREVISANATO ORNELLA",
+  "Trevisanato",
+  "n. 12918/2023",
+  "n. 592/2024",
+  "n. 806/2023"
+ ]
+}

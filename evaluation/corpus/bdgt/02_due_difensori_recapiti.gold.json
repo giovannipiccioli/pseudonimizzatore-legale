@@ -1,0 +1,24 @@
+{
+ "source": "bdgt/Sentenza_U01_120_2025.txt (official role tags filled with invented identities, then de-identified)",
+ "note": "Two counsel with codici fiscali, e-mail, telephone and an address.",
+ "config": {},
+ "must_remove": [
+  "+39 011 4478230",
+  "Corso Ambrogio Traversari 118, 48121 Ravenna",
+  "MLSFRC71D14F205X",
+  "MONTELEONE ARCANGELO",
+  "QUARANTOTTO ILDEGARDA",
+  "RCCBDS65B23H501Q",
+  "VMRRNS83M52L219K",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "ALESSANDRIA",
+  "Alessandria",
+  "RANIERI GRIMALDI SEVERINO",
+  "n. 120/2025",
+  "n. 31/2025",
+  "n. 34/2025"
+ ]
+}

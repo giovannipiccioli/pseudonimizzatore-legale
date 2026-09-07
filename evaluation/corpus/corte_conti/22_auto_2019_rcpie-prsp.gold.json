@@ -1,0 +1,22 @@
+{
+ "source": "corte_conti/2019/pdf.zip::ECLI_IT_CONT_2019_113SRCPIE-PRSP.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Clotilde Pontremoli",
+  "Corbellini",
+  "Federico Maria Sbaraglia",
+  "Mastrogiacomo",
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Sbaraglia",
+  "Severino Ranieri Grimaldi",
+  "Trevisanato",
+  "Vittorina Mastrogiacomo",
+  "n. 113/2019",
+  "n. 17/2019",
+  "n. 22/2018"
+ ]
+}

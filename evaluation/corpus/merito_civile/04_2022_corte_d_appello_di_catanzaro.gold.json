@@ -1,0 +1,25 @@
+{
+ "source": "merito_civile/2022/pdf.zip::2022__Corte_D_Appello_di_Catanzaro__n_1351__51412344.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2022. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Arcangelo Monteleone",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Mirandolina Zangheratti",
+  "Monteleone",
+  "Ortensia Vimercati",
+  "Scaramuzza",
+  "Spadaccini",
+  "Trentacoste",
+  "Vimercati",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "n. 44/2011",
+  "n. 48/2013",
+  "n. 546/2019"
+ ]
+}

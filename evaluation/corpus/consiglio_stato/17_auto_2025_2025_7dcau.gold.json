@@ -1,0 +1,10 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARMAR_2025_7DCAU.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Ermenegildo Trentacoste",
+  "Trentacoste"
+ ],
+ "must_keep": []
+}

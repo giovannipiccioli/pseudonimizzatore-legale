@@ -1,0 +1,11 @@
+{
+ "source": "cassazione/2020/ECLI_IT_CASS_2020_25802PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety. The Procuratore generale is a public judicial role and is kept by policy.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Napoli",
+  "Nicodemo Tagliaferri",
+  "Tagliaferri"
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "source": "merito_civile/2020/pdf.zip::2020__Corte_D_Appello_di_Ancona__n_1001__30653256.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2020. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Gervasio Spadaccini",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Spadaccini"
+ ],
+ "must_keep": [
+  "n. 1125/2019",
+  "n. 203/82",
+  "n.203/1982"
+ ]
+}

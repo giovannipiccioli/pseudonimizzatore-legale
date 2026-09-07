@@ -1,0 +1,19 @@
+{
+ "source": "merito_civile/2023/pdf.zip::2023__Corte_D_Appello_di_Brescia__n_86__62122897.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2023. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Ferruccio Malaspina",
+  "Gervasio Spadaccini",
+  "MONTELEONE ARCANGELO",
+  "Malaspina",
+  "Mirandolina Zangheratti",
+  "Spadaccini",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "INPS",
+  "n.\n218/2022",
+  "n. 505/22"
+ ]
+}

@@ -1,0 +1,16 @@
+{
+ "source": "CGUE/cgue_txt_ita/2024/62024CC0376_IT.txt (party initialism filled, then de-identified)",
+ "note": "Opinion of an Advocate General: the party is a two-letter initialism, the AG is named in clear, the referring court is foreign. Only the injected natural person may be removed.",
+ "config": {},
+ "must_remove": [
+  "Fumagalli",
+  "Ludovica Sanseverino",
+  "Sanseverino"
+ ],
+ "must_keep": [
+  "Bruxelles",
+  "C-376/24",
+  "TREVISANATO ORNELLA",
+  "n. 596/2014"
+ ]
+}

@@ -1,0 +1,24 @@
+{
+ "source": "bdgt/2021/Sentenza_U01_100_2021.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "DI BENEDETTO OSVALDO",
+  "Di Benedetto",
+  "MALINVERNI ISOTTA",
+  "Osvaldo Di Benedetto",
+  "Piazza Guido Cavalcanti 3, 50122 Firenze",
+  "SPADACCINI GERVASIO"
+ ],
+ "must_keep": [
+  "ALESSANDRIA",
+  "Alessandria",
+  "CORBELLINI AUGUSTO",
+  "Firenze",
+  "IVA",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 100/2021",
+  "n. 165/2020"
+ ]
+}

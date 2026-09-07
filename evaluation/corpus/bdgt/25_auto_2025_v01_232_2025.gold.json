@@ -1,0 +1,20 @@
+{
+ "source": "bdgt/2025/Sentenza_V01_232_2025.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "CAVALCANTI SERAFINA",
+  "MLSFRC71D14F205X",
+  "MONTELEONE ARCANGELO",
+  "QUARANTOTTO ILDEGARDA",
+  "VMRRNS83M52L219K",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "RANIERI GRIMALDI SEVERINO",
+  "TREVISANATO ORNELLA",
+  "n. 167/2025",
+  "n. 232/2025",
+  "n. 80/2025"
+ ]
+}

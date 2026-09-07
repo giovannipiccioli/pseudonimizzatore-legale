@@ -1,0 +1,18 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARPA_2025_538OCAU.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Lo Strano",
+  "Perpetua Lo Strano",
+  "Scaramuzza",
+  "Spadaccini",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "n. 884213/2022"
+ ]
+}

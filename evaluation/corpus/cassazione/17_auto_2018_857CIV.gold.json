@@ -1,0 +1,21 @@
+{
+ "source": "cassazione/2018/ECLI_IT_CASS_2018_857CIV.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "MONTELEONE ARCANGELO",
+  "SCARAMUZZA ADELASIA",
+  "SPADACCINI GERVASIO",
+  "ZANGHERATTI MIRANDOLINA"
+ ],
+ "must_keep": [
+  "I.N.P.S.",
+  "Mastrogiacomo",
+  "ROMA",
+  "Roma",
+  "SBARAGLIA FEDERICO MARIA",
+  "Vittorina Mastrogiacomo",
+  "n. 10332/2010",
+  "n. 17023/2012"
+ ]
+}

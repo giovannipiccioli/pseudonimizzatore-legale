@@ -1,0 +1,23 @@
+{
+ "source": "merito_civile/2020/pdf.zip::2020__Corte_D_Appello_di_Bari__n_1988__56658628.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2020. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Arcangelo Monteleone",
+  "Baldassarre Rocchetti",
+  "Ermenegildo Trentacoste",
+  "Ferruccio Malaspina",
+  "Gervasio Spadaccini",
+  "Malaspina",
+  "Monteleone",
+  "Rocchetti",
+  "Spadaccini",
+  "Teodoro Ventimiglia",
+  "Trentacoste",
+  "Ventimiglia"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Sbaraglia"
+ ]
+}

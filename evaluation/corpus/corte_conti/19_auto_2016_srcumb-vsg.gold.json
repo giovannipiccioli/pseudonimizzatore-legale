@@ -1,0 +1,19 @@
+{
+ "source": "corte_conti/2016/pdf.zip::ECLI_IT_CONT_2016_10SRCUMB-VSG.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "CORTE DEI CONTI",
+  "Federico Maria Sbaraglia",
+  "Mastrogiacomo",
+  "Ornella Trevisanato",
+  "Ranieri Grimaldi",
+  "Sbaraglia",
+  "Severino Ranieri Grimaldi",
+  "Trevisanato",
+  "Vittorina Mastrogiacomo",
+  "n. 10/2016",
+  "n.149/2011"
+ ]
+}

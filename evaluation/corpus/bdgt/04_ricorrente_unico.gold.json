@@ -1,0 +1,24 @@
+{
+ "source": "bdgt/Sentenza_U01_122_2025.txt (official role tags filled with invented identities, then de-identified)",
+ "note": "Minimal shape: one applicant, one counsel, one e-mail.",
+ "config": {},
+ "must_remove": [
+  "DELLA ROVERE AMEDEO",
+  "MLSFRC71D14F205X",
+  "QUARANTOTTO ILDEGARDA",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it"
+ ],
+ "must_keep": [
+  "ALESSANDRIA",
+  "Ag. Entrate",
+  "Alessandria",
+  "CORBELLINI AUGUSTO",
+  "Guardia di Finanza",
+  "IRPEF",
+  "PONTREMOLI CLOTILDE",
+  "RANIERI GRIMALDI SEVERINO",
+  "n. 122/2025",
+  "n. 314/2023"
+ ]
+}

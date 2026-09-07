@@ -1,0 +1,24 @@
+{
+ "source": "bdgt/2022/Sentenza_U91_1356_2022.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BONAVENTURA CELESTE",
+  "MLSFRC71D14F205X",
+  "QUARANTOTTO ILDEGARDA",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "Agenzia delle Entrate",
+  "PONTREMOLI CLOTILDE",
+  "RANIERI GRIMALDI SEVERINO",
+  "ROMA",
+  "Roma",
+  "TREVISANATO ORNELLA",
+  "n. 1356/2022",
+  "n. 6397/2020"
+ ]
+}

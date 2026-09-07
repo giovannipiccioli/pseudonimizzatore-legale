@@ -1,0 +1,27 @@
+{
+ "source": "merito_civile/2023/pdf.zip::2023__Corte_D_Appello_di_Firenze__n_636__119560043.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2023. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Arcangelo Monteleone",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Ludovica Sanseverino",
+  "Mirandolina Zangheratti",
+  "Monteleone",
+  "Ortensia Vimercati",
+  "Sanseverino",
+  "Scaramuzza",
+  "Spadaccini",
+  "Trentacoste",
+  "Vimercati",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Firenze",
+  "IVA",
+  "n. 3417/06",
+  "n. 424/2021"
+ ]
+}

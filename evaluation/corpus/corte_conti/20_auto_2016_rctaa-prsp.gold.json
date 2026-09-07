@@ -1,0 +1,20 @@
+{
+ "source": "corte_conti/2016/pdf.zip::ECLI_IT_CONT_2016_11SRCTAA-PRSP.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Augusto Corbellini",
+  "CORTE DEI CONTI",
+  "Corbellini",
+  "Federico Maria Sbaraglia",
+  "Mastrogiacomo",
+  "Ornella Trevisanato",
+  "Sbaraglia",
+  "Trevisanato",
+  "Vittorina Mastrogiacomo",
+  "n. 1/2015",
+  "n. 11/2016",
+  "n. 13/2015"
+ ]
+}

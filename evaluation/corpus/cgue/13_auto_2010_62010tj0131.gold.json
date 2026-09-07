@@ -1,0 +1,11 @@
+{
+ "source": "CGUE/cgue_txt_ita/2010/62010TJ0131_IT.txt (party initialism filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "n. 2454/93",
+  "n. 2913/92",
+  "n. 975/2003"
+ ]
+}

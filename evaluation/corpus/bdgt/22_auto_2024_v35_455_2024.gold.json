@@ -1,0 +1,31 @@
+{
+ "source": "bdgt/2024/Sentenza_V35_455_2024.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BELLOCCIO ANASTASIA",
+  "Cavalcanti",
+  "Corso Ambrogio Traversari 118, 48121 Ravenna",
+  "MALASPINA FERRUCCIO",
+  "MLSFRC71D14F205X",
+  "Piazza Guido Cavalcanti 3, 50122 Firenze",
+  "ROCCHETTI BALDASSARRE",
+  "VMRRNS83M52L219K",
+  "b.rocchetti@legalmail.it",
+  "ortensia.vimercati@pec.avvocatiferrara.it"
+ ],
+ "must_keep": [
+  "Ag. Entrate",
+  "Agenzia delle Entrate",
+  "CORBELLINI AUGUSTO",
+  "Firenze",
+  "INPS",
+  "IRPEF",
+  "IVA",
+  "MASTROGIACOMO VITTORINA",
+  "SBARAGLIA FEDERICO MARIA",
+  "n. 104/2024",
+  "n. 455/2024",
+  "n. 57/2024"
+ ]
+}

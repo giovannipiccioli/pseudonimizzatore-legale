@@ -1,0 +1,26 @@
+{
+ "source": "bdgt/2026/Sentenza_V10_6327_2026.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "BONAVENTURA CELESTE",
+  "Corso Ambrogio Traversari 118, 48121 Ravenna",
+  "MLSFRC71D14F205X",
+  "Piazza Guido Cavalcanti 3, 50122 Firenze",
+  "QUARANTOTTO ILDEGARDA",
+  "VMRRNS83M52L219K",
+  "anastasia.belloccio@postacert.legalitalia.it",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "g.spadaccini@studiospadaccini.eu"
+ ],
+ "must_keep": [
+  "Agenzia delle Entrate",
+  "Firenze",
+  "NAPOLI",
+  "Napoli",
+  "TREVISANATO ORNELLA",
+  "n. 12774/2025",
+  "n. 5854/2026",
+  "n. 6327/2026"
+ ]
+}

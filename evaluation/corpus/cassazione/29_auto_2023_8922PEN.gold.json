@@ -1,0 +1,13 @@
+{
+ "source": "cassazione/2023/ECLI_IT_CASS_2023_8922PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "MASTROGIACOMO VITTORINA",
+  "NAPOLI",
+  "SBARAGLIA FEDERICO MARIA",
+  "Sbaraglia"
+ ]
+}

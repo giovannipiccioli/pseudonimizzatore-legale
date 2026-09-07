@@ -1,0 +1,15 @@
+{
+ "source": "cassazione/2014/ECLI_IT_CASS_2014_21158PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Ortensia Vimercati",
+  "VIMERCATI ORTENSIA",
+  "Vimercati"
+ ],
+ "must_keep": [
+  "Mastrogiacomo",
+  "Vittorina Mastrogiacomo",
+  "n. 2774/2011"
+ ]
+}

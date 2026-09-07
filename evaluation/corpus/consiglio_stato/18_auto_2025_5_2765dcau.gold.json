@@ -1,0 +1,18 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARNA_2025_2765DCAU.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Della Rovere",
+  "Gualtiero Piccinini",
+  "Ildegarda Quarantotto",
+  "Piccinini",
+  "Quarantotto"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Napoli",
+  "Sbaraglia"
+ ]
+}

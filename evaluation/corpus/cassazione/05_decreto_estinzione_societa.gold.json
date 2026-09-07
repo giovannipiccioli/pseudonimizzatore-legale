@@ -1,0 +1,16 @@
+{
+ "source": "cassazione/2025/ECLI_IT_CASS_2025_14077CIV.txt (all real names replaced with invented ones)",
+ "note": "Short decree, no named judges, a company as respondent — a near no-op that must not invent detections.",
+ "config": {},
+ "must_remove": [
+  "DELLA ROVERE AMEDEO",
+  "PICCININI GUALTIERO"
+ ],
+ "must_keep": [
+  "AVVOCATURA GENERALE DELLO STATO",
+  "Roma",
+  "n. 17486/2020",
+  "n. 197/2022",
+  "n.1331/06"
+ ]
+}

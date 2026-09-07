@@ -1,0 +1,29 @@
+{
+ "source": "bdgt/2025/Sentenza_U24_1663_2025.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "07412963058",
+  "BELLOCCIO ANASTASIA",
+  "MLSFRC71D14F205X",
+  "MONTELEONE ARCANGELO",
+  "Nicodemo Tagliaferri",
+  "TAGLIAFERRI NICODEMO",
+  "Tagliaferri",
+  "VMRRNS83M52L219K",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "ortensia.vimercati@pec.avvocatiferrara.it"
+ ],
+ "must_keep": [
+  "Ag. Entrate",
+  "Agenzia delle Entrate",
+  "CORBELLINI AUGUSTO",
+  "IRPEF",
+  "IVA",
+  "MASTROGIACOMO VITTORINA",
+  "Milano",
+  "n. 1663/2025",
+  "n. 5098/2024",
+  "n. 5101/2024"
+ ]
+}

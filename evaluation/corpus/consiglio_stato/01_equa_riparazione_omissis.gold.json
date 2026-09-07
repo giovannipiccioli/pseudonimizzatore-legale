@@ -1,0 +1,25 @@
+{
+ "source": "giustizia_amministrativa/ECLI_IT_CDS_2025_10000SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Consiglio di Stato appeal. Parties are -OMISSIS- in the source; counsel and the relatore are named in clear, so both roles are exercised in one document.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "Baldassarre Rocchetti",
+  "Fumagalli",
+  "Ildegarda Quarantotto",
+  "Nicodemo Tagliaferri",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rocchetti",
+  "Rosalinda Pizzigoni",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Avvocatura Generale dello Stato",
+  "Consiglio di Stato",
+  "Federico Maria Sbaraglia",
+  "Ministero della Salute",
+  "Roma",
+  "Sbaraglia"
+ ]
+}

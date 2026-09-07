@@ -1,0 +1,17 @@
+{
+ "source": "bdgt/2021/Sentenza_V22_3244_2021.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "SPADACCINI GERVASIO",
+  "Via Ippolito Nievo n. 47, 44121 Ferrara",
+  "ZANGHERATTI MIRANDOLINA"
+ ],
+ "must_keep": [
+  "PONTREMOLI CLOTILDE",
+  "RANIERI GRIMALDI SEVERINO",
+  "TREVISANATO ORNELLA",
+  "n. 2628/2017",
+  "n. 3244/2021"
+ ]
+}

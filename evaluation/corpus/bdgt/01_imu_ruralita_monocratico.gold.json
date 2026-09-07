@@ -1,0 +1,26 @@
+{
+ "source": "bdgt/Sentenza_U01_101_2025.txt (official role tags filled with invented identities, then de-identified)",
+ "note": "CGT first instance, single judge, one party and one counsel, Comune as respondent.",
+ "config": {},
+ "must_remove": [
+  "CAVALCANTI SERAFINA",
+  "MLSFRC71D14F205X",
+  "Ortensia Vimercati",
+  "PICCININI GUALTIERO",
+  "QUARANTOTTO ILDEGARDA",
+  "VIMERCATI ORTENSIA",
+  "VMRRNS83M52L219K",
+  "Vimercati",
+  "ferruccio.malaspina@studiomalaspina.it",
+  "ortensia.vimercati@pec.avvocatiferrara.it"
+ ],
+ "must_keep": [
+  "ALESSANDRIA",
+  "Agenzia delle Entrate",
+  "Comune di Carpeneto",
+  "IMU",
+  "n. 101/2025",
+  "n. 190/2023",
+  "n. 260/2022"
+ ]
+}

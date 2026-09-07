@@ -1,0 +1,18 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARCZ_2025_49SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Cavalcanti",
+  "Ermenegildo Trentacoste",
+  "Lo Strano",
+  "Perpetua Lo Strano",
+  "Serafina Cavalcanti",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "Consiglio di Stato",
+  "n. 32/2020",
+  "n. 89/2001"
+ ]
+}

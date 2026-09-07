@@ -1,0 +1,11 @@
+{
+ "source": "cassazione/2022/ECLI_IT_CASS_2022_30655CIV.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "n. 10454/2015",
+  "n. 15656/2012",
+  "n. 938/2020"
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARLAZ_2025_2997OCOL.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Ludovica Sanseverino",
+  "Mirandolina Zangheratti",
+  "Ortensia Vimercati",
+  "Sanseverino",
+  "Spadaccini",
+  "Trentacoste",
+  "Vimercati",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "n. 884213/2022"
+ ]
+}

@@ -1,0 +1,20 @@
+{
+ "source": "merito_civile/2022/pdf.zip::2022__Corte_D_Appello_di_Brescia__n_73__54250103.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2022. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Arcangelo Monteleone",
+  "Belloccio",
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Monteleone"
+ ],
+ "must_keep": [
+  "n. 21/21",
+  "n. 349/20",
+  "n. 349/2020"
+ ]
+}

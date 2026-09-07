@@ -1,0 +1,20 @@
+{
+ "source": "cassazione/2024/ECLI_IT_CASS_2024_24464CIV.txt (all real names replaced with invented ones)",
+ "note": "Two counsel, each followed by a codice fiscale in brackets — the CF-adjacency anchor. A bank is a party and must survive (companies are opt-out).",
+ "config": {},
+ "must_remove": [
+  "ROCCHETTI BALDASSARRE"
+ ],
+ "must_keep": [
+  "AGENZIA DELLE ENTRATE",
+  "BANCA NAZIONALE DEL LAVORO",
+  "IVA",
+  "Ornella Trevisanato",
+  "ROMA",
+  "Roma",
+  "SBARAGLIA FEDERICO MARIA",
+  "TREVISANATO ORNELLA",
+  "Trevisanato",
+  "n. 30160/2021"
+ ]
+}

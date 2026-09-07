@@ -1,0 +1,25 @@
+{
+ "source": "bdgt/2023/Sentenza_Z29_6427_2023.txt (official role tags filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "MLSFRC71D14F205X",
+  "MONTELEONE ARCANGELO",
+  "PICCININI GUALTIERO",
+  "PIZZIGONI ROSALINDA",
+  "RCCBDS65B23H501Q",
+  "VMRRNS83M52L219K",
+  "b.rocchetti@legalmail.it",
+  "ortensia.vimercati@pec.avvocatiferrara.it"
+ ],
+ "must_keep": [
+  "IMU",
+  "Napoli",
+  "PONTREMOLI CLOTILDE",
+  "RANIERI GRIMALDI SEVERINO",
+  "TREVISANATO ORNELLA",
+  "n. 2803/2023",
+  "n. 3787/2022",
+  "n. 6427/2023"
+ ]
+}

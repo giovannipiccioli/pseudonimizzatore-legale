@@ -1,0 +1,21 @@
+{
+ "source": "corte_conti/2003/pdf.zip::ECLI_IT_CONT_2003_1095SGCAL.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Della Rovere",
+  "Gualtiero Piccinini",
+  "Ildegarda Quarantotto",
+  "Piccinini",
+  "Quarantotto"
+ ],
+ "must_keep": [
+  "CORTE DEI CONTI",
+  "n. 1095/2003",
+  "n. 566/89",
+  "n.566/89"
+ ]
+}

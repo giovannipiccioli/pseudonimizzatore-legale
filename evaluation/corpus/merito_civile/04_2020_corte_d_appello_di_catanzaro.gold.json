@@ -1,0 +1,25 @@
+{
+ "source": "merito_civile/2020/pdf.zip::2020__Corte_D_Appello_di_Catanzaro__n_1242__31244513.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2020. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Arcangelo Monteleone",
+  "Ferruccio Malaspina",
+  "Gervasio Spadaccini",
+  "Malaspina",
+  "Mirandolina Zangheratti",
+  "Monteleone",
+  "Ortensia Vimercati",
+  "Scaramuzza",
+  "Spadaccini",
+  "Vimercati",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Pontremoli",
+  "Ranieri Grimaldi",
+  "Severino Ranieri Grimaldi",
+  "n. 577/2016"
+ ]
+}

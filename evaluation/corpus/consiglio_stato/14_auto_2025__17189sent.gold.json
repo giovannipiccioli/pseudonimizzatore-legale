@@ -1,0 +1,17 @@
+{
+ "source": "giustizia_amministrativa/2025/ECLI_IT_TARLAZ_2025_17189SENT.html (HTML stripped, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Ildegarda Quarantotto",
+  "Quarantotto",
+  "Scaramuzza",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
+ ],
+ "must_keep": [
+  "Avvocatura Generale dello Stato",
+  "Roma"
+ ]
+}

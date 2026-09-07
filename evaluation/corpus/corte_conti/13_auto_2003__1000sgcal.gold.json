@@ -1,0 +1,20 @@
+{
+ "source": "corte_conti/2003/pdf.zip::ECLI_IT_CONT_2003_1000SGCAL.pdf (PyMuPDF text, (OMISSIS) filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "Fumagalli",
+  "Gervasio Spadaccini",
+  "Ludovica Sanseverino",
+  "Sanseverino",
+  "Spadaccini"
+ ],
+ "must_keep": [
+  "CORTE DEI CONTI",
+  "MASTROGIACOMO VITTORINA",
+  "Mastrogiacomo",
+  "Vittorina Mastrogiacomo",
+  "n. 1000/2003"
+ ]
+}

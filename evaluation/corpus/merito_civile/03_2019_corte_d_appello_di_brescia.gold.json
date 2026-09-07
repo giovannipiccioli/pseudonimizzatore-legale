@@ -1,0 +1,20 @@
+{
+ "source": "merito_civile/2019/pdf.zip::2019__Corte_D_Appello_di_Brescia__n_1208__32691182.pdf (PyMuPDF text, initials filled, then de-identified)",
+ "note": "Civil decision, 2019. Names are masked as initials in the source and filled with invented identities here.",
+ "config": {},
+ "must_remove": [
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Pizzigoni",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Pontremoli",
+  "n. 19908/16",
+  "n. 25/2008",
+  "n. 251/2007"
+ ]
+}

@@ -1,0 +1,14 @@
+{
+ "source": "cassazione/2022/ECLI_IT_CASS_2022_16423PEN.txt (all real names replaced with invented ones)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Milano",
+  "PONTREMOLI CLOTILDE",
+  "Pontremoli",
+  "RANIERI GRIMALDI SEVERINO",
+  "Roma"
+ ]
+}
