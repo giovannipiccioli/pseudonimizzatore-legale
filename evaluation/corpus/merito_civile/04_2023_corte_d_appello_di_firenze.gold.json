@@ -3,24 +3,24 @@
  "note": "Civil decision, 2023. Names are masked as initials in the source and filled with invented identities here.",
  "config": {},
  "must_remove": [
-  "Adelasia Scaramuzza",
   "Arcangelo Monteleone",
   "Ermenegildo Trentacoste",
   "Gervasio Spadaccini",
   "Ludovica Sanseverino",
-  "Mirandolina Zangheratti",
   "Monteleone",
   "Ortensia Vimercati",
   "Sanseverino",
-  "Scaramuzza",
   "Spadaccini",
   "Trentacoste",
-  "Vimercati",
-  "Zangheratti"
+  "Vimercati"
  ],
  "must_keep": [
+  "Adelasia Scaramuzza",
   "Firenze",
   "IVA",
+  "Mirandolina Zangheratti",
+  "Scaramuzza",
+  "Zangheratti",
   "n. 3417/06",
   "n. 424/2021"
  ]

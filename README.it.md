@@ -242,12 +242,12 @@ anche un solo alias, l'intera identità è considerata non rimossa.
 
 | Configurazione | Entità complete | Richiamo sulle occorrenze | Limite inferiore di precisione | Valori protetti conservati | Documenti completi |
 |---|---:|---:|---:|---:|---:|
-| solo regex | 441/503 (87,7%) | 692/794 (87,2%) | 757/878 (86,2%) | 700/700 | 89/124 |
-| + NER italiano XXL | 472/503 (93,8%) | 742/794 (93,5%) | 827/1081 (76,5%) | 676/700 | 102/124 |
+| solo regex | 440/486 (90,5%) | 690/764 (90,3%) | 756/878 (86,1%) | 728/730 | 94/124 |
+| + NER italiano XXL | 470/486 (96,7%) | 738/764 (96,6%) | 825/1081 (76,3%) | 702/730 | 108/124 |
 
 Entrambe le configurazioni rimuovono 115/115 identificatori strutturati annotati.
-L'euristica di revisione intercetta tutti i 35 documenti con residui annotati, ma
-segnala anche 85 documenti senza residui. È intenzionalmente pensata come una revisione
+L'euristica di revisione intercetta tutti i 30 documenti con residui annotati, ma
+segnala anche 90 documenti senza residui. È intenzionalmente pensata come una revisione
 orientata a non perdere documenti con potenziali errori. Non è un certificato di sicurezza.
 
 Per definizioni, risultati per fonte, compromessi e comandi di riproduzione, vedere

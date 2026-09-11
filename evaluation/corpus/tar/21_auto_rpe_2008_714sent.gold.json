@@ -7,16 +7,16 @@
   "Arcangelo Monteleone",
   "Lo Strano",
   "Monteleone",
-  "Ornella Trevisanato",
   "Perpetua Lo Strano",
   "SPADACCINI GERVASIO",
   "Scaramuzza",
   "TRENTACOSTE ERMENEGILDO",
-  "Trevisanato",
   "VIMERCATI ORTENSIA",
   "ZANGHERATTI MIRANDOLINA"
  ],
  "must_keep": [
-  "Napoli"
+  "Napoli",
+  "Ornella Trevisanato",
+  "Trevisanato"
  ]
 }

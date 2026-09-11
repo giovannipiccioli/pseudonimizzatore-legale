@@ -3,21 +3,21 @@
  "note": "Civil decision, 2020. Names are masked as initials in the source and filled with invented identities here.",
  "config": {},
  "must_remove": [
-  "Arcangelo Monteleone",
   "Baldassarre Rocchetti",
   "Ermenegildo Trentacoste",
   "Ferruccio Malaspina",
   "Gervasio Spadaccini",
   "Malaspina",
-  "Monteleone",
   "Rocchetti",
   "Spadaccini",
-  "Teodoro Ventimiglia",
-  "Trentacoste",
-  "Ventimiglia"
+  "Trentacoste"
  ],
  "must_keep": [
+  "Arcangelo Monteleone",
   "Federico Maria Sbaraglia",
-  "Sbaraglia"
+  "Monteleone",
+  "Sbaraglia",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
  ]
 }

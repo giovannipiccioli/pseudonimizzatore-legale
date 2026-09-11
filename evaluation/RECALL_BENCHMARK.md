@@ -7,8 +7,8 @@ Transformer runs used CPU, threshold 0.3 and locally cached model weights.
 
 | Configuration | Complete entities | Names complete | Surface recall | Span precision LB | Character precision LB | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| regex only | 441/503 (87.7%) | 326/388 (84.0%) | 692/794 (87.2%) | 757/878 (86.2%) | 87.1% | 700/700 (100%) | 89/124 |
-| + Italian NER XXL | 472/503 (93.8%) | 357/388 (92.0%) | 742/794 (93.5%) | 827/1081 (76.5%) | 78.6% | 676/700 (96.6%) | 102/124 |
+| regex only | 440/486 (90.5%) | 325/371 (87.6%) | 690/764 (90.3%) | 756/878 (86.1%) | 87.0% | 728/730 (99.7%) | 94/124 |
+| + Italian NER XXL | 470/486 (96.7%) | 355/371 (95.7%) | 738/764 (96.6%) | 825/1081 (76.3%) | 78.4% | 702/730 (96.2%) | 108/124 |
 
 Every configuration removes 115/115 annotated structured identifiers/other entities.
 The remaining gap is person recognition.
@@ -34,9 +34,9 @@ span may still be correct. Character precision additionally penalizes overly wid
 | Cassazione | 90.2% | 100.0% |
 | CGUE | 0.0% | 50.0% |
 | Consiglio di Stato | 94.0% | 98.0% |
-| TAR | 90.7% | 95.3% |
-| Corte dei conti | 76.7% | 88.4% |
-| Merito civile | 67.5% | 76.6% |
+| TAR | 91.5% | 96.2% |
+| Corte dei conti | 84.6% | 94.9% |
+| Merito civile | 78.5% | 89.2% |
 
 NER adds most where the layout announces little: EU opinions, accounting and civil
 decisions, and the people a penal decision names only in its narrative — victims,
@@ -44,9 +44,9 @@ witnesses — which no role cue introduces.
 
 ## Privacy/utility trade-off
 
-Italian NER XXL gains 31 complete entities and 13 complete documents over regex alone.
+Italian NER XXL gains 30 complete entities and 14 complete documents over regex alone.
 It also creates 203 additional replacement decisions, lowers the replacement-overlap
-precision bound by 9.7 points, and removes 24 protected assertions.
+precision bound by 9.8 points, and removes 26 protected assertions.
 
 The protected-value change is expected under span-local policy: an explicit
 `Presidente: NOME COGNOME` span stays, while an uncued later occurrence of that name is
@@ -59,7 +59,7 @@ stronger configuration. Regex-only remains useful when throughput, explainabilit
 preservation of uncued public-role aliases matters more.
 
 Observed end-to-end elapsed time in this run was roughly 0.8 seconds for regex-only and
-28.5 seconds with Italian NER XXL. Treat these only as relative figures; hardware,
+29.5 seconds with Italian NER XXL. Treat these only as relative figures; hardware,
 tokenizer cache and document lengths dominate runtime.
 
 ## Review heuristic
@@ -69,7 +69,7 @@ matrix against annotated residuals:
 
 | TP | FN | FP | TN | Recall | Precision |
 |---:|---:|---:|---:|---:|---:|
-| 35 | 0 | 85 | 4 | 100.0% | 29.2% |
+| 30 | 0 | 90 | 4 | 100.0% | 25.0% |
 
 This is deliberately noisy. It is a review queue, not evidence that one of the four
 `passed_checks` documents is anonymous.

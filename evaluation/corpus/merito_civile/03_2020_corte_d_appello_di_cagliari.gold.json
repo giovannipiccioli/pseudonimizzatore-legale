@@ -6,14 +6,15 @@
   "Amedeo Della Rovere",
   "Anastasia Belloccio",
   "Belloccio",
-  "Bonaventura",
-  "Celeste Bonaventura",
   "Della Rovere",
   "Ildegarda Quarantotto",
-  "Lo Strano",
-  "Malinverni",
-  "Pizzigoni",
   "Quarantotto"
  ],
- "must_keep": []
+ "must_keep": [
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Lo Strano",
+  "Malinverni",
+  "Pizzigoni"
+ ]
 }

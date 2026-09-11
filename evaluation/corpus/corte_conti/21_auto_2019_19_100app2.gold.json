@@ -4,14 +4,12 @@
  "config": {},
  "must_remove": [
   "Adelasia Scaramuzza",
-  "Arcangelo Monteleone",
   "Belloccio",
   "Ermenegildo Trentacoste",
   "Gervasio Spadaccini",
   "Ildegarda Quarantotto",
   "Lo Strano",
   "Mirandolina Zangheratti",
-  "Monteleone",
   "Perpetua Lo Strano",
   "Scaramuzza",
   "Spadaccini",
@@ -19,9 +17,11 @@
   "Zangheratti"
  ],
  "must_keep": [
+  "Arcangelo Monteleone",
   "CORTE DEI CONTI",
   "Clotilde Pontremoli",
   "I.N.P.S.",
+  "Monteleone",
   "Pontremoli",
   "Roma"
  ]

@@ -23,18 +23,19 @@ Current regex-only result:
 | Cassazione | 46/51 (90.2%) | 73/81 (90.1%) | 79/95 (83.2%) | 137/137 | 23/25 |
 | CGUE | 0/2 (0.0%) | 0/3 (0.0%) | 0/0 | 17/17 | 7/8 |
 | Consiglio di Stato | 47/50 (94.0%) | 92/98 (93.9%) | 74/84 (88.1%) | 78/78 | 13/16 |
-| TAR | 97/107 (90.7%) | 189/206 (91.7%) | 199/215 (92.6%) | 83/83 | 16/21 |
-| Corte dei conti | 33/43 (76.7%) | 60/77 (77.9%) | 55/57 (96.5%) | 132/132 | 8/15 |
-| Merito civile | 52/77 (67.5%) | 103/147 (70.1%) | 104/113 (92.0%) | 56/56 | 3/16 |
-| **Total** | **441/503 (87.7%)** | **692/794 (87.2%)** | **757/878 (86.2%)** | **700/700** | **89/124** |
+| TAR | 97/106 (91.5%) | 189/204 (92.6%) | 199/215 (92.6%) | 85/85 | 16/21 |
+| Corte dei conti | 33/39 (84.6%) | 60/69 (87.0%) | 55/57 (96.5%) | 140/140 | 10/15 |
+| Merito civile | 51/65 (78.5%) | 101/127 (79.5%) | 103/113 (91.2%) | 74/76 | 6/16 |
+| **Total** | **440/486 (90.5%)** | **690/764 (90.3%)** | **756/878 (86.1%)** | **728/730** | **94/124** |
 
 The scorer also reports:
 
-- names: 326/388 complete (84.0%);
+- names: 325/371 complete (87.6%);
 - structured identifiers/other: 115/115 complete (100%);
-- character-overlap precision lower bound: 15,451/17,741 (87.1%);
-- damage-free documents (no protected value lost): 124/124;
-- review heuristic: TP/FN/FP/TN = 35/0/85/4, or 100% recall and 29.2%
+- character-overlap precision lower bound: 15,431/17,741 (87.0%);
+- damage-free documents (no protected value lost): 123/124 — `merito_civile/02_2020`
+  removes a giudice ausiliario introduced as "Avv. X … G.A. relatore";
+- review heuristic: TP/FN/FP/TN = 30/0/90/4, or 100% recall and 25.0%
   precision for finding documents with an annotated residual.
 
 ## Metric definitions
