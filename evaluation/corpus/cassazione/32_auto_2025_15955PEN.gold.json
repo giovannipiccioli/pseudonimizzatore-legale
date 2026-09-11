@@ -4,7 +4,12 @@
  "config": {},
  "must_remove": [
   "Amedeo Della Rovere",
-  "Della Rovere"
+  "Della Rovere",
+  "Ferruccio Malaspina",
+  "Malaspina",
+  "Rocchetti",
+  "Sanseverino",
+  "Vimercati"
  ],
  "must_keep": [
   "Augusto Corbellini",

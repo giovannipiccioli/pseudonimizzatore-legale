@@ -48,8 +48,9 @@ class Config:
         not pseudonymize case numbers; it only removes their explicit keep decision.
     sanitize
         Run the normalisation pre-pass (NFKC, zero-width strip, de-hyphenation, entity
-        decode, markdown flattening). Needed for ``.md`` input and for anything
-        converted from PDF or OCR. Costs roughly 15% of runtime, and **changes offsets**
+        decode, HTML-tag and markdown flattening). Needed for ``.md`` input and for
+        anything converted from PDF, OCR or HTML; ``<<…>>`` quotation marks are kept as
+        text. Costs roughly 15% of runtime, and **changes offsets**
         — turn it off only if you need the original bytes preserved exactly, and accept
         the lower recall that comes with it.
     min_token_len

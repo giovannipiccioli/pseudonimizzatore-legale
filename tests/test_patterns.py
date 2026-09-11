@@ -7,6 +7,7 @@ re-opens that defect.
 import regex as re
 
 from pseudonimizzatore_legale import patterns as P
+from pseudonimizzatore_legale import protect
 from pseudonimizzatore_legale.seeds import SeedSet
 
 
@@ -247,3 +248,51 @@ class TestJudgeProtectionAtScale:
         # ("U:\DocumentiGA\Magistrati\769…"), which pulled a nearby party into the
         # role-word-then-title anchors.
         assert not re.search(P.JUDICIAL_ROLE, "Magistrati", re.I)
+
+
+class TestAdministrativeLayouts:
+    """Shapes of first-instance administrative decisions. Every name is invented."""
+
+    def test_party_list_captures_every_name(self):
+        m = P.PARTY_LIST.search("proposto da Giulia Balestri, Lucia Surpo, Maurita Perfetti "
+                                "e Anna Vezzi, rappresentate e difese")
+        assert P.COUNSEL_LIST_SEP.split(m.group(1)) == [
+            "Giulia Balestri", "Lucia Surpo", "Maurita Perfetti", "Anna Vezzi"]
+
+    def test_party_list_accepts_semicolons(self):
+        m = P.PARTY_LIST.search("nei confronti di\n\nDavide Fiorenzi; Teodoro Vezzani;\n\nper")
+        assert P.COUNSEL_LIST_SEP.split(m.group(1)) == ["Davide Fiorenzi", "Teodoro Vezzani"]
+
+    def test_party_list_stops_at_the_first_non_name(self):
+        m = P.PARTY_LIST.search("proposto da Giulia Balestri, rappresentata dall'avv. X")
+        assert m.group(1) == "Giulia Balestri"
+
+    def test_standalone_nei_confronti_label_is_a_cue(self):
+        assert P.NEI_CONFRONTI.search(
+            "nei confronti\n\nDavide Fiorenzi, non costituito").group(1) == "Davide Fiorenzi"
+        assert P.NEI_CONFRONTI.search(
+            "nei confronti di Davide Fiorenzi").group(1) == "Davide Fiorenzi"
+
+    def test_nei_confronti_in_prose_is_not_a_person(self):
+        assert P.NEI_CONFRONTI.search("ha agito nei confronti della Regione Marche") is None
+        assert P.NEI_CONFRONTI.search("nei confronti\n\ndell'amministrazione") is None
+
+    def test_referendario_is_a_judicial_role(self):
+        for line in ("Anna Bianchi, Referendario, Estensore", "Anna Bianchi, Primo Referendario"):
+            assert "Anna Bianchi" in protect.collect(line).names
+
+    def test_consigliere_avv_is_a_judge_not_counsel(self):
+        text = "il consigliere avv. Liana Tacchi"
+        assert P.COUNSEL.search(text) is None
+        assert "Liana Tacchi" in protect.collect(text).names
+        assert P.COUNSEL.search("difeso dall'avv. Liana Tacchi").group(1) == "Liana Tacchi"
+
+    def test_health_authority_acronyms_are_institutions(self):
+        for name in ("Asur Marche Area Vasta", "ASP di Catania", "Ausl Romagna", "Ulss Dolomiti"):
+            assert P.INSTITUTION_HEAD.search(name)
+        assert not P.INSTITUTION_HEAD.search("Mario Aspesi")
+
+    def test_statutory_domicile_is_not_biographic(self):
+        assert P.BIOGRAFICO.search(
+            "Stato di Reggio Calabria, domiciliata ex lege in Reggio Calabria") is None
+        assert P.BIOGRAFICO.search("Mario Rossi, domiciliato in Roma").group(1) == "Mario Rossi"

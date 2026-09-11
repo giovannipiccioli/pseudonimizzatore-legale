@@ -34,9 +34,12 @@ flowchart LR
 ### 1. Normalize
 
 `text.py` applies NFKC normalization, removes zero-width characters, normalizes quotes,
-decodes entities, repairs line-wrap hyphenation and flattens light Markdown when
-`sanitize=True`. Detection and replacement offsets therefore refer to this normalized
-text, not necessarily the raw input bytes.
+decodes entities, repairs line-wrap hyphenation, strips HTML tags and flattens light
+Markdown when `sanitize=True`. Only real tag names are stripped, each tag on one line
+and never right after another `<`: the `<<…>>` many judges type as quotation marks is
+text, and a generic `<letters…>` pattern used to delete it — together with everything
+up to the next `>`, paragraphs away. Detection and replacement offsets refer to this
+normalized text, not necessarily the raw input bytes.
 
 ### 2. Detect evidence
 
@@ -64,6 +67,13 @@ Strong private-role cues may seed an exact all-common name such as `Antonio De L
 but it contributes no unsafe bare-token propagation. When a token belongs to more than
 one detected person, the token is still redacted under a neutral identity instead of
 being assigned arbitrarily.
+
+Party blocks are read as lists. After an applicant cue (`proposto da`, `ricorso di`) or
+a counter-party cue (`nei confronti di`, or `nei confronti` alone on its line, as the TAR
+prints it) every name of a list separated by commas, semicolons or `e` is seeded, not
+only the first: a mass appeal lists dozens of applicants after one cue. The list ends at
+the first item that is not name-shaped, and institutions inside it are left to the
+public-body guards.
 
 ### 4. Apply policy and resolve overlaps
 
@@ -104,6 +114,13 @@ If one complete identity has both judicial and strong private-role evidence, the
 privacy-first conflict rule removes its occurrences and emits a warning. A broad party
 window alone is not strong enough to revoke an explicit judicial role, because legal
 headers can contain prosecutors inside that window.
+
+A courtesy title is not a private role. A name whose only evidence is a title
+(`il dott. X`) is left alone when the same name holds an explicit judicial role in the
+document, and `avv.` after a judicial rank (`il consigliere avv. X`) is a title, not a
+counsel cue: older TAR decisions introduce the reporting judge that way, and the title
+used to turn the bench into parties. A title on a name with no judicial role still
+marks a person.
 
 `keep_judges=False` and `keep_case_numbers=False` remove their keep decisions; they do
 not add special redactors. Public institutions are rejected as person/company
@@ -213,8 +230,11 @@ parallel anonymization pipeline.
 - Regex-only person recall remains weakest in low-structure civil and EU material.
 - Optional NER improves recall but may remove uncued public-role aliases; exact role
   spans remain protected.
+- A party list ends at the first item that is not name-shaped, and a name no cue
+  introduces ("motivi aggiunti presentati da X") stays in clear unless it is also
+  seen in a cued position.
 - Review findings have high recall and low precision and therefore require triage.
-- The evaluation corpus is useful but small (103 documents) and not a legal guarantee.
+- The evaluation corpus is useful but small (124 documents) and not a legal guarantee.
 - PDF/OCR extraction quality is outside the package; malformed text can still hide PII.
 
 See [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md) for current

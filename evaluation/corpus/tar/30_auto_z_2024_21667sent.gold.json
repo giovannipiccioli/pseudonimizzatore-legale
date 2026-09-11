@@ -1,0 +1,21 @@
+{
+ "source": "giustizia_amministrativa/2024/ECLI_IT_TARLAZ_2024_21667SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Gualtiero Piccinini",
+  "Nicodemo Tagliaferri",
+  "Piccinini",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Avvocatura Generale dello Stato",
+  "Corbellini",
+  "Roma",
+  "n. 2013/55",
+  "n. 206/2007"
+ ]
+}

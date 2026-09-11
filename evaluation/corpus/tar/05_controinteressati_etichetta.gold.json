@@ -1,0 +1,25 @@
+{
+ "source": "giustizia_amministrativa/2024/ECLI_IT_TARNA_2024_790OCOL.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Counter-interested parties below a standalone 'nei confronti' label.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Della Rovere",
+  "Di Benedetto",
+  "Gualtiero Piccinini",
+  "Nicodemo Tagliaferri",
+  "Osvaldo Di Benedetto",
+  "Piccinini",
+  "Tagliaferri",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Napoli",
+  "Sbaraglia",
+  "n.326/2021"
+ ]
+}

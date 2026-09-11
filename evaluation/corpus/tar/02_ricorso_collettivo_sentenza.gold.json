@@ -1,0 +1,28 @@
+{
+ "source": "giustizia_amministrativa/2020/ECLI_IT_TARLAZ_2020_9988SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Mass appeal decided by sentenza; the applicants' list opens the decision.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Baldassarre Rocchetti",
+  "Belloccio",
+  "Di Benedetto",
+  "Federico Maria Sbaraglia",
+  "Ferruccio Malaspina",
+  "Ildegarda Quarantotto",
+  "Malaspina",
+  "Osvaldo Di Benedetto",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rocchetti",
+  "Rosalinda Pizzigoni",
+  "Sbaraglia"
+ ],
+ "must_keep": [
+  "Avvocatura Generale dello Stato",
+  "Roma",
+  "n. 19/2016",
+  "n. 259/2017",
+  "n. 39/1998"
+ ]
+}

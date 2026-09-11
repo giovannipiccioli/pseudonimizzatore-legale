@@ -50,7 +50,10 @@ def main():
     per_source = {}
     for gold_path in sorted(CORPUS.rglob("*.gold.json")):
         doc = gold_path.with_suffix("").with_suffix(".txt")
-        if only and only not in str(gold_path):
+        # A source name selects that family exactly — "tar" is also a substring of
+        # "tributario" — and anything else is matched against the corpus-relative path.
+        rel = gold_path.relative_to(CORPUS)
+        if only and (rel.parts[0] != only if (CORPUS / only).is_dir() else only not in str(rel)):
             continue
         gold = json.loads(gold_path.read_text(encoding="utf-8"))
         raw = doc.read_text(encoding="utf-8")

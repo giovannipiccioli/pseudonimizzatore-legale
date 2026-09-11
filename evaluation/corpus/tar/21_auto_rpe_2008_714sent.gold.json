@@ -1,0 +1,22 @@
+{
+ "source": "giustizia_amministrativa/2008/ECLI_IT_TARPE_2008_714SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Arcangelo Monteleone",
+  "Lo Strano",
+  "Monteleone",
+  "Ornella Trevisanato",
+  "Perpetua Lo Strano",
+  "SPADACCINI GERVASIO",
+  "Scaramuzza",
+  "TRENTACOSTE ERMENEGILDO",
+  "Trevisanato",
+  "VIMERCATI ORTENSIA",
+  "ZANGHERATTI MIRANDOLINA"
+ ],
+ "must_keep": [
+  "Napoli"
+ ]
+}

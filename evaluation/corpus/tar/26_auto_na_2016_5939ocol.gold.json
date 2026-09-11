@@ -1,0 +1,26 @@
+{
+ "source": "giustizia_amministrativa/2016/ECLI_IT_TARNA_2016_5939OCOL.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Della Rovere",
+  "Di Benedetto",
+  "Ildegarda Quarantotto",
+  "MLNSTT88H61E463P",
+  "Osvaldo Di Benedetto",
+  "Quarantotto",
+  "TGLNDM62P19C351M",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Corbellini",
+  "Napoli",
+  "Roma",
+  "n. 07680/2015"
+ ]
+}

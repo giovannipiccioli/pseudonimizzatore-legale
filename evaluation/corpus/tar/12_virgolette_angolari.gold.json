@@ -1,0 +1,27 @@
+{
+ "source": "giustizia_amministrativa/2017/ECLI_IT_TARCT_2017_925SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Quotations typed as <<...>>: the quoted text must survive normalization.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Aristide Fumagalli",
+  "Baldassarre Rocchetti",
+  "Belloccio",
+  "Fumagalli",
+  "Ildegarda Quarantotto",
+  "Nicodemo Tagliaferri",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rocchetti",
+  "Rosalinda Pizzigoni",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Sbaraglia",
+  "ha natura formalmente amministrativa",
+  "n. 285/1992",
+  "n. 446/1997",
+  "n. 495/1992"
+ ]
+}

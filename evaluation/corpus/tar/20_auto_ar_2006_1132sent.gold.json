@@ -1,0 +1,24 @@
+{
+ "source": "giustizia_amministrativa/2006/ECLI_IT_TARMAR_2006_1132SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Amedeo Della Rovere",
+  "Anastasia Belloccio",
+  "Belloccio",
+  "Della Rovere",
+  "Di Benedetto",
+  "Gualtiero Piccinini",
+  "Ildegarda Quarantotto",
+  "Osvaldo Di Benedetto",
+  "Piccinini",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Corbellini",
+  "n. 10033/04"
+ ]
+}

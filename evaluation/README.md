@@ -1,7 +1,7 @@
 # Evaluation
 
 The evaluation directory measures privacy recall, collateral removal and review
-behavior on 103 committed Italian legal-decision fixtures. Identities in the fixtures
+behavior on 124 committed Italian legal-decision fixtures. Identities in the fixtures
 are invented; the private source archives are not required to run a score.
 
 Unit tests are the CI gate. Corpus scores are measurements rather than pass/fail tests:
@@ -19,20 +19,22 @@ Current regex-only result:
 
 | Source | Complete entities | Surface recall | Span precision LB | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| BDGT | 166/173 (96.0%) | 174/181 (96.1%) | 245/313 (78.3%) | 194/194 | 19/23 |
-| Cassazione | 37/37 (100.0%) | 57/57 (100.0%) | 65/94 (69.1%) | 131/131 | 25/25 |
+| BDGT | 166/173 (96.0%) | 175/182 (96.2%) | 246/314 (78.3%) | 197/197 | 19/23 |
+| Cassazione | 46/51 (90.2%) | 73/81 (90.1%) | 79/95 (83.2%) | 137/137 | 23/25 |
 | CGUE | 0/2 (0.0%) | 0/3 (0.0%) | 0/0 | 17/17 | 7/8 |
-| Consiglio di Stato | 45/56 (80.4%) | 90/112 (80.4%) | 79/91 (86.8%) | 60/60 | 6/16 |
-| Corte dei conti | 28/35 (80.0%) | 55/68 (80.9%) | 51/58 (87.9%) | 133/133 | 10/15 |
-| Merito civile | 52/75 (69.3%) | 103/145 (71.0%) | 109/130 (83.8%) | 56/56 | 4/16 |
-| **Total** | **328/378 (86.8%)** | **479/566 (84.6%)** | **549/686 (80.0%)** | **591/591** | **71/103** |
+| Consiglio di Stato | 47/59 (79.7%) | 92/116 (79.3%) | 74/84 (88.1%) | 60/60 | 6/16 |
+| TAR | 97/107 (90.7%) | 189/206 (91.7%) | 199/215 (92.6%) | 83/83 | 16/21 |
+| Corte dei conti | 33/43 (76.7%) | 60/77 (77.9%) | 55/57 (96.5%) | 132/132 | 8/15 |
+| Merito civile | 52/77 (67.5%) | 103/147 (70.1%) | 104/113 (92.0%) | 56/56 | 3/16 |
+| **Total** | **441/512 (86.1%)** | **692/812 (85.2%)** | **757/878 (86.2%)** | **682/682** | **82/124** |
 
 The scorer also reports:
 
-- names: 221/271 complete (81.5%);
-- structured identifiers/other: 107/107 complete (100%);
-- character-overlap precision lower bound: 11,427/14,110 (81.0%);
-- review heuristic: TP/FN/FP/TN = 32/0/67/4, or 100% recall and 32.3%
+- names: 326/397 complete (82.1%);
+- structured identifiers/other: 115/115 complete (100%);
+- character-overlap precision lower bound: 15,451/17,741 (87.1%);
+- damage-free documents (no protected value lost): 124/124;
+- review heuristic: TP/FN/FP/TN = 42/0/78/4, or 100% recall and 35.0%
   precision for finding documents with an annotated residual.
 
 ## Metric definitions
@@ -84,7 +86,7 @@ full comparison and interpretation.
 | `ner/ab_corpus.py` | regex versus one NER model or a mention union |
 | `ner/throughput.py` | end-to-end timing on an explicit corpus root |
 | `corpus/` | committed text and gold fixtures |
-| `build_corpus/` | regenerate fixtures from private source archives |
+| `build_corpus/` | regenerate fixtures from private source archives, and audit them for real names |
 | `corpus_stats.py` | rebuild the packaged common-word resource from any corpus |
 
 Rebuild the common-word resource explicitly:
@@ -93,12 +95,14 @@ Rebuild the common-word resource explicitly:
 python evaluation/corpus_stats.py /path/to/legal/txt --documents 3000
 ```
 
-Rebuild fixtures only when the private archive roots are configured:
+Rebuild fixtures only when the private archive roots are configured, then check them
+twice — the heuristic gate, and an NER model whose list you read by eye:
 
 ```bash
 python evaluation/build_corpus/build_fixtures.py --help
 python evaluation/build_corpus/build_fixtures.py
 python evaluation/build_corpus/check_fixtures.py
+python evaluation/build_corpus/ner_audit.py
 ```
 
 The gold policy is privacy-first for a complete identity carrying both judicial and

@@ -1,0 +1,22 @@
+{
+ "source": "giustizia_amministrativa/2006/ECLI_IT_TARMAR_2006_829SENB.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "An older decision titling the reporting judge 'il consigliere avv.'.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Mirandolina Zangheratti",
+  "Scaramuzza",
+  "Spadaccini",
+  "Trentacoste",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Pontremoli",
+  "n.195/2002",
+  "n.222/2002",
+  "n.85/2006"
+ ]
+}

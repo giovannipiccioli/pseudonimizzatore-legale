@@ -1,0 +1,25 @@
+{
+ "source": "giustizia_amministrativa/2024/ECLI_IT_TARLAZ_2024_3295DDEC.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Mass appeal: dozens of co-applicants listed after a single 'proposto da'.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Arcangelo Monteleone",
+  "Di Benedetto",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Mirandolina Zangheratti",
+  "Monteleone",
+  "Osvaldo Di Benedetto",
+  "Scaramuzza",
+  "Spadaccini",
+  "Trentacoste",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Alessandria",
+  "Avvocatura Generale dello Stato",
+  "Roma",
+  "n. 1069/2018"
+ ]
+}

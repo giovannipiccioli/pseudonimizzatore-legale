@@ -1,0 +1,24 @@
+{
+ "source": "giustizia_amministrativa/2020/ECLI_IT_TARPIE_2020_11DDEC.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Two counter-interested parties joined by 'e'.",
+ "config": {},
+ "must_remove": [
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Isotta Malinverni",
+  "Ludovica Sanseverino",
+  "Malinverni",
+  "Ortensia Vimercati",
+  "Sanseverino",
+  "Spadaccini",
+  "Trentacoste",
+  "Vimercati"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Pontremoli",
+  "n. 35/2013"
+ ]
+}

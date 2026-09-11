@@ -235,21 +235,20 @@ repository sono inventate.
 
 ## Prestazioni misurate
 
-Il repository comprende 103 esempi annotati, relativi a materiale tributario, civile,
-amministrativo, contabile, di Cassazione e dell'Unione europea. Il richiamo per entità
-completa è una misura tutto-o-niente: se sopravvive anche un solo alias, l'intera
-identità è considerata non rimossa.
+Il repository comprende 124 esempi annotati, relativi a materiale tributario, civile,
+amministrativo (Consiglio di Stato e TAR), contabile, di Cassazione e dell'Unione
+europea. Il richiamo per entità completa è una misura tutto-o-niente: se sopravvive
+anche un solo alias, l'intera identità è considerata non rimossa.
 
 | Configurazione | Entità complete | Richiamo sulle occorrenze | Limite inferiore di precisione | Valori protetti conservati | Documenti completi |
 |---|---:|---:|---:|---:|---:|
-| solo regex | 328/378 (86,8%) | 479/566 (84,6%) | 549/686 (80,0%) | 591/591 | 71/103 |
-| + NER italiano XXL | 347/378 (91,8%) | 510/566 (90,1%) | 589/841 (70,0%) | 570/591 | 81/103 |
-| + unione XXL e XLM-R | 349/378 (92,3%) | 513/566 (90,6%) | 591/870 (67,9%) | 570/591 | 83/103 |
+| solo regex | 441/512 (86,1%) | 692/812 (85,2%) | 757/878 (86,2%) | 682/682 | 82/124 |
+| + NER italiano XXL | 472/512 (92,2%) | 742/812 (91,4%) | 834/1081 (77,2%) | 658/682 | 95/124 |
 
-Tutte le configurazioni rimuovono 107/107 identificatori strutturati annotati.
-L'euristica di revisione intercetta tutti i 32 documenti con residui annotati, ma
-segnala anche 67 documenti senza residui. È intenzionalmente pensata come una revisione
-orientata a non perdere documenti con potenziali errori. No è un certificato di sicurezza.
+Entrambe le configurazioni rimuovono 115/115 identificatori strutturati annotati.
+L'euristica di revisione intercetta tutti i 42 documenti con residui annotati, ma
+segnala anche 78 documenti senza residui. È intenzionalmente pensata come una revisione
+orientata a non perdere documenti con potenziali errori. Non è un certificato di sicurezza.
 
 Per definizioni, risultati per fonte, compromessi e comandi di riproduzione, vedere
 [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md).
@@ -281,7 +280,7 @@ i punti di estensione sono descritti in [`ARCHITECTURE.md`](ARCHITECTURE.md).
 pseudonimizzatore_legale/ pacchetto della libreria
 tests/                    test unitari e di integrazione
 notebooks/                playground eseguibile
-evaluation/corpus/        103 esempi con identità inventate
+evaluation/corpus/        124 esempi con identità inventate
 evaluation/               metriche e strumenti per costruire il corpus
 ```
 

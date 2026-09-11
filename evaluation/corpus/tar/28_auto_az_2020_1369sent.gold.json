@@ -1,0 +1,20 @@
+{
+ "source": "giustizia_amministrativa/2020/ECLI_IT_TARLAZ_2020_1369SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Baldassarre Rocchetti",
+  "Belloccio",
+  "Ferruccio Malaspina",
+  "Malaspina",
+  "Rocchetti"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Avvocatura Generale dello Stato",
+  "Corbellini",
+  "Roma",
+  "n. 82/91"
+ ]
+}

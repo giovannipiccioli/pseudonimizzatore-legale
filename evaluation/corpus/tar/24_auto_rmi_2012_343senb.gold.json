@@ -1,0 +1,19 @@
+{
+ "source": "giustizia_amministrativa/2012/ECLI_IT_TARMI_2012_343SENB.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Aristide Fumagalli",
+  "Belloccio",
+  "Fumagalli",
+  "Nicodemo Tagliaferri",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Augusto Corbellini",
+  "Corbellini",
+  "Milano",
+  "n.3223/11"
+ ]
+}

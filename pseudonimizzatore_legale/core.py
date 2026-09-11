@@ -147,6 +147,8 @@ _PRIVATE_ROLE_SOURCES = {
     "regex:party_role",
     "regex:qualifica",
     "regex:proposto_da",
+    "regex:nei_confronti",
+    "regex:party_list",
     "regex:counsel_list",
     "regex:counsel_surname",
     "regex:legal_party_block",
@@ -156,6 +158,9 @@ _PRIVATE_ROLE_SOURCES = {
 # terminator. It is useful detection evidence but not strong enough by itself to revoke
 # an exact judicial-role keep decision.
 _STRICT_PRIVATE_ROLE_SOURCES = _PRIVATE_ROLE_SOURCES - {"regex:legal_party_block"}
+# A courtesy title names a person without saying which side they are on, and judges
+# carry one as often as anybody: "Relatore … il dott. Andrea De Col" is the judge.
+_NEUTRAL_SOURCES = frozenset({"regex:titolo"})
 _COMPANY_INTRO = re.compile(
     r"(?i:(?:(?:di|del|della|dei|degli|delle|il|lo|la|le|gli|e)\s+)+)"
 )
@@ -482,6 +487,12 @@ def anonymize(raw: str, config: Config | None = None, **overrides) -> tuple[str,
 
     protection_evidence = protect.collect(text)
     people = seeds_mod.collect(text, cfg)
+    if cfg.keep_judges:
+        # An identity found only through a title, which also carries judicial evidence,
+        # is that judge. Seeding it would replace every mention, the bench list included.
+        people = [person for person in people
+                  if not (person.sources <= _NEUTRAL_SOURCES
+                          and protection_evidence.matches_identity(person.display))]
 
     candidates: list[Candidate] = []
     _propose_protections(

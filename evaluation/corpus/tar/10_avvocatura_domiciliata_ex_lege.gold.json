@@ -1,0 +1,19 @@
+{
+ "source": "giustizia_amministrativa/2019/ECLI_IT_TARRC_2019_472SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "'domiciliata ex lege in Reggio Calabria' must not make the court's seat a person.",
+ "config": {},
+ "must_remove": [
+  "Di Benedetto",
+  "Ildegarda Quarantotto",
+  "Osvaldo Di Benedetto",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rosalinda Pizzigoni"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Reggio Calabria",
+  "Sbaraglia",
+  "n.38/2013"
+ ]
+}

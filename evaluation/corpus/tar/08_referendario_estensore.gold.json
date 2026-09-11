@@ -1,0 +1,17 @@
+{
+ "source": "giustizia_amministrativa/2007/ECLI_IT_TARBS_2007_915SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "The drafting judge is a referendario, a TAR rank.",
+ "config": {},
+ "must_remove": [
+  "Cavalcanti",
+  "Ermenegildo Trentacoste",
+  "Gervasio Spadaccini",
+  "Serafina Cavalcanti",
+  "Spadaccini",
+  "Trentacoste"
+ ],
+ "must_keep": [
+  "Clotilde Pontremoli",
+  "Pontremoli"
+ ]
+}

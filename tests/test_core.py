@@ -315,3 +315,81 @@ class TestQueryProfile:
         out, _ = anonymize(q, Config(profile="query", companies=True))
         assert "Laura Bianchi" not in out
         assert "01234567890" not in out
+
+
+class TestSanitize:
+    def test_angle_bracket_quotations_survive(self):
+        from pseudonimizzatore_legale.text import sanitize
+        text = "Il giudice osserva: <<la sentenza è corretta>> e prosegue.\n\nSecondo paragrafo."
+        assert sanitize(text) == text
+
+    def test_an_unclosed_quotation_does_not_swallow_paragraphs(self):
+        from pseudonimizzatore_legale.text import sanitize
+        text = "<<a tal fine il ricorrente deduce\n\nche l'atto è illegittimo>> e conclude."
+        assert sanitize(text) == text
+
+    def test_real_markup_is_still_flattened(self):
+        from pseudonimizzatore_legale.text import sanitize
+        assert sanitize("<b>Ma</b>rio <i>Rossi</i><br/>") == "Mario Rossi"
+
+
+class TestAdministrativeParties:
+    """Party blocks of first-instance administrative decisions. Every name is invented."""
+
+    HEAD = ("sul ricorso numero di registro generale 100 del 2024, proposto da Giulia Balestri, "
+            "Lucia Surpo, Maurita Perfetti e Anna Vezzi, rappresentate e difese dall'avvocato "
+            "Carla Fenzi;\n\ncontro\n\nMinistero dell'Istruzione e del Merito;\n\n"
+            "nei confronti\n\nDavide Fiorenzi, Pietro Salvo Rinaldi, non costituiti in "
+            "giudizio;\n\nper l'annullamento\n\ndel provvedimento n. 12/2024.")
+
+    def test_every_co_applicant_is_removed(self):
+        out, report = anonymize(self.HEAD)
+        for name in ("Giulia Balestri", "Lucia Surpo", "Maurita Perfetti", "Anna Vezzi"):
+            assert name not in out
+        applicants = sorted(t for t in report.mapping.values() if t.startswith("Ricorrente"))
+        assert applicants == ["Ricorrente_1", "Ricorrente_2", "Ricorrente_3", "Ricorrente_4"]
+
+    def test_counter_interested_parties_are_the_other_side(self):
+        out, report = anonymize(self.HEAD)
+        assert "Fiorenzi" not in out and "Rinaldi" not in out
+        assert report.mapping["Davide Fiorenzi"].startswith("Resistente")
+
+    def test_public_bodies_in_the_same_blocks_stay(self):
+        out, _ = anonymize(self.HEAD)
+        assert "Ministero dell'Istruzione e del Merito" in out and "n. 12/2024" in out
+
+    def test_institutions_listed_as_parties_stay(self):
+        text = "proposto da Regione Marche, Comune di Pesaro e Provincia di Ancona, rappresentati"
+        assert anonymize(text)[0] == text
+
+    def test_health_authority_is_not_a_person(self):
+        text = ("nei confronti di Asur Marche Area Vasta n. 1, non costituita;\n\n"
+                "La Regione Marche e l'Asur Marche resistono.")
+        assert anonymize(text)[0] == text
+
+
+class TestJudicialRanks:
+    """TAR benches and the ways older decisions title a judge. Every name is invented."""
+
+    def test_referendario_estensore_is_kept_everywhere(self):
+        text = ("Relatore nella camera di consiglio del giorno 4 giugno 2024 la dott.ssa "
+                "Anna Bianchi e uditi per le parti i difensori.\n\n"
+                "Così deciso in Roma con l'intervento dei magistrati:\n\n"
+                "Mario Rossi, Presidente\n\nAnna Bianchi, Referendario, Estensore")
+        out, report = anonymize(text)
+        assert out.count("Anna Bianchi") == 2 and "Anna Bianchi" not in report.mapping
+
+    def test_a_title_alone_does_not_turn_a_judge_into_a_party(self):
+        text = "Presidente: ROSSI MARIO\n\nIl dott. Mario Rossi dà lettura del dispositivo."
+        out, report = anonymize(text)
+        assert "Mario Rossi" in out and not report.mapping
+
+    def test_a_title_still_marks_a_private_person(self):
+        out, _ = anonymize("Presidente: ROSSI MARIO\n\nÈ comparso il dott. Luca Verdi.")
+        assert "Luca Verdi" not in out
+
+    def test_consigliere_avv_is_the_judge(self):
+        text = ("Relatore alla camera di consiglio del 20 giugno 2006 il consigliere avv. "
+                "Liana Tacchi; udito l'avv. Carla Fenzi per il ricorrente.")
+        out, _ = anonymize(text)
+        assert "Liana Tacchi" in out and "Carla Fenzi" not in out

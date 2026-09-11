@@ -1,0 +1,26 @@
+{
+ "source": "giustizia_amministrativa/2023/ECLI_IT_TARNA_2023_1137OCAU.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "A health authority among the counter-interested parties.",
+ "config": {},
+ "must_remove": [
+  "Anastasia Belloccio",
+  "Arcangelo Monteleone",
+  "Belloccio",
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Ferruccio Malaspina",
+  "Gervasio Spadaccini",
+  "Ludovica Sanseverino",
+  "Malaspina",
+  "Monteleone",
+  "Ortensia Vimercati",
+  "Sanseverino",
+  "Spadaccini",
+  "Vimercati"
+ ],
+ "must_keep": [
+  "Avellino",
+  "Napoli",
+  "n. 6/2023"
+ ]
+}

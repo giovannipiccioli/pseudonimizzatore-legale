@@ -1,18 +1,21 @@
 # Recall-first benchmark
 
-Measured on 2026-08-11 with `pseudonimizzatore-legale` 0.2.0 and all 103 committed fixtures.
+Measured on 2026-09-11 with `pseudonimizzatore-legale` 0.3.0 and all 124 committed fixtures.
 Transformer runs used CPU, threshold 0.3 and locally cached model weights.
 
 ## Aggregate results
 
 | Configuration | Complete entities | Names complete | Surface recall | Span precision LB | Character precision LB | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| regex only | 328/378 (86.8%) | 221/271 (81.5%) | 479/566 (84.6%) | 549/686 (80.0%) | 81.0% | 591/591 (100%) | 71/103 |
-| + Italian NER XXL | 347/378 (91.8%) | 240/271 (88.6%) | 510/566 (90.1%) | 589/841 (70.0%) | 73.9% | 570/591 (96.4%) | 81/103 |
-| + XXL and XLM-R union | 349/378 (92.3%) | 242/271 (89.3%) | 513/566 (90.6%) | 591/870 (67.9%) | 72.5% | 570/591 (96.4%) | 83/103 |
+| regex only | 441/512 (86.1%) | 326/397 (82.1%) | 692/812 (85.2%) | 757/878 (86.2%) | 87.1% | 682/682 (100%) | 82/124 |
+| + Italian NER XXL | 472/512 (92.2%) | 357/397 (89.9%) | 742/812 (91.4%) | 834/1081 (77.2%) | 79.1% | 658/682 (96.5%) | 95/124 |
 
-Every configuration removes 107/107 annotated structured identifiers/other entities.
+Every configuration removes 115/115 annotated structured identifiers/other entities.
 The remaining gap is person recognition.
+
+The XXL + XLM-R union has not been re-measured on this corpus. On the earlier
+103-fixture corpus (2026-08-11) it added two complete entities and two complete
+documents beyond Italian NER XXL alone.
 
 “Complete entity” is all-or-nothing: every alias and repeated occurrence must be gone.
 “Complete document” is stricter again: one failed entity fails the whole document.
@@ -25,24 +28,25 @@ span may still be correct. Character precision additionally penalizes overly wid
 
 ## Entity recall by source
 
-| Source | Regex | + Italian NER XXL | + XXL/XLM-R union |
-|---|---:|---:|---:|
-| BDGT | 96.0% | 99.4% | 99.4% |
-| Cassazione | 100.0% | 100.0% | 100.0% |
-| CGUE | 0.0% | 100.0% | 100.0% |
-| Consiglio di Stato | 80.4% | 83.9% | 83.9% |
-| Corte dei conti | 80.0% | 88.6% | 88.6% |
-| Merito civile | 69.3% | 77.3% | 80.0% |
+| Source | Regex | + Italian NER XXL |
+|---|---:|---:|
+| BDGT | 96.0% | 99.4% |
+| Cassazione | 90.2% | 100.0% |
+| CGUE | 0.0% | 50.0% |
+| Consiglio di Stato | 79.7% | 83.1% |
+| TAR | 90.7% | 95.3% |
+| Corte dei conti | 76.7% | 88.4% |
+| Merito civile | 67.5% | 76.6% |
 
-NER adds little to strongly structured Cassazione input and most to low-structure EU,
-accounting and civil decisions. The two-model union adds two complete entities and two
-complete documents beyond Italian NER XXL alone.
+NER adds most where the layout announces little: EU opinions, accounting and civil
+decisions, and the people a penal decision names only in its narrative — victims,
+witnesses — which no role cue introduces.
 
 ## Privacy/utility trade-off
 
-The recall-first NER union gains 21 complete entities and 12 complete documents over
-regex alone. It also creates 184 additional replacement decisions, lowers the
-replacement-overlap precision bound by 12.1 points, and removes 21 protected assertions.
+Italian NER XXL gains 31 complete entities and 13 complete documents over regex alone.
+It also creates 203 additional replacement decisions, lowers the replacement-overlap
+precision bound by 9.0 points, and removes 24 protected assertions.
 
 The protected-value change is expected under span-local policy: an explicit
 `Presidente: NOME COGNOME` span stays, while an uncued later occurrence of that name is
@@ -50,13 +54,13 @@ an ordinary NER person proposal. Globally protecting judge surnames would improv
 utility number but reintroduce the more serious failure where an unrelated party with
 the same surname survives.
 
-For the stated priority—missing PII is worse than collateral removal—the ensemble is
-the strongest tested configuration. Regex-only remains useful when throughput,
-explainability or preservation of uncued public-role aliases matters more.
+For the stated priority—missing PII is worse than collateral removal—NER is the
+stronger configuration. Regex-only remains useful when throughput, explainability or
+preservation of uncued public-role aliases matters more.
 
-Observed end-to-end elapsed time in this run was roughly 0.6 seconds for regex-only,
-21.7 seconds with Italian NER XXL and 42.4 seconds for the union. Treat these only as
-relative figures; hardware, tokenizer cache and document lengths dominate runtime.
+Observed end-to-end elapsed time in this run was roughly 0.8 seconds for regex-only and
+30.9 seconds with Italian NER XXL. Treat these only as relative figures; hardware,
+tokenizer cache and document lengths dominate runtime.
 
 ## Review heuristic
 
@@ -65,7 +69,7 @@ matrix against annotated residuals:
 
 | TP | FN | FP | TN | Recall | Precision |
 |---:|---:|---:|---:|---:|---:|
-| 32 | 0 | 67 | 4 | 100.0% | 32.3% |
+| 42 | 0 | 78 | 4 | 100.0% | 35.0% |
 
 This is deliberately noisy. It is a review queue, not evidence that one of the four
 `passed_checks` documents is anonymous.

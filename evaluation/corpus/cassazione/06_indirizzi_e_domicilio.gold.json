@@ -4,7 +4,10 @@
  "config": {},
  "must_remove": [
   "DELLA ROVERE AMEDEO",
-  "DI BENEDETTO OSVALDO"
+  "DI BENEDETTO OSVALDO",
+  "ERMENEGILDO TRENTACOSTE",
+  "Ermenegildo Trentacoste",
+  "Trentacoste"
  ],
  "must_keep": [
   "INPS",

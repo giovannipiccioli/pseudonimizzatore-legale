@@ -1,0 +1,20 @@
+{
+ "source": "giustizia_amministrativa/2015/ECLI_IT_TARLAZ_2015_10797DDEC.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "One counter-interested party, surname first.",
+ "config": {},
+ "must_remove": [
+  "Aristide Fumagalli",
+  "Fumagalli",
+  "Ildegarda Quarantotto",
+  "Nicodemo Tagliaferri",
+  "Pizzigoni",
+  "Quarantotto",
+  "Rosalinda Pizzigoni",
+  "Tagliaferri"
+ ],
+ "must_keep": [
+  "Federico Maria Sbaraglia",
+  "Roma",
+  "Sbaraglia"
+ ]
+}

@@ -42,7 +42,10 @@ MONTHS = (r"gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|
 
 #: How counsel are introduced. `avv.to` and `avv.ti` are as common in Italian practice
 #: as `avv.` itself, and matching only the latter loses a whole class of documents.
-COUNSEL_CUE = r"(?i:avvocat[oi]|avv\.?ti|avv\.?to|avv\.)"
+#: Not after a judicial role word: older decisions title the reporting judge "il
+#: consigliere avv. X", and that X sits on the bench.
+COUNSEL_CUE = (r"(?<!(?i:consiglier[ea]|referendari[oa]|relatore|presidente|giudice)\s+)"
+               r"(?i:avvocat[oi]|avv\.?ti|avv\.?to|avv\.)")
 
 COMPANY_SUFFIX = (r"S\.?\s?p\.?\s?A\.?|S\.?\s?r\.?\s?l\.?(?:\s?s\.?)?|S\.?\s?a\.?\s?s\.?|"
                   r"S\.?\s?n\.?\s?c\.?|S\.?c\.?a\.?r\.?l\.?|S\.?c\.?p\.?A\.?|"
@@ -146,8 +149,10 @@ INDIRIZZO_RESIDENZA = re.compile(
 #: JUDGE_LIST_CUE sees "composta da…" in front of it. On its own it appears in contexts
 #: that have nothing to do with a bench — an HTML export's metadata trailer carries it
 #: as a literal Windows folder name (``U:\DocumentiGA\Magistrati\769…``) — and would
-#: then hand a nearby party to the role-plus-title anchors below.
+#: then hand a nearby party to the role-plus-title anchors below. `referendario` is the
+#: TAR's junior rank, and very often the judge who drafts the decision.
 JUDICIAL_ROLE = (r"(?:presidente|consigliere|rel\.?\s*consigliere|giudice|"
+                 r"(?:primo\s+)?referendari[oa]|"
                  r"sostituto\s+procuratore|procuratore\s+generale|\bp\.?\s?g\.?\b|"
                  r"cancelliere|segretario|relatore|estensore|componente)"
                  r"(?:\s+(?:relatore|estensore|monocratico|istruttore|generale|"
@@ -210,10 +215,12 @@ JUDGE_ANCHORS = [
     # Requiring the role to occupy the *whole* line is what makes this safe to stretch
     # across the blank lines. A bare role word with a name somewhere after it would
     # reach straight into the parties, which is why the anchors below all need a title.
-    re.compile(rf"^[^\S\r\n]*(?i:(?:il|la)\s+)?(?i:{JUDICIAL_ROLE})[^\S\r\n]*"
+    re.compile(rf"^[^\S\r\n]*(?i:(?:il|la)\s+|l['’]\s*)?(?i:{JUDICIAL_ROLE})[^\S\r\n]*"
                rf"(?:\n[^\S\r\n]*){{1,4}}({FULL_NAME})[^\S\r\n]*$", re.M),
-    # "il Cons. Nicola D'Angelo" / "il consigliere Nicola D'Angelo" (Consiglio di Stato)
-    re.compile(rf"(?i:il\s+)?(?i:cons\.|consigliere|consigliera)\s+({FULL_NAME})"),
+    # "il Cons. Nicola D'Angelo" / "il consigliere Nicola D'Angelo" (Consiglio di Stato),
+    # "il referendario Anna Bianchi", and the older "il consigliere avv. Liana Tacchi"
+    re.compile(rf"(?i:il\s+)?(?i:cons\.|consiglier[ea]|(?:primo\s+)?referendari[oa])\s+"
+               rf"(?:(?i:avv\.|dott\.?(?:ssa)?|dr\.?(?:ssa)?)\s*)?({FULL_NAME})"),
     # Corte dei Conti sometimes prints the judge after a formal "nella persona"
     # clause, with the unexplained title "Ref." and even a line break inside the
     # surname:
@@ -294,6 +301,9 @@ INSTITUTION_HEAD = re.compile(
     r"inail|inpgi|inpdap|istitut[oi]|"
     r"avvocatura|generale\s+dello\b|roma\s+capitale\b|comune|regione|provincia|città\s+metropolitana|universit|"
     r"azienda\s+(?:ospedaliera|sanitaria)|a\.?s\.?l\.?|equitalia|riscossione|ader|"
+    # health authorities by acronym ("Asur Marche Area Vasta n. 1", "ASP di Catania");
+    # word-bounded, so the surname Aspesi is not one
+    r"(?:asur|asp|ausl|usl|ulss|asst|ats|aou|irccs)\b|area\s+vasta|"
     r"presidenza|consiglio|procura|pretura|tribunale|corte|commissione\s+tributaria|"
     r"prefettura|questura|camera\s+di\s+commercio|poste\s+italiane|ferrovie|"
     r"direzione\s+(?:provinciale|regionale|centrale)|ufficio|ente|croce\s+rossa|"
@@ -372,8 +382,8 @@ COUNSEL_LIST = re.compile(
     rf"{COUNSEL_CUE}\s+"
     rf"({FULL_NAME}(?:\s*,\s*{FULL_NAME})*(?:\s*,?\s*(?i:ed?)\s+{FULL_NAME})?)")
 
-#: Splits the captured list back into individual names.
-COUNSEL_LIST_SEP = re.compile(r"\s*,\s*|\s+(?i:ed?)\s+")
+#: Splits a captured list — of counsel, or of parties (PARTY_LIST) — back into names.
+COUNSEL_LIST_SEP = re.compile(r"\s*[,;]\s*|\s+(?i:ed?)\s+")
 
 #: Counsel named by surname alone: "per l'Inps l'avv. Scaramuzza". Very common in
 #: hearing minutes, and counsel must always be pseudonymized. Safe only because the
@@ -397,11 +407,13 @@ TITOLO = re.compile(
 #: (whitespace or a comma). Allow a zero-width gap and the cue `nat[oa]\b` matches the
 #: literal tail of any surname ending in "-nato": "Ornella Trevisanato" reads as the
 #: name "Ornella Trevisa" followed by its own cue, and four-fifths of a surname is
-#: pseudonymized out of the document.
+#: pseudonymized out of the document. "domiciliata ex lege" is not a person's domicile but
+#: the Avvocatura dello Stato's, and follows a place: "…dello Stato di Reggio Calabria,
+#: domiciliata ex lege" made the court's own seat a person.
 BIOGRAFICO = re.compile(
     rf"(?<![\p{{L}}])({FULL_NAME})(?:\s*,\s*|\s+)"
     rf"(?:(?i:ivi|già|quivi|attualmente)\s+)?"
-    rf"(?i:nat[oa]\b|residente\b|domiciliat[oa]\b|dimorante\b|c\.?f\.?\b|"
+    rf"(?i:nat[oa]\b|residente\b|domiciliat[oa]\b(?!\s+ex\s+lege)|dimorante\b|c\.?f\.?\b|"
     rf"codice\s+fiscale\b|in\s+proprio\b|quale\s+erede\b|in\s+qualità\s+di\b)")
 
 #: Name adjacent to a codice fiscale — the strongest anchor there is.
@@ -423,9 +435,22 @@ PARTY_ROLE = re.compile(
 #: Cassazione writes it in the ALL-CAPS party block, but the administrative and civil
 #: courts write it in ordinary case inline, which the block scan never sees.
 #: Institutions and companies following the same cue are refused downstream.
-PROPOSTO_DA = re.compile(
-    rf"(?i:proposto\s+da|proposto\s+dal(?:la)?|ricorso\s+di|nei\s+confronti\s+di|"
-    rf"promoss[oa]\s+da)\s*:?\s*({FULL_NAME})")
+APPLICANT_CUE = (r"(?i:proposto\s+da(?:l(?:la)?|i|gli|lle)?|ricorso\s+di|promoss[oa]\s+da)"
+                 r"(?:\s+(?i:i\s+)?(?i:signori|sigg?\.\s?(?:ri|re)|sig\.(?:ra)?))?")
+#: …and the other side: "nei confronti di X" in running text, or the administrative
+#: courts' label "nei confronti" alone on its line, with the parties below it.
+COUNTERPARTY_CUE = r"(?i:nei\s+confronti(?:\s+di\b|(?=[^\S\n]*\n)))"
+PROPOSTO_DA = re.compile(rf"{APPLICANT_CUE}\s*:?\s*({FULL_NAME})")
+NEI_CONFRONTI = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({FULL_NAME})")
+
+#: A *list* of parties at one cue. Mass appeals name dozens of applicants, and the
+#: counter-interested parties of a public competition come in lists as well:
+#:   "proposto da Giulia Balestri, Lucia Surpo, Maurita Perfetti e Anna Vezzi, …"
+#: As with counsel, the single-name anchors above only ever see the first of them.
+#: Party lists are also written with semicolons: "nei confronti di A; B; C;".
+PARTY_LIST = re.compile(
+    rf"(?:{APPLICANT_CUE}|{COUNTERPARTY_CUE})\s*:?\s*"
+    rf"({FULL_NAME}(?:\s*[,;]\s*{FULL_NAME})*(?:\s*[,;]?\s*(?i:ed?)\s+{FULL_NAME})?)")
 
 #: Civil-law capacities that introduce a named individual in the body of a decision:
 #: "all'altro socio TAGLIAFERRI NICODEMO", "la ditta di PICCININI GUALTIERO".

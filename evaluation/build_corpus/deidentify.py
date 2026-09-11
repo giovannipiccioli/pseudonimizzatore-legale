@@ -22,7 +22,7 @@ COMMON = common_words()
 #: A person-shaped run, up to 6 tokens, allowing D'ALOISIO, DE ROSE, de la Tour, Bellè.
 #: The run must be generous: capturing only the first four tokens of
 #: "JEAN RICHARD DE LA TOUR" replaced the head and left "TOUR" stranded in the fixture.
-_TOK = r"(?:[\p{Lu}][\p{L}'’]*[\p{L}]|[Dd]['’][\p{Lu}][\p{L}'’]*)"
+_TOK = r"(?:[\p{Lu}][\p{L}'’]*[\p{L}]['’]?|[Dd]['’][\p{Lu}][\p{L}'’]*)"
 _PARTICLE = r"(?:de|di|da|del|della|dello|dei|degli|delle|la|le|lo|van|von|der|den|y)"
 NAME = re.compile(
     rf"(?<![\p{{L}}'’])({_TOK}(?:[^\S\r\n]+(?:{_TOK}|{_PARTICLE})){{1,5}})(?![\p{{L}}'’])")
@@ -36,6 +36,7 @@ COMPANY = re.compile(
 
 #: Cues that mark the *preceding* name as a member of the bench or the prosecution.
 _ROLE = (r"Presidente(?:\s+Titolare)?|Relatore|Estensore|[Cc]onsiglier[ei]|Cons\.|"
+         r"(?:[Pp]rimo\s+)?[Rr]eferendari[oa]|"
          r"[Gg]iudice|monocratic[oa]|AVVOCATO\s+GENERALE|[Ss]ostituto\s+[Pp]rocuratore|"
          r"[Pp]rocuratore\s+[Gg]enerale|\bP\.?\s?G\.?\b|[Cc]ancellier[ei]|"
          # "composta dai sigg.ri magistrati: dott. X" — without this the bench was
@@ -53,6 +54,13 @@ JUDGE_CUE_AFTER = re.compile(rf"^[^\n]{{0,8}}?[\s,.\-–]*(?:e\s+)?(?:{_ROLE})")
 JUDGE_CUE_CONTEXT = re.compile(
     r"(?i:\b(?:procuratore\s+generale|sostituto\s+procuratore)\b[^\n]{0,35}$)"
 )
+#: The reporting judge is introduced by the role, a clause, then a title — "Relatore
+#: nell'udienza pubblica del giorno 4 ottobre 2023 il dott. X", "il consigliere avv. X".
+#: Mirrors the engine's role-plus-title anchor; without it the only cue next to the name
+#: was the title, and the gold called the relatore a party.
+JUDGE_CUE_TITLE = re.compile(
+    r"(?i:\b(?:relatore|estensore|presidente|consiglier[ea]|referendari[oa]|giudice)\b"
+    r"[^\n]{0,90}?\b(?:dott\.?(?:ssa)?|dr\.?(?:ssa)?|avv\.)\s*$)")
 
 #: Cues that mark a run as a *person* at all. A cluster with no cue anywhere is left
 #: untouched: without this gate the builder rewrote "Comune di Carpeneto" into "Comune
@@ -64,13 +72,26 @@ PERSON_CUE = re.compile(
     # `contro` on its own line opens the respondent block of every Italian decision, and
     # without it the respondent was left in clear — a real party name reached a committed
     # fixture. Institutions and companies that follow it are filtered separately.
-    r"proposto\s+da|nei\s+confronti\s+di|\bcontro\b|\bavverso\b|"
+    r"proposto\s+da|nei\s+confronti(?:\s+di)?|\bcontro\b|\bavverso\b|"
+    # "presso lo studio Flaviano Lai" names counsel as surely as "studio legale" does
+    r"\bstudio(?:\s+legale)?|ad\s+(?:opponendum|adiuvandum)|\bminori\b|"
     r"sig\.?r?a?\.?|signor[ae]?|dott\.(?:ssa)?|"
     r"nat[oa]\s+a|residente|domiciliat[oa]|ricorrent|resistent|appellant|appellat|"
     r"intimat|controricorrent|imputat|contribuent|militare|erede|paziente|"
-    r"C\.?T\.?U\.?|perito|notaio|prof\.|ing\.|geom\.|rag\.)[\s:,.\-–']*$",
+    r"C\.?T\.?U\.?|perito|notaio|prof\.|ing\.|geom\.|rag\.)"
+    # opening quotes too: "proposto da:\n\n“Alessandra Palese”" stayed real without them
+    r"[\s:,.\-–'\"“«]*$",
     re.I)
 PERSON_CUE_ANY = re.compile(PERSON_CUE.pattern.rstrip("$"), re.I)
+#: …and the same kind of cue *after* the name: "De Martino Giuseppina, rappresentata e
+#: difesa", "Mario Rossi, nato a". A party introduced by an unusual phrase ("ad
+#: opponendum:") is still followed by one of these.
+PERSON_CUE_AFTER = re.compile(
+    r"^[\s,\"”»]*(?i:rappresentat[oaie]|difes[oaie]|assistit[oaie]|nat[oaie]\s+(?:a|il)\b|"
+    r"residente|in\s+proprio|in\s+qualità)")
+#: A monocratic decree prints its judge alone on the line under the heading:
+#: "ha pronunciato il presente\n\nDECRETO\n\nCarlo Testori\n\nsul ricorso…".
+JUDGE_UNDER_HEADING = re.compile(r"(?:SENTENZA|ORDINANZA|DECRETO)[^\S\n]*\n\s*$")
 
 #: Words that make a capitalised run an organisation or a place, never a person here.
 NOT_A_PERSON = re.compile(
@@ -81,6 +102,7 @@ NOT_A_PERSON = re.compile(
     r"demanio|dogan|monopoli|finanz|erario|tesoro|assessorat|banca|banco|cassa|credito|"
     r"cooperativ|consorzi|societ|associazion|fondazion|assicurazion|autostrad|"
     r"s\.?p\.?a|s\.?r\.?l|s\.?n\.?c|s\.?a\.?s|onlus|"
+    r"asur|asp|ausl|usl|ulss|asst|irccs|area\s+vasta|"
     r"sezione|udienza|camera|ricorso|sentenza|ordinanza|decreto|appello|cassazione|"
     r"giustizia|popolo|italiano|italiana|nome|fatto|diritto|motivi|causa|processo|"
     r"santa|santo|san|vetere|annunziata|capua|grado|"
@@ -92,12 +114,24 @@ NOT_A_PERSON = re.compile(
 
 #: Between a cue and a later name in the same list there may only be other names,
 #: commas and "e"/"ed" — "avvocati A B, C D, E F e G H" cues every one of them.
-_LIST_GAP = re.compile(r"^[\s,;]*(?:(?:[\p{Lu}][\p{L}'’]+|e|ed|,|;)[\s,;]*)*$")
+#: Lists are not typed cleanly: a stray full stop ("…Rossi., Anna …"), a lowercase
+#: particle ("Maria de Santis") or counsel's codice fiscale in brackets ("Guido Ciccarelli
+#: (C.F. …), Stefano Russo") must not end the list, or every later name stays real.
+_LIST_GAP = re.compile(
+    r"^[\s,;.]*(?:(?:[\p{Lu}][\p{L}'’.]*|[Dd]['’][\p{Lu}][\p{L}'’]*|\([^()\n]{0,40}\)|"
+    r"e|ed|d[aei]|de[il]|dell[aoe']|degli|dei|la|le|lo|,|;|\.)[\s,;.]*)*$")
 
 
 def _in_name_list(text, pos):
-    """True if `pos` continues a comma-separated list opened by a person cue."""
-    window = text[max(0, pos - 220):pos]
+    """True if `pos` continues a comma-separated list opened by a person cue.
+
+    The look-back covers the current paragraph and the one before it: a mass appeal
+    lists dozens of applicants after one "proposto da", often on the next line
+    ("proposto da\n\nA, B, C, …"), and a fixed window left the later ones real.
+    """
+    paragraph = text.rfind("\n\n", 0, pos)
+    start = text.rfind("\n\n", 0, paragraph) if paragraph > 0 else 0
+    window = text[max(0, pos - 8000, start):pos]
     last = None
     for m in PERSON_CUE_ANY.finditer(window):
         last = m
@@ -174,15 +208,23 @@ def _collect(text):
         toks = name.split()
         if NOT_A_PERSON.search(name):
             continue
-        rare = [t.lower() for t in _rare(toks)]
-        if not rare or all(t.lower() in COMMON for t in toks):
-            continue
         before = text[max(0, m.start() - 60):m.start()]
         judge = bool(JUDGE_CUE.search(before)
                      or JUDGE_CUE_CONTEXT.search(before)
+                     or JUDGE_CUE_TITLE.search(text[max(0, m.start() - 140):m.start()])
                      or JUDGE_CUE_AFTER.match(text[m.end():m.end() + 40])
+                     or JUDGE_UNDER_HEADING.search(before)
                      or _in_judge_list(text, m.start()))
-        cued = judge or bool(PERSON_CUE.search(before)) or _in_name_list(text, m.start())
+        cued = (judge or bool(PERSON_CUE.search(before))
+                or bool(PERSON_CUE_AFTER.match(text[m.end():m.end() + 40]))
+                or _in_name_list(text, m.start()))
+        rare = [t.lower() for t in _rare(toks)]
+        if not rare or all(t.lower() in COMMON for t in toks):
+            # "Ugo De Carlo" has no rare token to cluster on, but a cue still makes it a
+            # real person: key it on the whole name rather than leave it in the fixture.
+            if not cued:
+                continue
+            rare = [name.lower()]
         mentions.append((name, rare, m.start(), judge, cued))
 
     parent: dict[str, str] = {}

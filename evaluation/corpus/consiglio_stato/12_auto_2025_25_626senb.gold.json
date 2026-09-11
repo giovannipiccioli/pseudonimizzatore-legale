@@ -4,13 +4,15 @@
  "config": {},
  "must_remove": [
   "Cavalcanti",
+  "Ermenegildo Trentacoste",
   "Ildegarda Quarantotto",
   "Nicodemo Tagliaferri",
   "Pizzigoni",
   "Quarantotto",
   "Rosalinda Pizzigoni",
   "Serafina Cavalcanti",
-  "Tagliaferri"
+  "Tagliaferri",
+  "Trentacoste"
  ],
  "must_keep": [
   "Federico Maria Sbaraglia",

@@ -1,0 +1,22 @@
+{
+ "source": "giustizia_amministrativa/2010/ECLI_IT_TARNA_2010_1268SENT.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Arcangelo Monteleone",
+  "Ermenegildo Trentacoste",
+  "Ludovica Sanseverino",
+  "Monteleone",
+  "Ortensia Vimercati",
+  "Sanseverino",
+  "Trentacoste",
+  "Vimercati"
+ ],
+ "must_keep": [
+  "Napoli",
+  "Ornella Trevisanato",
+  "Trevisanato",
+  "n. 241/1990",
+  "n. 7142/2006"
+ ]
+}

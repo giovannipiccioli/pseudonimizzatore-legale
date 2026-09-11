@@ -1,0 +1,17 @@
+{
+ "source": "giustizia_amministrativa/2014/ECLI_IT_TARVEN_2014_626SENB.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Arcangelo Monteleone",
+  "Cavalcanti",
+  "Isotta Malinverni",
+  "Malinverni",
+  "Monteleone",
+  "Serafina Cavalcanti"
+ ],
+ "must_keep": [
+  "Ornella Trevisanato",
+  "Trevisanato"
+ ]
+}

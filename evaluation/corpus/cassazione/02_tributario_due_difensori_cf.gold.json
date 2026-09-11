@@ -3,7 +3,10 @@
  "note": "Two counsel, each followed by a codice fiscale in brackets — the CF-adjacency anchor. A bank is a party and must survive (companies are opt-out).",
  "config": {},
  "must_remove": [
-  "ROCCHETTI BALDASSARRE"
+  "MLSFRC71D14F205X",
+  "ROCCHETTI BALDASSARRE",
+  "TRENTACOSTE",
+  "VMRRNS83M52L219K"
  ],
  "must_keep": [
   "AGENZIA DELLE ENTRATE",

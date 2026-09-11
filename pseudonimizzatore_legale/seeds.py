@@ -213,6 +213,7 @@ _SIMPLE_ANCHORS = (
     ("PARTY_ROLE", "Ricorrente"),
     ("QUALIFICA", "Nominativo"),
     ("PROPOSTO_DA", "Ricorrente"),
+    ("NEI_CONFRONTI", "Resistente"),
 )
 
 # These cues identify a private person strongly enough that an all-common name such as
@@ -228,6 +229,7 @@ _ALLOW_COMMON_NAME = frozenset({
     "PARTY_ROLE",
     "QUALIFICA",
     "PROPOSTO_DA",
+    "NEI_CONFRONTI",
 })
 
 
@@ -250,6 +252,13 @@ def collect(text: str, cfg) -> list[Entity]:
         for part in P.COUNSEL_LIST_SEP.split(m.group(1)):
             seeds.add(part, "Difensore", require_distinctive=False,
                       source="regex:counsel_list")
+    # Parties come in lists too — dozens of applicants in a mass appeal, the
+    # counter-interested parties of a public competition — and, as with counsel, the
+    # single-name anchors only see the first. The cue decides the side.
+    for m in P.PARTY_LIST.finditer(text):
+        role = _party_role(m.group(0))
+        for part in P.COUNSEL_LIST_SEP.split(m.group(1)):
+            seeds.add(part, role, require_distinctive=False, source="regex:party_list")
     # …and counsel named by surname alone ("l'avv. Scaramuzza"), the one place a
     # one-token candidate is allowed through.
     for m in P.COUNSEL_SOLO.finditer(text):

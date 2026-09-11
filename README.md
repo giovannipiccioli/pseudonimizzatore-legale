@@ -222,18 +222,17 @@ Every identity in the notebook and committed evaluation corpus is invented.
 
 ## Measured performance
 
-The repository includes 103 annotated fixtures spanning tax, civil, administrative,
-accounting, Cassazione, and EU material. Complete-entity recall is all-or-nothing: one
-surviving alias fails that identity.
+The repository includes 124 annotated fixtures spanning tax, civil, administrative
+(Consiglio di Stato and TAR), accounting, Cassazione, and EU material. Complete-entity
+recall is all-or-nothing: one surviving alias fails that identity.
 
 | Configuration | Complete entities | Surface recall | Span precision lower bound | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| regex only | 328/378 (86.8%) | 479/566 (84.6%) | 549/686 (80.0%) | 591/591 | 71/103 |
-| + Italian NER XXL | 347/378 (91.8%) | 510/566 (90.1%) | 589/841 (70.0%) | 570/591 | 81/103 |
-| + XXL and XLM-R union | 349/378 (92.3%) | 513/566 (90.6%) | 591/870 (67.9%) | 570/591 | 83/103 |
+| regex only | 441/512 (86.1%) | 692/812 (85.2%) | 757/878 (86.2%) | 682/682 | 82/124 |
+| + Italian NER XXL | 472/512 (92.2%) | 742/812 (91.4%) | 834/1081 (77.2%) | 658/682 | 95/124 |
 
-All configurations remove 107/107 annotated structured identifiers. The review
-heuristic catches all 32 documents with annotated residuals, but also flags 67 without
+Both configurations remove 115/115 annotated structured identifiers. The review
+heuristic catches all 42 documents with annotated residuals, but also flags 78 without
 one. It is deliberately a recall-heavy review queue, not a safety certificate.
 
 See [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md) for definitions,
@@ -263,7 +262,7 @@ See [`ARCHITECTURE.md`](ARCHITECTURE.md) for the reasoning and extension points.
 pseudonimizzatore_legale/ runtime package
 tests/                   unit and integration tests
 notebooks/               executable user playground
-evaluation/corpus/       103 fixtures with invented identities
+evaluation/corpus/       124 fixtures with invented identities
 evaluation/              scorers and corpus-building utilities
 ```
 

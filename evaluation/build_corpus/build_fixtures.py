@@ -8,13 +8,17 @@ adding or refreshing fixtures.
 ships real ones. Two passes do it:
 
 1. sources that are already pseudonymized (BDGT role tags, `-OMISSIS-`, `(OMISSIS)`) get
-   their placeholders filled with invented identities — this is what makes the gold
-   exact, since we know precisely what we injected;
+   their placeholders filled with invented identities, and so do two shapes the
+   heuristic below loses track of: the list of applicants of a TAR mass appeal
+   (`fill_party_list`) and every codice fiscale or personal e-mail address
+   (`fill_identifiers`). This is what makes the gold exact, since we know precisely
+   what we injected;
 2. every document then goes through `deidentify`, which finds any remaining real person
    and replaces them cluster by cluster, preserving each surface form.
 
-`check_fixtures.py` fails the build if any person-shaped name outside the namebank
-survives.
+`check_fixtures.py` fails the build if any person-shaped name, codice fiscale or
+personal e-mail address outside the namebank survives. It shares the de-identifier's
+blind spots, so after adding fixtures also run `ner_audit.py` and read what it lists.
 
 Source archive locations are read from the ``PSEUDONIMIZZATORE_LEGALE_*_ROOT`` environment
 variables documented by ``python build_fixtures.py --help``.
@@ -47,6 +51,9 @@ BDGT = BDGT_ROOT / "scraping_bdgt_2025_txt_norm"
 CDS_ROOT = _root("PSEUDONIMIZZATORE_LEGALE_GIUSTIZIA_AMMINISTRATIVA_ROOT")
 CDS = CDS_ROOT / "2025/html"
 CGUE = _root("PSEUDONIMIZZATORE_LEGALE_CGUE_ROOT")
+#: Plain-text TAR decisions (one paragraph per block), e.g. from an HTML/XML-to-text
+#: conversion of the giustizia-amministrativa.it archive, laid out as <year>/<name>.txt.
+TAR = _root("PSEUDONIMIZZATORE_LEGALE_TAR_TXT_ROOT")
 CONTI_ROOT = _root("PSEUDONIMIZZATORE_LEGALE_CORTE_CONTI_ROOT")
 CONTI = CONTI_ROOT / "2022/pdf"
 
@@ -190,6 +197,34 @@ CDS_DOCS = [
     ("ECLI_IT_CDS_2025_10001SENT.html", "03_appello_amministrativo_bis", 4200, ""),
 ]
 
+#: (path under the TAR root, fixture name, character limit, note, extra keep sentinels)
+TAR_DOCS = [
+    ("2024/ECLI_IT_TARLAZ_2024_3295DDEC.txt", "01_ricorso_collettivo_elenco", 4200,
+     "Mass appeal: dozens of co-applicants listed after a single 'proposto da'.", ()),
+    ("2020/ECLI_IT_TARLAZ_2020_9988SENT.txt", "02_ricorso_collettivo_sentenza", 4200,
+     "Mass appeal decided by sentenza; the applicants' list opens the decision.", ()),
+    ("2014/ECLI_IT_TARLAZ_2014_5633OCOL.txt", "03_elenco_cognome_nome", 4200,
+     "Co-applicants written surname first.", ()),
+    ("2024/ECLI_IT_TARNA_2024_790OCOL.txt", "05_controinteressati_etichetta", 4200,
+     "Counter-interested parties below a standalone 'nei confronti' label.", ()),
+    ("2020/ECLI_IT_TARPIE_2020_11DDEC.txt", "06_due_controinteressati", 3200,
+     "Two counter-interested parties joined by 'e'.", ()),
+    ("2015/ECLI_IT_TARLAZ_2015_10797DDEC.txt", "07_controinteressato_unico", 1900,
+     "One counter-interested party, surname first.", ()),
+    ("2007/ECLI_IT_TARBS_2007_915SENT.txt", "08_referendario_estensore", 4200,
+     "The drafting judge is a referendario, a TAR rank.", ()),
+    ("2019/ECLI_IT_TARRC_2019_472SENT.txt", "10_avvocatura_domiciliata_ex_lege", 4200,
+     "'domiciliata ex lege in Reggio Calabria' must not make the court's seat a person.",
+     ("Reggio Calabria",)),
+    ("2006/ECLI_IT_TARMAR_2006_829SENB.txt", "11_consigliere_avv", 4200,
+     "An older decision titling the reporting judge 'il consigliere avv.'.", ()),
+    ("2017/ECLI_IT_TARCT_2017_925SENT.txt", "12_virgolette_angolari", 7000,
+     "Quotations typed as <<...>>: the quoted text must survive normalization.",
+     ("ha natura formalmente amministrativa",)),
+    ("2023/ECLI_IT_TARNA_2023_1137OCAU.txt", "13_azienda_sanitaria", 4200,
+     "A health authority among the counter-interested parties.", ()),
+]
+
 CGUE_DOCS = [
     ("2024/62024CC0376_IT.txt", "01_conclusioni_avvocato_generale", 4000,
      "Opinion of an Advocate General: the party is a two-letter initialism, the AG is "
@@ -328,15 +363,36 @@ def fill_omissis(text, person_idx):
     return text, [full, s.title()]
 
 
+def fill_identifiers(text, seed):
+    """Swap real codici fiscali and personal e-mail addresses for invented ones.
+
+    Replacing a counsel's name is not enough: the codice fiscale and PEC address printed
+    beside it reached committed fixtures untouched. Office addresses stay.
+    """
+    from check_fixtures import CODICE_FISCALE, EMAIL, INSTITUTIONAL_MAIL
+
+    def personal(value):
+        return "@" not in value or not INSTITUTIONAL_MAIL.search(value.split("@")[1].lower())
+
+    injected = []
+    for bank, pattern in ((NB.CODICI_FISCALI, CODICE_FISCALE), (NB.EMAILS + NB.PEC, EMAIL)):
+        real = [v for v in dict.fromkeys(pattern.findall(text)) if v not in bank and personal(v)]
+        for k, v in enumerate(real):
+            injected.append(bank[(seed + k) % len(bank)])
+            text = text.replace(v, injected[-1])
+    return text, injected
+
+
 # ── builders ─────────────────────────────────────────────────────────────────
 
 def _emit(source, name, text, limit, note, src_label, extra_remove=(), seed=0,
-          config=None):
+          config=None, extra_keep=()):
+    text, identifiers = fill_identifiers(text, seed)
     text, removed, kept = deidentify(text, seed=seed)
     text = truncate(text, limit)
     return write(source, name, text, note, src_label,
-                 list(extra_remove) + removed,
-                 kept + keep_present(text, INSTITUTIONS)
+                 list(extra_remove) + identifiers + removed,
+                 kept + list(extra_keep) + keep_present(text, INSTITUTIONS)
                  + re.findall(r"\bn\.\s?\d{1,6}/\d{2,4}\b", text)[:3]
                  + re.findall(r"\bC-\d+/\d+(?:\s?P)?\b", text)[:2],
                  config=config)
@@ -349,7 +405,7 @@ def _emit(source, name, text, limit, note, src_label, extra_remove=(), seed=0,
 #: a dropped/failing fixture costs nothing (see `write`'s leak-checker gate and
 #: fixture safety gate).
 EXTRAS = {"cassazione": 24, "bdgt": 20, "consiglio_stato": 16, "corte_conti": 18,
-          "cgue": 14}
+          "cgue": 14, "tar": 11}
 
 
 def _auto_pick(candidates, used, count):
@@ -460,6 +516,91 @@ def build_cds():
               3800, "Auto-selected for shape variety.",
               f"giustizia_amministrativa/{year}/{fname} (HTML stripped, -OMISSIS- "
               f"filled, then de-identified)", extra_remove=removed, seed=80 + k * 3)
+
+
+#: One item of a list of parties: capitalised words, lowercase surname particles, stray
+#: apostrophes and full stops ("Maria Teresa Sgro'", "Maria de Santis", "Rossi A.").
+_LIST_ITEM = (r"[\p{Lu}][\p{L}'’.]*(?:[^\S\n]+(?:[\p{Lu}][\p{L}'’.]*|d[aei]|de[il]|"
+              r"dell[aoe'’]|degli|dei|la|le|lo))*")
+#: The applicants of a mass appeal, listed after one "proposto da" — or after "e da"
+#: when an association opens the list: "proposto da Associazione Italia Nostra Onlus, in
+#: persona del Presidente p.t., e da A, B, C, …".
+PARTY_LIST_AT_CUE = re.compile(
+    rf"((?:proposto\s+da(?:l(?:la)?|i)?|\be\s+da)\s*:?\s*)"
+    rf"({_LIST_ITEM}(?:\s*[,;]\s*{_LIST_ITEM}|[^\S\n]+ed?[^\S\n]+{_LIST_ITEM})+)")
+LIST_MAX = 12
+#: A list item is an organisation only when it *starts* like one or carries a legal
+#: form. Institution and place words further in are surnames here: "Maria Filomena
+#: Puglia", "Croce Floriana" and "Alessia L'Erario" all stayed real under a looser test.
+_ORG_HEAD = re.compile(
+    r"(?i:associazion|comitat|coordinament|codacons|sindacat|federazion|confederazion|"
+    r"consorzi|cooperativ|fondazion|societ|comune|region|provinc|minister|ufficio|"
+    r"azienda|agenzi|istitut|universit|ordine|ente\b)")
+_LEGAL_FORM = re.compile(r"(?i:\bonlus\b|\bs\.?\s?r\.?\s?l\b|\bs\.?\s?p\.?\s?a\b)")
+
+
+def fill_party_list(text, seed):
+    """Fill a list of applicants with invented people, as `fill_omissis` fills -OMISSIS-.
+
+    A long real list is exactly where the heuristic de-identifier loses track — one
+    stray full stop or a surname that is also a place, and every later name stays real.
+    Replacing the list wholesale first is safe, and makes the gold exact. Institutions in
+    the list are left alone, and the list is cut to LIST_MAX people. Every applicant's
+    later mentions follow — reversed ("Abbondandolo Nicoletta") or a bare surname — or
+    the body keeps the real name the list no longer shows.
+    """
+    m = PARTY_LIST_AT_CUE.search(text)
+    if not m:
+        return text, []
+    from check_fixtures import PLACE_OR_NAME
+    from deidentify import COMMON, NOT_A_PERSON
+    bank = NB.PEOPLE + NB.COUNSEL
+    items, injected, swaps, k = [], [], [], 0
+    for item in re.split(r"\s*[,;]\s*|[^\S\n]+ed?[^\S\n]+", m.group(2)):
+        if _ORG_HEAD.match(item) or _LEGAL_FORM.search(item):
+            items.append(item)
+            continue
+        surname, first = bank[(seed + k) % len(bank)]
+        new = f"{first.title()} {surname.title()}"
+        if k < LIST_MAX:
+            items.append(new)
+        injected += [new, surname.title()]
+        toks = item.split()
+        swaps += [(item, new), (" ".join(toks[::-1]), f"{surname.title()} {first.title()}")]
+        # a bare surname follows too, unless it is also a place or an institution word
+        swaps += [(t, surname.title()) for t in toks
+                  if len(t) >= 4 and t.lower() not in COMMON
+                  and not PLACE_OR_NAME.match(t) and not NOT_A_PERSON.match(t)]
+        k += 1
+    text = text[:m.start(2)] + ", ".join(items) + text[m.end(2):]
+    for old, new in sorted(swaps, key=lambda s: -len(s[0])):
+        text = re.sub(rf"(?<![\p{{L}}'’]){re.escape(old)}(?![\p{{L}}'’])", new, text)
+    return text, injected
+
+
+def build_tar():
+    used = set()
+    for i, (rel, name, limit, note, keep) in enumerate(TAR_DOCS):
+        used.add(rel)
+        src = TAR / rel
+        if not src.exists():
+            print(f"  SKIP {name}: not found")
+            continue
+        text, removed = fill_omissis(src.read_text(encoding="utf-8"), i * 4)
+        text, listed = fill_party_list(text, i * 5)
+        _emit("tar", name, text, limit, note,
+              f"giustizia_amministrativa/{rel} (plain text, -OMISSIS- filled, then "
+              f"de-identified)", extra_remove=removed + listed, extra_keep=keep,
+              seed=i * 3 + 5)
+
+    pool = sorted(str(p.relative_to(TAR)) for p in TAR.rglob("*.txt")) if TAR.is_dir() else []
+    for k, rel in enumerate(_auto_pick(pool, used, EXTRAS["tar"])):
+        text, removed = fill_omissis((TAR / rel).read_text(encoding="utf-8"), 40 + k * 2)
+        text, listed = fill_party_list(text, 60 + k * 5)
+        _emit("tar", f"{20 + k}_auto_{Path(rel).stem.lower()[-16:]}", text, 3800,
+              "Auto-selected for shape variety.",
+              f"giustizia_amministrativa/{rel} (plain text, -OMISSIS- filled, then "
+              f"de-identified)", extra_remove=removed + listed, seed=120 + k * 3)
 
 
 def build_cgue():
@@ -629,7 +770,7 @@ def build_merito():
 
 
 BUILDERS = {"cassazione": build_cassazione, "bdgt": build_bdgt,
-            "consiglio_stato": build_cds, "cgue": build_cgue,
+            "consiglio_stato": build_cds, "tar": build_tar, "cgue": build_cgue,
             "corte_conti": build_conti, "merito_civile": build_merito}
 
 
@@ -642,6 +783,7 @@ def main():
             "Configure archive roots with PSEUDONIMIZZATORE_LEGALE_CASSAZIONE_ROOT, "
             "PSEUDONIMIZZATORE_LEGALE_BDGT_ROOT, "
             "PSEUDONIMIZZATORE_LEGALE_GIUSTIZIA_AMMINISTRATIVA_ROOT, "
+            "PSEUDONIMIZZATORE_LEGALE_TAR_TXT_ROOT, "
             "PSEUDONIMIZZATORE_LEGALE_CGUE_ROOT, "
             "PSEUDONIMIZZATORE_LEGALE_CORTE_CONTI_ROOT and "
             "PSEUDONIMIZZATORE_LEGALE_MERITO_CIVILE_ROOT."

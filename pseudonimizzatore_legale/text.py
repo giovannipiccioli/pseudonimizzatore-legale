@@ -2,9 +2,10 @@
 
 Court text arrives through PDF extraction, OCR and markdown conversion, and each of
 those fragments names in its own way: a soft hyphen inside "Ros-si", a zero-width space
-left by a converter, `**Mario** Rossi`, a full-width character from a bad encoding.
-Every one defeats an exact-match detector — the name is still legible to a human and
-invisible to a regex — so they are repaired first.
+left by a converter, `**Mario** Rossi`, `<b>Ma</b>rio`, a full-width character from a
+bad encoding. Every one defeats an exact-match detector — the name is still legible to
+a human and invisible to a regex — so they are repaired first. Only real HTML tags are
+stripped: the `<<…>>` many judges type as quotation marks is text.
 
 **This step changes offsets**, deliberately. The pipeline works on the sanitized text
 from here on and never maps back, which is why `anonymize()` returns sanitized-and-
@@ -20,7 +21,14 @@ import regex as re
 _ZERO_WIDTH = re.compile(r"[​‌‍⁠﻿­]")
 _FRONTMATTER = re.compile(r"\A---\n.*?\n---\n|\A\+\+\+\n.*?\n\+\+\+\n", re.S)
 _HTML_COMMENT = re.compile(r"<!--.*?-->", re.S)
-_HTML_TAG = re.compile(r"</?[a-zA-Z][^>]*>")
+#: Real HTML tags only, each on one line, and never a `<` that follows another `<`.
+#: The generic `<letters…>` this replaces read the `<<…>>` many Italian judges type as
+#: quotation marks as a tag and deleted the quotation — and, when the closing `>` was
+#: paragraphs away, everything in between.
+_HTML_TAG = re.compile(
+    r"(?<!<)</?(?i:a|b|i|u|s|em|strong|sup|sub|span|font|p|div|br|hr|li|ul|ol|table|"
+    r"thead|tbody|tr|td|th|h[1-6]|blockquote|code|pre|img|small|big|mark|del|ins)"
+    r"(?:\s[^<>\n]*)?/?>")
 _MD_IMAGE = re.compile(r"!\[([^\]]*)\]\([^)]*\)")
 _MD_LINK = re.compile(r"\[([^\]]+)\]\([^)]*\)")
 #: The delimiter may not reappear inside the span: without that, a run of scan noise

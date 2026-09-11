@@ -1,0 +1,26 @@
+{
+ "source": "giustizia_amministrativa/2022/ECLI_IT_TARLAZ_2022_10020OCOL.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Auto-selected for shape variety.",
+ "config": {},
+ "must_remove": [
+  "Adelasia Scaramuzza",
+  "Cavalcanti",
+  "Ermenegildo Trentacoste",
+  "Isotta Malinverni",
+  "Lo Strano",
+  "Malinverni",
+  "Mirandolina Zangheratti",
+  "Ornella Trevisanato",
+  "Perpetua Lo Strano",
+  "Scaramuzza",
+  "Serafina Cavalcanti",
+  "Trentacoste",
+  "Trevisanato",
+  "Zangheratti"
+ ],
+ "must_keep": [
+  "Pontremoli",
+  "Roma",
+  "n. 5281/21"
+ ]
+}

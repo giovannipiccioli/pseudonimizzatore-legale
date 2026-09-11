@@ -1,0 +1,25 @@
+{
+ "source": "giustizia_amministrativa/2014/ECLI_IT_TARLAZ_2014_5633OCOL.txt (plain text, -OMISSIS- filled, then de-identified)",
+ "note": "Co-applicants written surname first.",
+ "config": {},
+ "must_remove": [
+  "Bonaventura",
+  "Celeste Bonaventura",
+  "Clotilde Pontremoli",
+  "Ferruccio Malaspina",
+  "Ludovica Sanseverino",
+  "Malaspina",
+  "Ortensia Vimercati",
+  "Pontremoli",
+  "Sanseverino",
+  "Spadaccini",
+  "Trentacoste",
+  "Vimercati"
+ ],
+ "must_keep": [
+  "Avvocatura Generale dello Stato",
+  "Consiglio di Stato",
+  "Roma",
+  "n. 147/2013"
+ ]
+}

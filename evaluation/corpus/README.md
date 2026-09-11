@@ -1,6 +1,6 @@
 # Evaluation corpus
 
-This directory contains 103 Italian legal-decision fixtures from six source families.
+This directory contains 124 Italian legal-decision fixtures from seven source families.
 The layout and prose come from real decisions, but every detected natural-person name
 was replaced with an invented identity before the fixtures were committed. The source
 archives themselves are not part of this repository.
@@ -11,6 +11,7 @@ archives themselves are not part of this repository.
 | Cassazione | 25 | surname-first headers, prose aliases, old initials-only feeds |
 | CGUE | 8 | low-structure opinions and organization-heavy text |
 | Consiglio di Stato | 16 | administrative headings, party and counsel lists |
+| TAR | 21 | mass appeals listing many applicants, counter-interested parties, older judge titles |
 | Corte dei conti | 15 | accounting/pension decisions and irregular panels |
 | Merito civile | 16 | PDF extraction, mixed layouts and masked initials |
 
@@ -59,14 +60,18 @@ is printed as a leak by the scorer.
 The builder uses two passes:
 
 1. publisher placeholders/initial runs are filled with identities from a fixed invented
-   name bank;
+   name bank, and so are two shapes the second pass loses track of: the list of
+   applicants of a mass appeal, and every codice fiscale or personal e-mail address;
 2. remaining person clusters are de-identified while their capitalization, order and
    bare-surname variants are preserved.
 
-`check_fixtures.py` rejects a generated document when a person-shaped value outside the
-invented bank remains. The builder drops uncertain fixtures rather than commit a
-possible real identity. This is a heuristic safety check; contributors should still
-review newly generated text before committing it.
+`check_fixtures.py` rejects a generated document when a person-shaped value, codice
+fiscale or personal e-mail address outside the invented bank remains, and the builder
+drops that document rather than commit a possible real identity. The check shares the
+de-identifier's heuristics and so its blind spots — a name made only of common words, a
+witness called by bare surname — so after adding fixtures also run `ner_audit.py`,
+which asks an Italian NER model for every person outside the bank. Read its list and
+the new text before committing.
 
 Do not replace these files with raw decisions or add real names manually.
 
@@ -79,6 +84,7 @@ one or more archive roots, provided only through environment variables:
 PSEUDONIMIZZATORE_LEGALE_CASSAZIONE_ROOT
 PSEUDONIMIZZATORE_LEGALE_BDGT_ROOT
 PSEUDONIMIZZATORE_LEGALE_GIUSTIZIA_AMMINISTRATIVA_ROOT
+PSEUDONIMIZZATORE_LEGALE_TAR_TXT_ROOT      TAR decisions as plain text, <year>/<name>.txt
 PSEUDONIMIZZATORE_LEGALE_CGUE_ROOT
 PSEUDONIMIZZATORE_LEGALE_CORTE_CONTI_ROOT
 PSEUDONIMIZZATORE_LEGALE_MERITO_CIVILE_ROOT
@@ -90,6 +96,7 @@ Run:
 python evaluation/build_corpus/build_fixtures.py --help
 python evaluation/build_corpus/build_fixtures.py
 python evaluation/build_corpus/check_fixtures.py
+python evaluation/build_corpus/ner_audit.py
 python evaluation/score_corpus.py
 ```
 
