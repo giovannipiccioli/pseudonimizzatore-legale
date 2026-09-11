@@ -228,11 +228,11 @@ recall is all-or-nothing: one surviving alias fails that identity.
 
 | Configuration | Complete entities | Surface recall | Span precision lower bound | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| regex only | 441/512 (86.1%) | 692/812 (85.2%) | 757/878 (86.2%) | 682/682 | 82/124 |
-| + Italian NER XXL | 472/512 (92.2%) | 742/812 (91.4%) | 834/1081 (77.2%) | 658/682 | 95/124 |
+| regex only | 441/503 (87.7%) | 692/794 (87.2%) | 757/878 (86.2%) | 700/700 | 89/124 |
+| + Italian NER XXL | 472/503 (93.8%) | 742/794 (93.5%) | 827/1081 (76.5%) | 676/700 | 102/124 |
 
 Both configurations remove 115/115 annotated structured identifiers. The review
-heuristic catches all 42 documents with annotated residuals, but also flags 78 without
+heuristic catches all 35 documents with annotated residuals, but also flags 85 without
 one. It is deliberately a recall-heavy review queue, not a safety certificate.
 
 See [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md) for definitions,

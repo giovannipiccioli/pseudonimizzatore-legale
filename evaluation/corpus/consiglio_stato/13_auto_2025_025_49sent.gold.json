@@ -3,15 +3,15 @@
  "note": "Auto-selected for shape variety.",
  "config": {},
  "must_remove": [
-  "Cavalcanti",
   "Ermenegildo Trentacoste",
   "Lo Strano",
   "Perpetua Lo Strano",
-  "Serafina Cavalcanti",
   "Trentacoste"
  ],
  "must_keep": [
+  "Cavalcanti",
   "Consiglio di Stato",
+  "Serafina Cavalcanti",
   "n. 32/2020",
   "n. 89/2001"
  ]

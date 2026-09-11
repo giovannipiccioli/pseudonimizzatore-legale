@@ -22,19 +22,19 @@ Current regex-only result:
 | BDGT | 166/173 (96.0%) | 175/182 (96.2%) | 246/314 (78.3%) | 197/197 | 19/23 |
 | Cassazione | 46/51 (90.2%) | 73/81 (90.1%) | 79/95 (83.2%) | 137/137 | 23/25 |
 | CGUE | 0/2 (0.0%) | 0/3 (0.0%) | 0/0 | 17/17 | 7/8 |
-| Consiglio di Stato | 47/59 (79.7%) | 92/116 (79.3%) | 74/84 (88.1%) | 60/60 | 6/16 |
+| Consiglio di Stato | 47/50 (94.0%) | 92/98 (93.9%) | 74/84 (88.1%) | 78/78 | 13/16 |
 | TAR | 97/107 (90.7%) | 189/206 (91.7%) | 199/215 (92.6%) | 83/83 | 16/21 |
 | Corte dei conti | 33/43 (76.7%) | 60/77 (77.9%) | 55/57 (96.5%) | 132/132 | 8/15 |
 | Merito civile | 52/77 (67.5%) | 103/147 (70.1%) | 104/113 (92.0%) | 56/56 | 3/16 |
-| **Total** | **441/512 (86.1%)** | **692/812 (85.2%)** | **757/878 (86.2%)** | **682/682** | **82/124** |
+| **Total** | **441/503 (87.7%)** | **692/794 (87.2%)** | **757/878 (86.2%)** | **700/700** | **89/124** |
 
 The scorer also reports:
 
-- names: 326/397 complete (82.1%);
+- names: 326/388 complete (84.0%);
 - structured identifiers/other: 115/115 complete (100%);
 - character-overlap precision lower bound: 15,451/17,741 (87.1%);
 - damage-free documents (no protected value lost): 124/124;
-- review heuristic: TP/FN/FP/TN = 42/0/78/4, or 100% recall and 35.0%
+- review heuristic: TP/FN/FP/TN = 35/0/85/4, or 100% recall and 29.2%
   precision for finding documents with an annotated residual.
 
 ## Metric definitions

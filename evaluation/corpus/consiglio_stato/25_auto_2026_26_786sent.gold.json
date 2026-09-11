@@ -3,19 +3,19 @@
  "note": "Auto-selected for shape variety.",
  "config": {},
  "must_remove": [
-  "Adelasia Scaramuzza",
   "Ermenegildo Trentacoste",
   "Gervasio Spadaccini",
   "Mirandolina Zangheratti",
-  "Scaramuzza",
   "Spadaccini",
   "Trentacoste",
   "Zangheratti"
  ],
  "must_keep": [
+  "Adelasia Scaramuzza",
   "Clotilde Pontremoli",
   "Napoli",
   "Pontremoli",
+  "Scaramuzza",
   "n. 1363/2025",
   "n. 23773/2024"
  ]

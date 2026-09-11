@@ -7,8 +7,8 @@ Transformer runs used CPU, threshold 0.3 and locally cached model weights.
 
 | Configuration | Complete entities | Names complete | Surface recall | Span precision LB | Character precision LB | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| regex only | 441/512 (86.1%) | 326/397 (82.1%) | 692/812 (85.2%) | 757/878 (86.2%) | 87.1% | 682/682 (100%) | 82/124 |
-| + Italian NER XXL | 472/512 (92.2%) | 357/397 (89.9%) | 742/812 (91.4%) | 834/1081 (77.2%) | 79.1% | 658/682 (96.5%) | 95/124 |
+| regex only | 441/503 (87.7%) | 326/388 (84.0%) | 692/794 (87.2%) | 757/878 (86.2%) | 87.1% | 700/700 (100%) | 89/124 |
+| + Italian NER XXL | 472/503 (93.8%) | 357/388 (92.0%) | 742/794 (93.5%) | 827/1081 (76.5%) | 78.6% | 676/700 (96.6%) | 102/124 |
 
 Every configuration removes 115/115 annotated structured identifiers/other entities.
 The remaining gap is person recognition.
@@ -33,7 +33,7 @@ span may still be correct. Character precision additionally penalizes overly wid
 | BDGT | 96.0% | 99.4% |
 | Cassazione | 90.2% | 100.0% |
 | CGUE | 0.0% | 50.0% |
-| Consiglio di Stato | 79.7% | 83.1% |
+| Consiglio di Stato | 94.0% | 98.0% |
 | TAR | 90.7% | 95.3% |
 | Corte dei conti | 76.7% | 88.4% |
 | Merito civile | 67.5% | 76.6% |
@@ -46,7 +46,7 @@ witnesses — which no role cue introduces.
 
 Italian NER XXL gains 31 complete entities and 13 complete documents over regex alone.
 It also creates 203 additional replacement decisions, lowers the replacement-overlap
-precision bound by 9.0 points, and removes 24 protected assertions.
+precision bound by 9.7 points, and removes 24 protected assertions.
 
 The protected-value change is expected under span-local policy: an explicit
 `Presidente: NOME COGNOME` span stays, while an uncued later occurrence of that name is
@@ -59,7 +59,7 @@ stronger configuration. Regex-only remains useful when throughput, explainabilit
 preservation of uncued public-role aliases matters more.
 
 Observed end-to-end elapsed time in this run was roughly 0.8 seconds for regex-only and
-30.9 seconds with Italian NER XXL. Treat these only as relative figures; hardware,
+28.5 seconds with Italian NER XXL. Treat these only as relative figures; hardware,
 tokenizer cache and document lengths dominate runtime.
 
 ## Review heuristic
@@ -69,7 +69,7 @@ matrix against annotated residuals:
 
 | TP | FN | FP | TN | Recall | Precision |
 |---:|---:|---:|---:|---:|---:|
-| 42 | 0 | 78 | 4 | 100.0% | 35.0% |
+| 35 | 0 | 85 | 4 | 100.0% | 29.2% |
 
 This is deliberately noisy. It is a review queue, not evidence that one of the four
 `passed_checks` documents is anonymous.

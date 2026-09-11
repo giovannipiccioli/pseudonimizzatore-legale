@@ -6,12 +6,12 @@
   "Adelasia Scaramuzza",
   "Ildegarda Quarantotto",
   "Quarantotto",
-  "Scaramuzza",
-  "Teodoro Ventimiglia",
-  "Ventimiglia"
+  "Scaramuzza"
  ],
  "must_keep": [
   "Avvocatura Generale dello Stato",
-  "Roma"
+  "Roma",
+  "Teodoro Ventimiglia",
+  "Ventimiglia"
  ]
 }
