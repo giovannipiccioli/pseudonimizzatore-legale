@@ -70,17 +70,27 @@ being assigned arbitrarily.
 `policy.py` filters candidates using `Config`, then greedily accepts non-overlapping
 spans by evidence priority and length:
 
+For companies, `False` rejects every company candidate, `"person_named"` accepts only
+the conservative family-marker and two-surname subset, and `True` accepts every
+detected private company. Public-institution guards apply before these choices.
+
 | Priority | Evidence |
 |---:|---|
 | 120 | structured personal data |
 | 100 | exact judicial-role and procedural-number keeps |
 | 40 | personally cued residential address |
+| 35 | private company |
 | 30 | full person identity |
 | 20 | distinctive or ambiguous person token |
-| 10 | private company |
 
 Structured PII deliberately outranks kept case identifiers, so a birth date such as
 `12/03/1974` cannot survive because a substring resembles a case number.
+
+For company candidates, `companies=False` keeps every company,
+`companies="person_named"` accepts only candidates with a conservative family-name
+signal, and `companies=True` accepts them all. Accepted company spans outrank person
+aliases so a surname shared with a partner or shareholder does not leave part of the
+company name visible.
 
 Judicial protection applies only to the explicit role span. For example:
 

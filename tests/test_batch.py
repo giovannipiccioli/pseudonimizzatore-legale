@@ -22,7 +22,7 @@ def test_file_sidecar_is_json_and_contains_verdict(tmp_path):
     assert data["residuals"][0]["text"] == "Antonio De Luca"
     assert data["source_sha256"]
     assert data["output_sha256"]
-    assert data["engine_version"] == "0.2.0"
+    assert data["engine_version"] == "0.3.0"
     assert data["config"]["verify"] is True
 
 

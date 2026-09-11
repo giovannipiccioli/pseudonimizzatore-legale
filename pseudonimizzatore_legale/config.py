@@ -8,6 +8,10 @@ removed, explicit judicial roles and public bodies are kept, companies are opt-i
 consistency is scoped to one document.
 """
 from dataclasses import dataclass
+from typing import Literal
+
+
+CompanyPolicy = bool | Literal["person_named"]
 
 #: There is one document-agnostic legal pipeline. ``query`` only omits block scanning
 #: for short interactive input. The two old names remain inexpensive compatibility
@@ -26,10 +30,12 @@ class Config:
         input. Legacy values ``"cassazione"`` and ``"generic"`` are accepted as aliases
         of ``"legal"`` and do not select different court logic.
     companies
-        Pseudonymize private companies as ``Società_N``. **Off by default**: in tax
-        litigation the company is usually the subject matter rather than a private
-        individual, and removing it often destroys the point of the document. Public
-        bodies are never pseudonymized regardless of this flag.
+        Control whether private companies become ``Società_N``. ``False`` (the
+        default) keeps them. ``"person_named"`` replaces only names with a strong
+        personal-name signal: an explicit family marker such as ``F.lli`` or
+        ``Fratelli``, or two surname-shaped words joined by ``e`` or ``&``.
+        ``True`` replaces every detected private company. Public bodies are never
+        pseudonymized regardless of this option.
     keep_judges
         Keep exact names that appear in a judicial role — Presidente, Relatore, Consigliere,
         Giudice, Sostituto Procuratore, and the bench lists of collegiate panels. On by
@@ -80,7 +86,7 @@ class Config:
     """
 
     profile: str = "legal"
-    companies: bool = False
+    companies: CompanyPolicy = False
     keep_judges: bool = True
     keep_case_numbers: bool = True
     sanitize: bool = True
@@ -96,5 +102,7 @@ class Config:
                 f"unknown profile {self.profile!r}; expected one of {PROFILES}")
         if self.profile in _PROFILE_ALIASES:
             object.__setattr__(self, "profile", _PROFILE_ALIASES[self.profile])
+        if not isinstance(self.companies, bool) and self.companies != "person_named":
+            raise ValueError("companies must be False, 'person_named', or True")
         if isinstance(self.ner, tuple) and not self.ner:
             raise ValueError("ner model tuple must not be empty")

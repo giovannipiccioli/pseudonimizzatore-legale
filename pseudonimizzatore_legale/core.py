@@ -156,6 +156,9 @@ _PRIVATE_ROLE_SOURCES = {
 # terminator. It is useful detection evidence but not strong enough by itself to revoke
 # an exact judicial-role keep decision.
 _STRICT_PRIVATE_ROLE_SOURCES = _PRIVATE_ROLE_SOURCES - {"regex:legal_party_block"}
+_COMPANY_INTRO = re.compile(
+    r"(?i:(?:(?:di|del|della|dei|degli|delle|il|lo|la|le|gli|e)\s+)+)"
+)
 
 
 def _token_owners(entities: list[Entity], min_len: int) -> dict[str, list[Entity]]:
@@ -260,22 +263,84 @@ def _propose_addresses(text: str, out: list[Candidate]) -> None:
         ))
 
 
+def _person_named_company_start(
+    text: str,
+    start: int,
+    value: str,
+) -> int | None:
+    """Return the company start when its name has a strong personal-name signal."""
+    suffix = next(
+        (match for match in P.COMPANY_SUFFIX_RE.finditer(value)
+         if match.end() == len(value)),
+        None,
+    )
+    if suffix is None:
+        return None
+    name = value[:suffix.start()].strip()
+    name = re.sub(r"(?i:^societ[àa]\s+)", "", name)
+    if P.PERSON_NAMED_COMPANY_FAMILY.search(name):
+        without_marker = P.PERSON_NAMED_COMPANY_FAMILY.sub("", name).strip()
+        if re.search(P.NAME_TOKEN, without_marker):
+            return start
+
+    line_start = max(text.rfind("\n", 0, start) + 1, start - 100)
+    context = text[line_start:start]
+    for family in reversed(list(P.PERSON_NAMED_COMPANY_FAMILY.finditer(context))):
+        bridge = context[family.end():]
+        if not P.PERSON_NAMED_COMPANY_BRIDGE.fullmatch(bridge):
+            continue
+        if not re.search(P.NAME_TOKEN, f"{bridge} {name}"):
+            continue
+        company_start = line_start + family.start()
+        prefix = P.PERSON_NAMED_COMPANY_PREFIX.search(context[:family.start()])
+        if prefix:
+            prefix_start = prefix.start()
+            intro = _COMPANY_INTRO.match(prefix.group())
+            if intro:
+                prefix_start += intro.end()
+            if prefix_start < family.start():
+                company_start = line_start + prefix_start
+        return company_start
+
+    pair = P.PERSON_NAMED_COMPANY_PAIR.fullmatch(name)
+    if pair and all(
+        P.PERSON_NAMED_COMPANY_SURNAME_END.search(part)
+        for part in pair.groups()
+    ):
+        return start
+    return None
+
+
 def _propose_companies(text: str, out: list[Candidate]) -> None:
     for match in P.SOCIETA.finditer(text):
-        value = re.sub(r"\s+", " ", match.group(1)).strip()
-        if P.INSTITUTION_HEAD.match(value):
+        start = match.start(1)
+        # Introductory articles/prepositions are prose, not part of the name.
+        # Strip them before checking institutions as well: "della Equitalia ..."
+        # must receive the same protection as "Equitalia ...".
+        prefix = _COMPANY_INTRO.match(match.group(1))
+        if prefix:
+            start += prefix.end()
+        value = re.sub(r"\s+", " ", text[start:match.end(1)]).strip()
+        institution_name = re.sub(r"(?i:^societ[àa]\s+)", "", value)
+        if P.INSTITUTION_HEAD.match(institution_name) or P.COMPANY_SUFFIX_RE.fullmatch(value):
             continue
+        person_named_start = _person_named_company_start(text, start, value)
+        if person_named_start is not None:
+            start = person_named_start
+            value = re.sub(r"\s+", " ", text[start:match.end(1)]).strip()
         out.append(_candidate(
             text,
-            match.start(1),
+            start,
             match.end(1),
             kind="ORGANIZATION",
-            source="regex:private_company",
+            source=("regex:person_named_company" if person_named_start is not None
+                    else "regex:private_company"),
             priority=PRI_COMPANY,
             role="Società",
             label="Società",
             value=value,
-            reason="private company requested by policy",
+            reason=("private company with a strong personal-name signal"
+                    if person_named_start is not None else "private company"),
         ))
 
 

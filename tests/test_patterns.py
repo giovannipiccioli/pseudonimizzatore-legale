@@ -133,6 +133,37 @@ class TestSeeds:
                         "Snchez", "Srlvatore"):
             assert not P.COMPANY_SUFFIX_RE.search(surname), surname
 
+    def test_person_named_company_family_marker(self):
+        for name in (
+            "F.lli Filippi",
+            "F.LLI FUMAGALLI",
+            "F LLI DE CECCO",
+            "Fratelli Vignali",
+            "Eredi Rossi",
+        ):
+            assert P.PERSON_NAMED_COMPANY_FAMILY.search(name), name
+        for name in ("Filippi", "Fratellanza", "Eredit S.r.l."):
+            assert not P.PERSON_NAMED_COMPANY_FAMILY.search(name), name
+
+    def test_person_named_company_bridge_rejects_prose(self):
+        assert P.PERSON_NAMED_COMPANY_BRIDGE.fullmatch(
+            " DE CECCO DI FILIPPO FARA S. "
+        )
+        assert not P.PERSON_NAMED_COMPANY_BRIDGE.fullmatch(
+            " Rossi hanno impugnato contro "
+        )
+
+    def test_person_named_company_pair_and_surname_shape(self):
+        pair = P.PERSON_NAMED_COMPANY_PAIR.fullmatch("Mazzetti e Franchi")
+        assert pair and all(
+            P.PERSON_NAMED_COMPANY_SURNAME_END.search(part)
+            for part in pair.groups()
+        )
+        assert not P.PERSON_NAMED_COMPANY_PAIR.fullmatch(
+            "Mazzetti e Franchi e Rossi"
+        )
+        assert not P.PERSON_NAMED_COMPANY_SURNAME_END.search("Labium")
+
     def test_counsel_list(self):
         m = P.COUNSEL_LIST.search(
             "difesi dagli avvocati Anton Lana, Mario Melillo e Valentina Rao,")

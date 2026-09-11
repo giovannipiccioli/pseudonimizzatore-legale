@@ -55,6 +55,25 @@ COMPANY_SUFFIX = (r"S\.?\s?p\.?\s?A\.?|S\.?\s?r\.?\s?l\.?(?:\s?s\.?)?|S\.?\s?a\.
 COMPANY_SUFFIX_RE = re.compile(rf"(?<![\p{{L}}])(?:{COMPANY_SUFFIX})(?![\p{{L}}])",
                                re.IGNORECASE)
 
+# Conservative signals for ``companies="person_named"``. They intentionally cover
+# only clear family wording and simple two-surname names. Brand words can look like
+# surnames, so broad title-case or dictionary-free name guessing is avoided.
+PERSON_NAMED_COMPANY_FAMILY = re.compile(
+    r"(?<!\p{L})(?i:f\s*\.?\s*lli\.?|fratelli|eredi)(?!\p{L})"
+)
+PERSON_NAMED_COMPANY_BRIDGE = re.compile(
+    rf"^(?:{SEP}(?:{NAME_TOKEN}|[A-Z]\.|(?i:d(?:i|el|ella|ei|egli|elle)|e)|&))*"
+    rf"{SEP}?$"
+)
+PERSON_NAMED_COMPANY_PREFIX = re.compile(rf"(?:{NAME_TOKEN}{SEP}){{1,3}}$")
+PERSON_NAMED_COMPANY_PAIR = re.compile(
+    rf"^({NAME_TOKEN}){SEP}(?i:e|&){SEP}({NAME_TOKEN})$"
+)
+PERSON_NAMED_COMPANY_SURNAME_END = re.compile(
+    r"(?i:(?:etti|elli|ini|oni|ucci|acci|azzi|ezzi|izzi|ozzi|ardi|aldi|eri|ori|"
+    r"esi|isi|chi|ghi|sca|sco|lino|nello))['’]?$"
+)
+
 # ── structured identifiers ───────────────────────────────────────────────────
 # Case-sensitive: these are written in upper case in real documents, and making them
 # case-insensitive turns ordinary words into matches.
@@ -273,7 +292,7 @@ JUDGE_LISTS = [
 INSTITUTION_HEAD = re.compile(
     r"\b(?i:agenzi[ae]|ag\.?\s+entrat|minister[oi]|ministro|i\.?n\.?p\.?s\.?|"
     r"inail|inpgi|inpdap|istitut[oi]|"
-    r"avvocatura|comune|regione|provincia|città\s+metropolitana|universit|"
+    r"avvocatura|generale\s+dello\b|roma\s+capitale\b|comune|regione|provincia|città\s+metropolitana|universit|"
     r"azienda\s+(?:ospedaliera|sanitaria)|a\.?s\.?l\.?|equitalia|riscossione|ader|"
     r"presidenza|consiglio|procura|pretura|tribunale|corte|commissione\s+tributaria|"
     r"prefettura|questura|camera\s+di\s+commercio|poste\s+italiane|ferrovie|"
@@ -445,4 +464,4 @@ ALLCAPS_NAME = re.compile(
 SOCIETA = re.compile(
     rf"(?<![\p{{L}}])((?:{NAME_TOKEN}|d(?:i|el|ella|ei|egli|elle)|e|&)"
     rf"(?:{SEP}(?:{NAME_TOKEN}|d(?:i|el|ella|ei|egli|elle)|e|&)){{0,6}}"
-    rf"{SEP}(?:{COMPANY_SUFFIX}))(?![\p{{L}}])")
+    rf"{SEP}(?i:{COMPANY_SUFFIX}))(?![\p{{L}}])")

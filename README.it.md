@@ -81,7 +81,7 @@ giudiziari italiani:
 | segmenti esatti relativi a magistrati e pubblici ministeri | conserva |
 | enti pubblici, istituzioni e nomi di luogo | conserva |
 | numeri di procedimento ed ECLI | conserva |
-| società private | conserva; sostituisci con `companies=True` |
+| società private | conserva; sostituisci le imprese probabilmente basate su nomi di persona con `companies="person_named"`, oppure tutte quelle rilevate con `companies=True` |
 | evidenze contrastanti di ruolo giudiziario e ruolo privato per la stessa identità | sostituisci e segnala per la revisione |
 
 Le etichette sono stabili soltanto all'interno del singolo documento. In questo modo
@@ -96,7 +96,7 @@ provvedimenti diversi.
 from pseudonimizzatore_legale import Config, anonymize
 
 configurazione = Config(
-    companies=True,
+    companies="person_named",
     keep_judges=True,
     keep_case_numbers=True,
     sanitize=True,
@@ -105,8 +105,16 @@ configurazione = Config(
 risultato, rapporto = anonymize(testo, configurazione)
 
 # Forma equivalente per una singola opzione:
-risultato, rapporto = anonymize(testo, companies=True)
+risultato, rapporto = anonymize(testo, companies="person_named")
 ```
+
+`companies="person_named"` privilegia deliberatamente la precisione. Sostituisce le
+società con un richiamo familiare esplicito (`F.lli`, `Fratelli` o `Eredi`) e i nomi
+semplici formati da due parole con la forma di cognomi unite da `e` o `&`, come
+`Mazzetti e Franchi s.r.l.`. Conserva nomi commerciali ambigui come `Labium spa` ed
+`Etofi srl`, insieme a molte società che portano un solo cognome. È una piccola
+euristica ortografica, non un registro dei cognomi né una promessa di copertura
+completa. Usare `companies=True` quando la copertura conta più della precisione.
 
 La libreria utilizza un'unica pipeline `legal`, indipendente dalla fonte del documento.
 I profili storici `cassazione` e `generic` sono alias, non instradamenti specifici per
@@ -240,8 +248,8 @@ identità è considerata non rimossa.
 
 Tutte le configurazioni rimuovono 107/107 identificatori strutturati annotati.
 L'euristica di revisione intercetta tutti i 32 documenti con residui annotati, ma
-segnala anche 67 documenti senza residui. È intenzionalmente una coda di revisione
-orientata al richiamo, non un certificato di sicurezza.
+segnala anche 67 documenti senza residui. È intenzionalmente pensata come una revisione
+orientata a non perdere documenti con potenziali errori. No è un certificato di sicurezza.
 
 Per definizioni, risultati per fonte, compromessi e comandi di riproduzione, vedere
 [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md).

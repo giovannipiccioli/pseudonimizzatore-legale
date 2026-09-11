@@ -14,9 +14,9 @@ from .model import Candidate, Decision
 PRI_STRUCTURED = 120
 PRI_PROTECTED = 100
 PRI_ADDRESS = 40
+PRI_COMPANY = 35
 PRI_PERSON_FULL = 30
 PRI_PERSON_TOKEN = 20
-PRI_COMPANY = 10
 
 
 def _enabled(candidate: Candidate, config) -> bool:
@@ -25,7 +25,9 @@ def _enabled(candidate: Candidate, config) -> bool:
     if candidate.protection == "case_number":
         return config.keep_case_numbers
     if candidate.mention.kind == "ORGANIZATION":
-        return config.companies
+        if config.companies == "person_named":
+            return candidate.mention.source == "regex:person_named_company"
+        return bool(config.companies)
     return True
 
 

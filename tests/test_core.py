@@ -4,6 +4,7 @@ The fixture is a redacted-shape Cassazione header: same structure as the real fi
 invented names.
 """
 import regex as re
+import pytest
 
 from pseudonimizzatore_legale import Config, anonymize
 
@@ -154,6 +155,36 @@ class TestNoCorruption:
 
 
 class TestCompanies:
+    def test_legal_form_capitalization(self):
+        for suffix in ("S.r.l.", "s.r.l.", "S.R.L.", "SRL", "srl", "S.P.A.", "spa"):
+            text = f"Alfa Costruzioni {suffix} ricorre."
+            assert anonymize(text, Config(companies=True))[0] == "Società_1 ricorre."
+            assert anonymize(text, Config(companies=False))[0] == text
+
+    def test_company_introducers_are_preserved(self):
+        text = "Il ricorso della Alfa Costruzioni S.r.l. e di Alfa Costruzioni S.r.l."
+        out, _ = anonymize(text, Config(companies=True))
+        assert out == "Il ricorso della Società_1 e di Società_1"
+
+    def test_institution_guard_also_applies_after_introducers(self):
+        for name in ("Equitalia Nord", "Poste Italiane", "Agenzia delle Entrate"):
+            text = f"Il ricorso della {name} S.p.A. è respinto."
+            assert anonymize(text, Config(companies=True))[0] == text
+
+    def test_article_and_legal_form_alone_are_not_a_company_name(self):
+        text = "La S.p.A. ricorre."
+        assert anonymize(text, Config(companies=True))[0] == text
+
+    def test_institution_guard_after_societa(self):
+        text = "Ricorre la Società Poste Italiane S.p.A., già Ente Poste Italiane."
+        assert anonymize(text, Config(companies=True))[0] == text
+
+    def test_public_entity_aliases_and_wrapped_names(self):
+        for name in ("ROMA CAPITALE", "AVVOCATURA\nGENERALE DELLO STATO"):
+            text = f"sul ricorso proposto da\n{name}\n-ricorrente-\n{name} insiste."
+            for companies in (False, "person_named", True):
+                assert anonymize(text, Config(companies=companies))[0] == text
+
     def test_companies_are_opt_in(self):
         text = "La Alfa Costruzioni S.r.l. impugna la cartella."
         assert "Alfa Costruzioni" in anonymize(text)[0]
@@ -163,6 +194,55 @@ class TestCompanies:
         text = "AGENZIA DELLE ENTRATE S.p.A. non esiste ma il prefisso conta."
         out, _ = anonymize(text, Config(companies=True))
         assert "AGENZIA DELLE ENTRATE" in out
+
+    def test_person_named_mode_replaces_strong_family_signals(self):
+        companies = (
+            "F.lli Filippi s.r.l.",
+            "Mazzetti e Franchi s.r.l.",
+            "Sicil Tiller dei Fratelli Palminteri S.r.l.",
+            "Calcestruzzi Fratelli Vignali S.r.l.",
+            "Traini & Torresi S.p.A.",
+            "Molino & Molino S.r.l.",
+            "Ottonello & Mosca S.r.l.",
+        )
+        for company in companies:
+            out, _ = anonymize(
+                f"La {company} ricorre.",
+                Config(companies="person_named"),
+            )
+            assert out == "La Società_1 ricorre.", company
+
+    def test_person_named_company_wins_over_a_shared_person_alias(self):
+        text = (
+            "contro\nSicil Tiller dei Fratelli Palminteri s.n.c., "
+            "in persona del legale rappresentante, ed il socio Samuele Palminteri."
+        )
+        out, report = anonymize(text, Config(companies="person_named"))
+        assert out.startswith("contro\nSocietà_1,")
+        assert any(
+            decision.kind == "ORGANIZATION"
+            and decision.text == "Sicil Tiller dei Fratelli Palminteri s.n.c."
+            for decision in report.decisions
+        )
+
+    def test_person_named_mode_keeps_ambiguous_brand_names(self):
+        companies = (
+            "Labium spa",
+            "Etofi srl",
+            "Ambiente & Sviluppo S.r.l.",
+            "Fish & Meats S.r.l.",
+            "Vodafone e Comdata S.r.l.",
+            "Fratelli S.p.A.",
+            "Eredi s.a.s.",
+        )
+        for company in companies:
+            text = f"La {company} ricorre."
+            assert anonymize(text, Config(companies="person_named"))[0] == text
+            assert anonymize(text, Config(companies=True))[0] == "La Società_1 ricorre."
+
+    def test_unknown_company_mode_is_rejected(self):
+        with pytest.raises(ValueError, match="companies must be"):
+            Config(companies="all")
 
 
 class TestReport:

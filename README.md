@@ -41,7 +41,7 @@ print(report.status)
 
 > [!IMPORTANT]
 > This is pseudonymization, not a guarantee of anonymity. `passed_checks` only means
-> that the bundled residual heuristics found nothing. Review sensitive output before
+> that the control heuristics found nothing. Review sensitive output before
 > publication or disclosure.
 
 ## Install
@@ -77,7 +77,7 @@ The default policy is designed for published Italian legal decisions:
 | exact judicial and public-prosecution role spans | keep |
 | public bodies, institutions, and place names | keep |
 | procedural case numbers and ECLI identifiers | keep |
-| private companies | keep; replace with `companies=True` |
+| private companies | keep; replace likely person-named firms with `companies="person_named"`, or all detected firms with `companies=True` |
 | conflicting judicial and private-role evidence for one identity | replace and flag for review |
 
 Tags are stable only inside one document. This avoids creating a persistent identifier
@@ -91,7 +91,7 @@ Pass either a `Config` object or keyword overrides:
 from pseudonimizzatore_legale import Config, anonymize
 
 config = Config(
-    companies=True,
+    companies="person_named",
     keep_judges=True,
     keep_case_numbers=True,
     sanitize=True,
@@ -100,8 +100,16 @@ config = Config(
 output, report = anonymize(source, config)
 
 # Equivalent for one option:
-output, report = anonymize(source, companies=True)
+output, report = anonymize(source, companies="person_named")
 ```
+
+`companies="person_named"` is deliberately precision-first. It replaces companies
+with explicit family wording (`F.lli`, `Fratelli`, or `Eredi`) and simple names made
+of two surname-shaped words joined by `e` or `&`, such as `Mazzetti e Franchi s.r.l.`.
+It leaves ambiguous brand-like names such as `Labium spa` and `Etofi srl`, along with
+many genuine single-surname firms. This is a small spelling heuristic, not a surname
+registry or a claim of complete coverage. Use `companies=True` when broader company
+removal is more important than precision.
 
 There is one document-agnostic `legal` pipeline. Legacy `cassazione` and `generic`
 profiles are aliases, not court-specific routers. `profile="query"` only skips the
