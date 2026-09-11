@@ -42,7 +42,10 @@ _ROLE = (r"Presidente(?:\s+Titolare)?|Relatore|Estensore|[Cc]onsiglier[ei]|Cons\
          # "composta dai sigg.ri magistrati: dott. X" — without this the bench was
          # labelled as parties, and the gold then demanded the judges' removal.
          r"[Mm]agistrat[oi]|[Cc]ollegio|[Cc]omponente")
-JUDGE_CUE = re.compile(rf"(?:{_ROLE})[\s:,.\-–]*$")
+# Case-insensitive, like PERSON_CUE, which carries the same role words: a lowercase
+# "il consigliere relatore X" or "il cons. X" was a person cue but not a judge cue, so the
+# gold called the judge a party.
+JUDGE_CUE = re.compile(rf"(?:{_ROLE})[\s:,.\-–]*$", re.I)
 #: …and the same cues *after* the name, which is how BDGT and CGT headers are written
 #: ("MAROZZO ANTONIO, Presidente e Relatore").
 #: Tabular headers put the role after the name, separated by runs of spaces and often
@@ -83,6 +86,13 @@ PERSON_CUE = re.compile(
     r"[\s:,.\-–'\"“«]*$",
     re.I)
 PERSON_CUE_ANY = re.compile(PERSON_CUE.pattern.rstrip("$"), re.I)
+#: A courtesy title or a role word says that a person is named, not which side they are
+#: on — the runtime treats a title as neutral too. Only the rest of PERSON_CUE (party,
+#: counsel and biographical cues, or a list one of them opens) is private-role evidence
+#: for the conflict rule: counting "dott." made a judge also written "dott. X", or listed
+#: in a bench after "dott.", a conflict, and the gold removed the judge.
+NEUTRAL_CUE = re.compile(
+    rf"(?:{_ROLE}|dott\.(?:ssa)?|prof\.|ing\.|geom\.|rag\.)[\s:,.\-–'\"“«]*$", re.I)
 #: …and the same kind of cue *after* the name: "De Martino Giuseppina, rappresentata e
 #: difesa", "Mario Rossi, nato a". A party introduced by an unusual phrase ("ad
 #: opponendum:") is still followed by one of these.
@@ -123,7 +133,7 @@ _LIST_GAP = re.compile(
 
 
 def _in_name_list(text, pos):
-    """True if `pos` continues a comma-separated list opened by a person cue.
+    """The person cue opening the comma-separated list that `pos` continues, or None.
 
     The look-back covers the current paragraph and the one before it: a mass appeal
     lists dozens of applicants after one "proposto da", often on the next line
@@ -135,9 +145,9 @@ def _in_name_list(text, pos):
     last = None
     for m in PERSON_CUE_ANY.finditer(window):
         last = m
-    if last is None:
-        return False
-    return bool(_LIST_GAP.match(window[last.end():]))
+    if last is None or not _LIST_GAP.match(window[last.end():]):
+        return None
+    return last.group(0)
 
 
 #: "composta dai (seguenti) (sigg.ri) magistrati:" opens a bench list where names run
@@ -215,9 +225,12 @@ def _collect(text):
                      or JUDGE_CUE_AFTER.match(text[m.end():m.end() + 40])
                      or JUDGE_UNDER_HEADING.search(before)
                      or _in_judge_list(text, m.start()))
-        cued = (judge or bool(PERSON_CUE.search(before))
-                or bool(PERSON_CUE_AFTER.match(text[m.end():m.end() + 40]))
-                or _in_name_list(text, m.start()))
+        cue = PERSON_CUE.search(before)
+        list_cue = _in_name_list(text, m.start())
+        after = bool(PERSON_CUE_AFTER.match(text[m.end():m.end() + 40]))
+        cued = judge or bool(cue) or after or bool(list_cue)
+        private = after or any(c and not NEUTRAL_CUE.search(c)
+                               for c in (cue and cue.group(0), list_cue))
         rare = [t.lower() for t in _rare(toks)]
         if not rare or all(t.lower() in COMMON for t in toks):
             # "Ugo De Carlo" has no rare token to cluster on, but a cue still makes it a
@@ -225,7 +238,7 @@ def _collect(text):
             if not cued:
                 continue
             rare = [name.lower()]
-        mentions.append((name, rare, m.start(), judge, cued))
+        mentions.append((name, rare, m.start(), judge, cued, private))
 
     parent: dict[str, str] = {}
 
@@ -241,18 +254,18 @@ def _collect(text):
         if ra != rb:
             parent[ra] = rb
 
-    for _, rare, _, _, _ in mentions:
+    for _, rare, *_ in mentions:
         for t in rare[1:]:
             union(rare[0], t)
 
     clusters: dict[str, Cluster] = {}
-    for name, rare, pos, judge, cued in mentions:
+    for name, rare, pos, judge, cued, private in mentions:
         root = find(rare[0])
         c = clusters.setdefault(root, Cluster(key=root))
         c.variants.add(name)
         c.first = min(c.first, pos)
         c.judge = c.judge or judge
-        c.private = c.private or (cued and not judge)
+        c.private = c.private or (private and not judge)
         c.cued = c.cued or cued
         c.tokens |= set(rare)
     for c in clusters.values():
