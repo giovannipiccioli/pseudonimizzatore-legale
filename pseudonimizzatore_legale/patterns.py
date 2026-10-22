@@ -79,18 +79,63 @@ PERSON_NAMED_COMPANY_SURNAME_END = re.compile(
 
 # ── structured identifiers ───────────────────────────────────────────────────
 # Case-sensitive: these are written in upper case in real documents, and making them
-# case-insensitive turns ordinary words into matches.
+# case-insensitive turns ordinary words into matches. The codice fiscale is the one
+# exception, because its check character can tell a code from a word.
 
-#: Codice fiscale, validating the month letter and the day range (01–71, ≥32 = female).
-CODICE_FISCALE = re.compile(
-    r"\b[A-Z]{6}\d{2}[ABCDEHLMPRST](?:[0-6]\d|7[01])[A-Z]\d{3}[A-Z]\b")
+#: A codice fiscale digit, or the letter that replaces it under omocodia: when two
+#: people would share a code, digits become L M N P Q R S T U V (0–9), rightmost first.
+_CF_DIGIT = "[0-9LMNPQRSTUV]"
+_CF_CHARS = (["[A-Z]"] * 6 + [_CF_DIGIT] * 2 + ["[ABCDEHLMPRST]"] + [_CF_DIGIT] * 2
+             + ["[A-Z]"] + [_CF_DIGIT] * 3 + ["[A-Z]"])
+
+#: Codice fiscale, validating the month letter. It also reads omocodia, lower case and
+#: characters typed one by one ("R S S M R A 8 0 …"); `codice_fiscale_ok` checks the day
+#: range and, for the looser forms, the check character.
+CODICE_FISCALE = re.compile(r"\b(?i:" + "[ ]?".join(_CF_CHARS) + r")\b")
+
+_OMOCODIA = str.maketrans("LMNPQRSTUV", "0123456789")
+_CF_ODD = dict(zip("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                   (1, 0, 5, 7, 9, 13, 15, 17, 19, 21) * 2
+                   + (2, 4, 18, 20, 11, 3, 6, 8, 12, 14, 16, 10, 22, 25, 24, 23)))
+_CF_EVEN = {c: int(c) if c.isdigit() else ord(c) - ord("A")
+            for c in "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"}
+
+
+def codice_fiscale_ok(value: str) -> bool:
+    """Whether a CODICE_FISCALE match is a codice fiscale.
+
+    The usual form, upper case, unbroken and with digits, is accepted without the check
+    character, as it always was: a typo in the last letter leaves it just as
+    identifying. Lower case and spaced forms must carry a valid check character.
+    """
+    cf = value.replace(" ", "").upper()
+    if int(cf[9:11].translate(_OMOCODIA)) > 71:      # day, +40 for women
+        return False
+    if value == cf and re.search(r"\d", cf):
+        return True
+    total = sum((_CF_ODD if i % 2 == 0 else _CF_EVEN)[c] for i, c in enumerate(cf[:15]))
+    return cf[15] == chr(ord("A") + total % 26)
 
 #: Partita IVA — cue required. A bare 11-digit run is far more often a protocol number.
 PARTITA_IVA = re.compile(
     r"(?i:p\.?\s?iva|partita\s+iva|c\.?f\.?\s?/\s?p\.?\s?iva|codice\s+iva)"
     r"[\s:.n°]*(\d{11})\b")
 
-IBAN = re.compile(r"\bIT\d{2}[ ]?(?:[A-Z0-9][ ]?){23}\b")
+#: IBAN: the Italian form, and any other country's (SM, DE…), which must pass the
+#: mod-97 check in `iban_ok` because its looser shape also fits act numbers. A foreign
+#: IBAN is read unbroken or in the printed groups of four, never with a space anywhere:
+#: that would let it run on into "… BIC COBADEFF" and then fail its check.
+IBAN = re.compile(r"\bIT\d{2}(?:[ ]?[A-Z0-9]){23}\b"
+                  r"|\b(?!IT)[A-Z]{2}\d{2}"
+                  r"(?:[A-Z0-9]{11,30}|(?: [A-Z0-9]{4}){2,7}(?: [A-Z0-9]{1,4})?)\b")
+
+
+def iban_ok(value: str) -> bool:
+    """Whether an IBAN match is one: Italian as before, any other by its mod-97 check."""
+    iban = value.replace(" ", "")
+    if iban.startswith("IT"):
+        return True
+    return int("".join(str(int(c, 36)) for c in iban[4:] + iban[:4])) % 97 == 1
 
 #: PEC must be tried before EMAIL so a PEC address is labelled as such.
 PEC = re.compile(
@@ -108,10 +153,11 @@ TELEFONO = re.compile(
 
 TARGA = re.compile(r"\b[A-Z]{2}\s?\d{3}\s?[A-Z]{2}\b")
 
-#: Identity-document number, cue required.
+#: Identity-document number, cue required. Two trailing letters cover the electronic
+#: identity card (CIE), numbered like CA12345AB.
 NUMERO_DOCUMENTO = re.compile(
-    r"(?i:carta\s+d[i']\s?identit[àa]|passaporto|patente|C\.I\.E?\.|"
-    r"documento\s+d[i']\s?identit[àa])[\s:,n.°]*([A-Z]{2}\s?\d{5,7}[A-Z]?)\b")
+    r"(?:(?i:carta\s+d[i']\s?identit[àa](?:\s+elettronica)?|passaporto|patente|C\.I\.E?\.|"
+    r"documento\s+d[i']\s?identit[àa])|\bCIE\b)[\s:,n.°]*([A-Z]{2}\s?\d{5,7}[A-Z]{0,2})\b")
 
 #: Date of birth. Procedural dates are deliberately not matched.
 DATA_NASCITA = re.compile(
@@ -132,14 +178,39 @@ STRUCTURED = [
 ]
 """(label, pattern, group) — group 0 means "the whole match is the value"."""
 
-#: Residential address. Anchored on a *personal* residence cue only: "con sede" is
-#: excluded on purpose, because an organisation's registered office stays in clear.
+#: Checks a STRUCTURED value must pass beyond its pattern, by label.
+STRUCTURED_CHECKS = {"CF": codice_fiscale_ok, "Iban": iban_ok}
+
+#: Residential or elective-domicile address. Anchored on a *personal* residence cue only:
+#: "con sede" is excluded on purpose, because an organisation's registered office stays
+#: in clear, and so is "domiciliata ex lege", the Avvocatura dello Stato's.
+#:
+#: The street need not follow the cue: a town, a province or a "presso lo studio
+#: dell'avv. X" may sit between them ("residente in Pratovecchio (AR), loc. Casalino 4").
+#: That gap stops at a semicolon, at the word "sede" and at a full stop, unless the stop
+#: closes a short abbreviation ("avv.", "n."). The CAP is optional. What keeps prose out
+#: is the street itself: a capital or a digit after the street word ("in via
+#: preliminare", "nel corso del giudizio" have neither) and a house number.
+_ADDRESS_GAP = r"(?:(?!(?i:sede)\b)[^.;]|(?<=(?<![\p{L}])\p{L}{1,4})\.)"
 INDIRIZZO_RESIDENZA = re.compile(
-    r"(?i:residente|domiciliat[oa]|abitante|dimorante)"
-    r"(?:\s+(?i:attualmente|in|a|presso|nel|alla))*\s*:?\s+"
-    r"((?i:via|viale|v\.le|piazza|p\.zza|largo|corso|c\.so|vicolo|str\.|strada|"
-    r"loc\.|località|fraz\.|frazione|contrada|borgo)"
-    r"[\p{L}\s0-9,.'’\-]{3,60}?\d{1,4}[\p{L}\s,.'’\-]{0,30}?\b\d{5}\b)")
+    r"(?i:residente|domiciliat[oa]|abitante|dimorante)\b(?!\s+ex\s+lege)"
+    rf"{_ADDRESS_GAP}{{0,100}}?(?<![\p{{L}}.])"
+    r"((?i:via|viale|v\.le|piazza|p\.zza|piazzale|largo|corso|c\.so|vicolo|str\.|strada|"
+    r"loc\.|località|fraz\.|frazione|contrada|c\.da|borgo|lungotevere|lungomare)"
+    r"[^\S\n]+(?:(?i:d(?:i|el|ella|ello|ei|egli|elle|ell['’]))[^\S\n]*)?"
+    r"(?:\d{1,2}°?[^\S\n]+)?\p{Lu}[\p{L}\d'’_\-]*\.?"
+    r"(?:[^\S\n]+(?:\p{L}\.|[\p{L}\d'’_\-]+)){0,6}?"
+    r"[^\S\n]*,?[^\S\n]*(?:(?i:n\.|n°|nr\.?|civ\.)[^\S\n]*)?\d{1,4}(?:/?[A-Za-z])?"
+    r"(?![\p{L}\d/])(?:[^\S\n]*,?[^\S\n]*\d{5}(?!\d))?)")
+
+#: A birthplace or residence town, read only in its biographic slot: "nato a Stia",
+#: "nato il 3.4.1960 a Stia", "residente a Pratovecchio". The capture runs to five words
+#: and the caller keeps its longest prefix that is an ISTAT comune, so "Stia il 3 aprile"
+#: gives "Stia", while a country ("nato in Romania") or a street ("residente in Via Roma
+#: 12") gives nothing. Court seats and other mentions of a town are not slots and stay.
+LUOGO_BIOGRAFICO = re.compile(
+    r"(?<![\p{L}])(?i:nat[oa](?:\s+il\s+[\d./\-]+)?|residente|dimorante)\s+(?i:a|ad|in)\s+"
+    r"(\p{Lu}[\p{L}'’\-]*(?:[^\S\n]+[\p{L}'’\-]+){0,4})")
 
 # ── judicial-role evidence ───────────────────────────────────────────────────
 # Case-sensitive on the name, case-insensitive on the role word.
@@ -407,9 +478,22 @@ DIFESO_DA = re.compile(
     rf"(?i:dall?[i'’]?|da)\s*(?:{COUNSEL_CUE}|(?i:procuratore))?\s*({FULL_NAME_NL})")
 
 #: Professional or courtesy title + name.
-TITOLO = re.compile(
-    rf"(?i:dott\.(?:ssa)?|dr\.(?:ssa)?|sig\.(?:ra)?|signor(?:a)?|ing\.|prof\.(?:ssa)?|"
-    rf"geom\.|arch\.|rag\.|not(?:aio|\.))\s*({FULL_NAME})")
+TITLE_CUE = (r"(?i:dott\.(?:ssa)?|dr\.(?:ssa)?|sig\.(?:ra)?|signor(?:a)?|ing\.|"
+             r"prof\.(?:ssa)?|geom\.|arch\.|rag\.|not(?:aio|\.))")
+TITOLO = re.compile(rf"{TITLE_CUE}\s*({FULL_NAME})")
+
+#: A surname alone after a courtesy title, for documents that never give the full name:
+#: "il sig. Malaspina". As with COUNSEL_SOLO, the common-word guard downstream is what
+#: makes one token safe. "dott." and "prof." are left out: judges carry them, and a
+#: judge named by surname alone has no judicial anchor to protect them.
+#: SURNAME_AFTER is shared with PARTY_ROLE_SOLO: the token must not be a title itself
+#: ("il ricorrente Prof. Rossi"), another abbreviation ("dal ricorrente Prot. n. 1234")
+#: or open a longer name, which TITOLO and PARTY_ROLE read.
+SURNAME_AFTER = (rf"(?!{TITLE_CUE}|{COUNSEL_CUE})({NAME_TOKEN})"
+                 rf"(?![\p{{L}}'’]|{SEP}\p{{Lu}}|\.\s*[\p{{Ll}}\d])")
+TITOLO_SOLO = re.compile(
+    rf"(?<![\p{{L}}])(?i:sig\.(?:ra)?|signor(?:a)?|ing\.|geom\.|arch\.|rag\.)\s*"
+    rf"{SURNAME_AFTER}")
 
 #: Name immediately followed by biographic or fiscal detail, or by the "rappresentato e
 #: difeso" that follows a party named in a heading. The separator tolerates a
@@ -421,12 +505,15 @@ TITOLO = re.compile(
 #: pseudonymized out of the document. "domiciliata ex lege" is not a person's domicile but
 #: the Avvocatura dello Stato's, and follows a place: "…dello Stato di Reggio Calabria,
 #: domiciliata ex lege" made the court's own seat a person.
+#: A bare name with its own partita IVA is a sole trader, who is a person: "DI BENEDETTO
+#: OSVALDO - P.IVA 02956140374". A company keeps its legal form before the P.IVA and is
+#: refused downstream.
 BIOGRAFICO = re.compile(
-    rf"(?<![\p{{L}}])({FULL_NAME})(?:\s*,\s*|\s+)"
+    rf"(?<![\p{{L}}])({FULL_NAME})(?:\s*,\s*|\s*[-–]\s*|\s+)"
     rf"(?:(?i:ivi|già|quivi|attualmente)\s+)?"
     rf"(?i:nat[oa]\b|residente\b|domiciliat[oa]\b(?!\s+ex\s+lege)|dimorante\b|c\.?f\.?\b|"
-    rf"codice\s+fiscale\b|in\s+proprio\b|quale\s+erede\b|in\s+qualità\s+di\b|"
-    rf"rappresentat[oaie]\s+e\s+difes[oaie]\b)")
+    rf"codice\s+fiscale\b|p\.?\s?iva\b|partita\s+iva\b|in\s+proprio\b|quale\s+erede\b|"
+    rf"in\s+qualità\s+di\b|rappresentat[oaie]\s+e\s+difes[oaie]\b)")
 
 #: Name adjacent to a codice fiscale — the strongest anchor there is.
 CF_ADIACENTE = re.compile(
@@ -438,10 +525,12 @@ CF_ADIACENTE = re.compile(
 PKI_FIRMA = re.compile(rf"(?i:firmato\s+da)\s*:\s*({FULL_NAME_NL})\s+(?i:emesso)")
 
 #: Party roles used to label a seed, and to find one in prose.
-PARTY_ROLE = re.compile(
-    rf"(?i:il\s+|la\s+|i\s+|le\s+)?(?i:ricorrent[ei]|resistent[ei]|controricorrent[ei]|"
-    rf"appellant[ei]|appellat[oi]|intimat[oi]|opponent[ei]|opposto|attor[ei]|"
-    rf"convenut[oi]|contribuent[ei]|istant[ei])[:\s,]+({FULL_NAME})")
+PARTY_ROLE_WORD = (r"(?i:ricorrent[ei]|resistent[ei]|controricorrent[ei]|"
+                   r"appellant[ei]|appellat[oi]|intimat[oi]|opponent[ei]|opposto|attor[ei]|"
+                   r"convenut[oi]|contribuent[ei]|istant[ei])")
+PARTY_ROLE = re.compile(rf"(?i:il\s+|la\s+|i\s+|le\s+)?{PARTY_ROLE_WORD}[:\s,]+({FULL_NAME})")
+#: …and a surname alone after one: "il ricorrente Malaspina".
+PARTY_ROLE_SOLO = re.compile(rf"(?<![\p{{L}}]){PARTY_ROLE_WORD}[:\s,]+{SURNAME_AFTER}")
 
 #: The commonest way an Italian decision names a party: "proposto da <Name>, …".
 #: Cassazione writes it in the ALL-CAPS party block, but the administrative and civil
@@ -477,11 +566,14 @@ ORG_NAME_BEFORE = re.compile(
     r"[^\S\n]*$")
 
 #: Civil-law capacities that introduce a named individual in the body of a decision:
-#: "all'altro socio TAGLIAFERRI NICODEMO", "la ditta di PICCININI GUALTIERO".
+#: "all'altro socio TAGLIAFERRI NICODEMO", "la ditta di PICCININI GUALTIERO". A sole
+#: trader and a law firm named after its lawyer are people too: "ditta individuale HU
+#: XIAOMING", "studio legale Mirandolina Zangheratti".
 QUALIFICA = re.compile(
     rf"(?<![\p{{L}}])(?i:soci[oa]|amministrator[ei]|titolar[ei]|legale\s+rappresentante|"
     rf"erede|eredi|coniuge|curator[ei]|liquidator[ei]|tutor[ei]|"
-    rf"(?:s\.?a\.?s\.?|s\.?n\.?c\.?|ditta|impresa|società)\s+di)"
+    rf"(?:s\.?a\.?s\.?|s\.?n\.?c\.?|ditta|impresa|società)\s+di|"
+    rf"(?:ditta|impresa)\s+individuale(?:\s+di)?|studio\s+legale)"
     rf"[\s:,]+({FULL_NAME})")
 
 #: The Cassazione party block: everything between "proposto da" / "contro" and the

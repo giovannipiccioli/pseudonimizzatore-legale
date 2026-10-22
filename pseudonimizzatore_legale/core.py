@@ -160,7 +160,7 @@ _PRIVATE_ROLE_SOURCES = {
 _STRICT_PRIVATE_ROLE_SOURCES = _PRIVATE_ROLE_SOURCES - {"regex:legal_party_block"}
 # A courtesy title names a person without saying which side they are on, and judges
 # carry one as often as anybody: "Relatore … il dott. Andrea De Col" is the judge.
-_NEUTRAL_SOURCES = frozenset({"regex:titolo", "lexicon:first_name"})
+_NEUTRAL_SOURCES = frozenset({"regex:titolo", "regex:titolo_solo", "lexicon:first_name"})
 _COMPANY_INTRO = re.compile(
     r"(?i:(?:(?:di|del|della|dei|degli|delle|il|lo|la|le|gli|e)\s+)+)"
 )
@@ -235,7 +235,7 @@ def _propose_structured(text: str, out: list[Candidate]) -> None:
         for match in pattern.finditer(text):
             index = _first_group(match) if group else 0
             value = match.group(index)
-            if not value:
+            if not value or not P.STRUCTURED_CHECKS.get(label, bool)(value.strip()):
                 continue
             out.append(_candidate(
                 text,
@@ -253,6 +253,14 @@ def _propose_structured(text: str, out: list[Candidate]) -> None:
 
 def _propose_addresses(text: str, out: list[Candidate]) -> None:
     for match in P.INDIRIZZO_RESIDENZA.finditer(text):
+        # A public body elects domicile at the Avvocatura dello Stato's offices ("…,
+        # domiciliata in Roma, via dei Portoghesi 12, presso l'Avvocatura generale"):
+        # a public address, like a registered office. Look a little either side,
+        # without crossing the semicolon that closes a party's clause.
+        before = text[max(0, match.start() - 80):match.start()].rsplit(";", 1)[-1]
+        after = text[match.end():match.end() + 60].split(";", 1)[0]
+        if re.search(r"(?i:avvocatura)", before + match.group(0) + after):
+            continue
         value = re.sub(r"\s+", " ", match.group(1)).strip()
         out.append(_candidate(
             text,
@@ -266,6 +274,29 @@ def _propose_addresses(text: str, out: list[Candidate]) -> None:
             value=value,
             reason="residential-address cue",
         ))
+
+
+def _propose_places(text: str, out: list[Candidate]) -> None:
+    """Birthplace and residence towns, only in their biographic slot."""
+    comuni = seeds_mod.comuni()
+    for match in P.LUOGO_BIOGRAFICO.finditer(text):
+        words = list(re.finditer(r"\S+", match.group(1)))
+        for word in reversed(words):            # longest prefix that is a comune
+            name = match.group(1)[:word.end()]
+            if seeds_mod.place_key(name) in comuni:
+                out.append(_candidate(
+                    text,
+                    match.start(1),
+                    match.start(1) + word.end(),
+                    kind="PLACE",
+                    source="regex:place",
+                    priority=PRI_ADDRESS,
+                    role="Luogo",
+                    label="Luogo",
+                    value=name,
+                    reason="birthplace or residence town",
+                ))
+                break
 
 
 def _person_named_company_start(
@@ -461,7 +492,8 @@ def residual_risk(anonymized: str, report: Report) -> float:
         score = max(score, 0.7)
     if report.warnings:
         score = max(score, 0.5)
-    if P.CODICE_FISCALE.search(anonymized) or P.EMAIL.search(anonymized):
+    if (any(P.codice_fiscale_ok(m.group()) for m in P.CODICE_FISCALE.finditer(anonymized))
+            or P.EMAIL.search(anonymized)):
         score = max(score, 0.9)
     return round(score, 3)
 
@@ -504,6 +536,7 @@ def anonymize(raw: str, config: Config | None = None, **overrides) -> tuple[str,
     _propose_people(text, people, cfg, candidates)
     _propose_structured(text, candidates)
     _propose_addresses(text, candidates)
+    _propose_places(text, candidates)
     _propose_companies(text, candidates)
 
     accepted = resolve(candidates, len(text), cfg)

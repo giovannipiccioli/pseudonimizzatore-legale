@@ -76,7 +76,10 @@ def verify(
 
     # Structured detectors are deterministic and independent of person seeding.
     for label, pattern, group in P.STRUCTURED:
+        check = P.STRUCTURED_CHECKS.get(label, bool)
         for match in pattern.finditer(output):
+            if not check(match.group(0).strip()):
+                continue
             index = 1 if group and match.lastindex else 0
             if group and match.lastindex:
                 index = next(

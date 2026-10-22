@@ -73,9 +73,10 @@ The default policy is designed for published Italian legal decisions:
 |---|---|
 | parties, counsel, and private natural persons | replace |
 | tax IDs, email/PEC, IBAN, phone, plates, identity documents, birth dates | replace |
-| personally cued residential addresses | replace |
+| personally cued residential and elective-domicile addresses | replace |
+| birthplace and residence towns (`nato a Stia`), checked against ISTAT's comuni | replace |
 | exact judicial and public-prosecution role spans | keep |
-| public bodies, institutions, and place names | keep |
+| public bodies, institutions, and other place names | keep |
 | procedural case numbers and ECLI identifiers | keep |
 | private companies | keep; replace likely person-named firms with `companies="person_named"`, or all detected firms with `companies=True` |
 | conflicting judicial and private-role evidence for one identity | replace and flag for review |

@@ -137,7 +137,9 @@ marks a person.
 
 `keep_judges=False` and `keep_case_numbers=False` remove their keep decisions; they do
 not add special redactors. Public institutions are rejected as person/company
-candidates. Places are not proposed in the first place.
+candidates. A place is proposed only in a biographic slot ("nato a Stia", "residente a
+Pratovecchio") and only if ISTAT lists it as a comune, current or suppressed; a court
+seat or any other mention of a town is never a candidate.
 
 ### 5. Allocate tags and render once
 

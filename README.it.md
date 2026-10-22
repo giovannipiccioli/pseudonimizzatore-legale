@@ -77,9 +77,10 @@ giudiziari italiani:
 |---|---|
 | parti, difensori e persone fisiche private | sostituisci |
 | codici fiscali, email/PEC, IBAN, telefoni, targhe, documenti di identità e date di nascita | sostituisci |
-| indirizzi di residenza accompagnati da un contesto personale | sostituisci |
+| indirizzi di residenza e di domicilio eletto accompagnati da un contesto personale | sostituisci |
+| comuni di nascita e di residenza (`nato a Stia`), verificati sull'elenco ISTAT | sostituisci |
 | segmenti esatti relativi a magistrati e pubblici ministeri | conserva |
-| enti pubblici, istituzioni e nomi di luogo | conserva |
+| enti pubblici, istituzioni e altri nomi di luogo | conserva |
 | numeri di procedimento ed ECLI | conserva |
 | società private | conserva; sostituisci le imprese probabilmente basate su nomi di persona con `companies="person_named"`, oppure tutte quelle rilevate con `companies=True` |
 | evidenze contrastanti di ruolo giudiziario e ruolo privato per la stessa identità | sostituisci e segnala per la revisione |

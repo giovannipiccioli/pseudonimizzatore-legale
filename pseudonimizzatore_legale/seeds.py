@@ -25,6 +25,7 @@ common-word set. Ambiguous tokens are handled after all entities are known. With
 these guards, propagating a name whose surname is "Del" replaces every "del" in the
 document.
 """
+import unicodedata
 from functools import lru_cache
 from importlib.resources import files
 
@@ -49,6 +50,23 @@ def first_names() -> frozenset[str]:
     import json
     data = files(__package__).joinpath("resources/first_names.json").read_text("utf-8")
     return frozenset(json.loads(data)["names"])
+
+
+def place_key(name: str) -> str:
+    """A town name compared without case, accents or the ALL-CAPS accent apostrophe."""
+    name = unicodedata.normalize("NFKD", name.replace("’", "'").casefold())
+    name = "".join(c for c in name if not unicodedata.combining(c))
+    return " ".join(name.split()).rstrip("'")
+
+
+@lru_cache(maxsize=1)
+def comuni() -> frozenset[str]:
+    """ISTAT comuni, current and suppressed, as `place_key`s, plus the everyday names of
+    two whose official ones differ ("Reggio di Calabria", "Reggio nell'Emilia")."""
+    import json
+    data = files(__package__).joinpath("resources/comuni.json").read_text("utf-8")
+    return frozenset(place_key(n) for n in json.loads(data)["names"]) | {
+        "reggio calabria", "reggio emilia"}
 
 
 #: Roles in priority order — a person seen both as party and as counsel is a party.
@@ -373,6 +391,13 @@ def collect(text: str, cfg) -> list[Entity]:
     for m in P.COUNSEL_SOLO.finditer(text):
         seeds.add(m.group(1), "Difensore", allow_single=True,
                   source="regex:counsel_surname")
+    # The same for a party known only by surname: "il sig. Malaspina", "il ricorrente
+    # Malaspina". When the full name is also given, the surname folds into it.
+    for attr, role in (("TITOLO_SOLO", "Nominativo"), ("PARTY_ROLE_SOLO", "Ricorrente")):
+        for m in getattr(P, attr).finditer(text):
+            if not _in_organisation(text, m.start(1), m.end(1)):
+                seeds.add(m.group(1), role, allow_single=True,
+                          source=f"regex:{attr.lower()}")
 
     if cfg.profile != "query":
         for m in P.PARTY_BLOCK.finditer(text):

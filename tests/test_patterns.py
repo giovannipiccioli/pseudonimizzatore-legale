@@ -7,7 +7,7 @@ re-opens that defect.
 import regex as re
 
 from pseudonimizzatore_legale import patterns as P
-from pseudonimizzatore_legale import protect
+from pseudonimizzatore_legale import protect, seeds as seeds_mod
 from pseudonimizzatore_legale.seeds import SeedSet
 
 
@@ -56,9 +56,86 @@ class TestStructured:
         # a case number must not read as a phone number
         assert not P.TELEFONO.search("n. 24009-2019 R.G.")
 
+    def test_codice_fiscale_loose_forms(self):
+        def found(text):
+            return [m.group() for m in P.CODICE_FISCALE.finditer(text)
+                    if P.codice_fiscale_ok(m.group())]
+        # omocodia: digits replaced by L M N P Q R S T U V, from the right
+        assert found("c.f. RSSMRA80A01H50MV") == ["RSSMRA80A01H50MV"]
+        # one character at a time, and lower case: accepted with a valid check letter
+        assert found("codice fiscale R S S M R A 8 0 A 0 1 H 5 0 1 U)") == [
+            "R S S M R A 8 0 A 0 1 H 5 0 1 U"]
+        assert found("c.f. rssmra80a01h501u.") == ["rssmra80a01h501u"]
+        # …and refused without one, so a looser pattern costs no precision
+        assert found("c.f. rssmra80a01h501x, R S S M R A 8 0 A 0 1 H 5 0 1 X") == []
+        # the usual upper-case form keeps working with a mistyped check letter, as before
+        assert found("C.F. RSSMRA80A01H501X") == ["RSSMRA80A01H501X"]
+        assert found("RSSMRA80A99H501U") == []          # day 99 does not exist
+
     def test_iban(self):
         assert P.IBAN.search("IT60X0542811101000000123456")
         assert not P.IBAN.search("IT60X05428111")
+        # The match must not take the space after it, or "Iban_1e" glues to the next word.
+        assert P.IBAN.search("IT60X0542811101000000123456 e").group() == (
+            "IT60X0542811101000000123456")
+
+    def test_foreign_iban_needs_its_mod_97_check(self):
+        def found(text):
+            return [m.group() for m in P.IBAN.finditer(text) if P.iban_ok(m.group())]
+        assert found("IBAN SM86U0322509800000000270100 e DE89 3704 0044 0532 0130 00.") == [
+            "SM86U0322509800000000270100", "DE89 3704 0044 0532 0130 00"]
+        # one digit off, and an act number of the same shape
+        assert found("IBAN DE89370400440532013001") == []
+        assert found("avviso n. TD7030604428 IRAP 2013") == []
+
+    def test_electronic_identity_card(self):
+        for text in ("carta d'identità n. CA12345AB rilasciata",
+                     "carta d'identità elettronica CA12345AB", "CIE n. CA12345AB"):
+            assert P.NUMERO_DOCUMENTO.search(text).group(1) == "CA12345AB", text
+        assert P.NUMERO_DOCUMENTO.search("passaporto n. YA1234567").group(1) == "YA1234567"
+        # the cue is still required
+        assert not P.NUMERO_DOCUMENTO.search("protocollo CA12345AB")
+
+    def test_residential_address_without_cap(self):
+        for text, street in (
+                ("residente in Roma, Via Cola di Rienzo 12, ricorre", "Via Cola di Rienzo 12"),
+                ("residente a Roma in Via Cola di Rienzo n. 12", "Via Cola di Rienzo n. 12"),
+                ("residente in Pratovecchio (AR), loc. Casalino 4", "loc. Casalino 4"),
+                ("elettivamente domiciliato presso lo studio dell'avv. Mario Malaspina, "
+                 "Via Po 3, che lo difende", "Via Po 3"),
+                ("domiciliato in Ancona, al Corso Garibaldi, n. 124;", "Corso Garibaldi, n. 124"),
+                ("residente in Via Ippolito Nievo n. 47, 44121 Ferrara",
+                 "Via Ippolito Nievo n. 47, 44121")):
+            assert P.INDIRIZZO_RESIDENZA.search(text).group(1) == street, text
+
+    def test_residential_address_needs_a_personal_cue_and_a_street(self):
+        for text in (
+                "La Alfa S.r.l., con sede in Roma, Via Cola di Rienzo 12",
+                "residente in Roma e socio della Alfa s.r.l., con sede in Via Po 3",
+                "domiciliata ex lege in Roma, via dei Portoghesi 12",
+                "domiciliato in Italia, in via preliminare eccepisce il ricorso n. 12",
+                "residente nel Comune, nel corso di 12 mesi",
+                "residente in Roma, via Garibaldi. Con ricorso n. 1234/2020 impugna"):
+            assert not P.INDIRIZZO_RESIDENZA.search(text), text
+
+    def test_birthplace_is_read_only_in_its_slot(self):
+        assert P.LUOGO_BIOGRAFICO.search("nato a Stia il 03/04/1960").group(1) == "Stia il"
+        assert P.LUOGO_BIOGRAFICO.search("nato il 6.5.1980 a Madaripur").group(1) == (
+            "Madaripur")
+        assert P.LUOGO_BIOGRAFICO.search("e residente a Pratovecchio,").group(1) == (
+            "Pratovecchio")
+        for text in ("il Tribunale di Stia", "nato a seguito del ricorso",
+                     "domiciliato in Roma"):
+            assert not P.LUOGO_BIOGRAFICO.search(text), text
+
+    def test_comuni_are_istat_names_old_and_new(self):
+        comuni = seeds_mod.comuni()
+        # Stia and Pratovecchio merged in 2014; a birthplace still names the old comune
+        for name in ("Stia", "Pratovecchio", "Pratovecchio Stia", "Bozen", "Reggio Emilia"):
+            assert seeds_mod.place_key(name) in comuni, name
+        assert seeds_mod.place_key("FORLI'") == seeds_mod.place_key("Forlì")
+        for name in ("Romania", "Italia", "Via Roma"):
+            assert seeds_mod.place_key(name) not in comuni, name
 
     def test_data_nascita_not_procedural_date(self):
         assert P.DATA_NASCITA.search("nato il 23 luglio 1968")
@@ -182,6 +259,35 @@ class TestSeeds:
         m = P.QUALIFICA.search("così come all'altro socio TAGLIAFERRI NICODEMO)")
         assert m and m.group(1) == "TAGLIAFERRI NICODEMO"
         assert not P.QUALIFICA.search("Sostituto Procuratore LUCA TAMPIERI")
+
+    def test_sole_trader_and_law_firm_are_people(self):
+        for text, name in (("La ditta individuale di HU XIAOMING, con", "HU XIAOMING"),
+                           ("l'impresa individuale Ferruccio Malaspina", "Ferruccio Malaspina"),
+                           ("(studio legale Mirandolina Zangheratti);", "Mirandolina Zangheratti")):
+            assert P.QUALIFICA.search(text).group(1) == name, text
+        # a firm named by one surname has no full name to read
+        assert not P.QUALIFICA.search("presso lo studio legale Rossi e Associati")
+
+    def test_biographic_partita_iva(self):
+        m = P.BIOGRAFICO.search("DI BENEDETTO OSVALDO - P.IVA 02956140374")
+        assert m and m.group(1) == "DI BENEDETTO OSVALDO"
+        # "eccepiva" ends in the letters of the cue, and is not one
+        assert not P.BIOGRAFICO.search("Mario Rossi eccepiva la nullità")
+
+    def test_surname_alone_after_a_courtesy_title(self):
+        assert P.TITOLO_SOLO.search("Il sig. Malaspina ha presentato").group(1) == "Malaspina"
+        assert P.TITOLO_SOLO.search("la sig.ra Malaspina.").group(1) == "Malaspina"
+        # a full name is TITOLO's; "dott." is a judge's title too and stays out
+        assert not P.TITOLO_SOLO.search("il sig. Ferruccio Malaspina")
+        assert not P.TITOLO_SOLO.search("il dott. Malaspina")
+
+    def test_surname_alone_after_a_party_role(self):
+        assert P.PARTY_ROLE_SOLO.search("Il ricorrente Malaspina insiste").group(1) == (
+            "Malaspina")
+        for text in ("il ricorrente Ferruccio Malaspina",   # a full name is PARTY_ROLE's
+                     "il ricorrente Prof. Rossi",           # a title, not a surname
+                     "inoltrata dal ricorrente Prot. n. 1234"):  # an abbreviation
+            assert not P.PARTY_ROLE_SOLO.search(text), text
 
     def test_advocate_general_is_a_judicial_role(self):
         text = "CONCLUSIONI DELL'AVVOCATO GENERALE\nMANUEL CAMPOS SANCHEZ\npresentate"
