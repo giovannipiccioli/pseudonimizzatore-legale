@@ -51,6 +51,9 @@ eval = ["PyMuPDF>=1.24"]
 [tool.setuptools.packages.find]
 include = ["pseudonimizzatore_legale*"]
 
+[tool.setuptools]
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+
 [tool.setuptools.package-data]
 pseudonimizzatore_legale = ["resources/*.json"]
 

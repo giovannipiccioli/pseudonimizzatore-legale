@@ -25,8 +25,9 @@ flowchart LR
 3. **Policy is late and span-local.** Judicial evidence cannot globally veto a surname.
 4. **One rewrite.** All offsets are resolved against a stable normalized input before
    rendering, avoiding cascading substitutions and offset drift.
-5. **Simple extension points.** Optional NER supplies the same `Mention` objects as the
-   regex detectors and uses the same identity, policy and rendering stages.
+5. **Simple extension points.** The first-name list and optional NER only add person
+   seeds; both use the same identity, policy and rendering stages as legal-context
+   detectors.
 6. **Verification does not mutate.** Residual checks only produce review evidence.
 
 ## Pipeline stages
@@ -48,7 +49,7 @@ The runtime has a small set of complementary detectors:
 - `patterns.py`: structured PII, legal roles, person cues, party blocks, addresses and
   organization/legal-form patterns;
 - `protect.py`: exact judicial-role and procedural-number evidence;
-- `seeds.py`: private-person seeds from legal context;
+- `seeds.py`: private-person seeds from legal context and the weak first-name list;
 - `ner.py`: optional transformer person mentions.
 
 None of these modules edits text or decides that an identity is globally safe. Private
@@ -67,6 +68,14 @@ Strong private-role cues may seed an exact all-common name such as `Antonio De L
 but it contributes no unsafe bare-token propagation. When a token belongs to more than
 one detected person, the token is still redacted under a neutral identity instead of
 being assigned arbitrarily.
+
+The bundled first-name list covers names registered in Italy and is intentionally used
+as weak evidence. One linear token scan proposes only adjacent full names: ordinary
+`Given Surname`, or the ALL-CAPS `SURNAME GIVEN` form used in headings. A listed first
+name alone is never a seed. Legal common words, public institutions and company suffixes
+remain guards, and the resulting identity follows the normal alias and late-policy
+path. The JSON resource is loaded once on first use; `Config(first_names=False)` turns
+the scan off.
 
 Party blocks are read as lists. After an applicant cue (`proposto da`, `ricorso di`) or
 a counter-party cue (`nei confronti di`, or `nei confronti` or `contro` ending its line,
@@ -218,6 +227,11 @@ describes a reusable legal-text structure and has positive and negative tests.
 legacy `cassazione` and `generic` names normalize to `legal` and have no behavioral
 branches.
 
+A broader non-legal mode is intentionally not another profile yet. Its removal policy
+and false-positive budget need a separately annotated general-Italian corpus first;
+adding that branch before it can be measured would create operational complexity with
+no defensible default.
+
 ## Optional NER and future training
 
 NER emits `Mention` records and stops there. The common identity and policy layers are
@@ -231,7 +245,7 @@ parallel anonymization pipeline.
 
 ## Known limitations
 
-- Regex-only person recall remains weakest in low-structure civil and EU material.
+- Deterministic person recall remains weakest in low-structure civil and EU material.
 - Optional NER improves recall but may remove uncued public-role aliases; exact role
   spans remain protected.
 - A party list ends at the first item that is not name-shaped, and a name no cue

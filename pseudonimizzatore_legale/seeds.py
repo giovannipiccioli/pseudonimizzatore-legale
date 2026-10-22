@@ -6,10 +6,11 @@ deleted; tighten it and the party is still readable three lines down.
 
 So the two concerns are separated, and pull in opposite directions on purpose:
 
-**Seeding is conservative.** A name is accepted only where the surrounding text proves
-it is a person: a professional title, adjacency to a codice fiscale, a biographic
-clause, the party block of a decision. Precision matters more than recall here, because
-a bad seed does not stay local — propagation then hunts that mistake through the whole
+**Seeding is conservative.** A name is accepted where surrounding text identifies a
+person — a professional title, adjacency to a codice fiscale, a biographic clause, the
+party block of a decision — or where a listed first name forms a complete multi-token
+name. A listed word is never accepted alone. Precision still matters here, because a
+bad seed does not stay local: propagation then hunts that mistake through the whole
 document.
 
 **Propagation is aggressive.** Once a person is known, every surface form of them is
@@ -40,6 +41,14 @@ def common_words() -> frozenset[str]:
     import json
     data = files(__package__).joinpath("resources/common_words.json").read_text("utf-8")
     return frozenset(json.loads(data))
+
+
+@lru_cache(maxsize=1)
+def first_names() -> frozenset[str]:
+    """Names registered in Italy, used only as weak, multi-token seeds."""
+    import json
+    data = files(__package__).joinpath("resources/first_names.json").read_text("utf-8")
+    return frozenset(json.loads(data)["names"])
 
 
 #: Roles in priority order — a person seen both as party and as counsel is a party.
@@ -237,11 +246,96 @@ _ALLOW_COMMON_NAME = frozenset({
 #: company or a public body just as it follows a party.
 _ORGANISATION_PRONE = frozenset({"BIOGRAFICO", "NEI_CONFRONTI"})
 
+# Italian surname particles accepted between a listed first name and a distinctive
+# surname. Keeping this deliberately small avoids turning ordinary phrases into names.
+_SURNAME_PARTICLES = frozenset({
+    "da", "dal", "dalla", "de", "dei", "del", "della", "di", "la", "lo",
+})
+
 
 def _in_organisation(text: str, start: int, end: int) -> bool:
     """True if the text continues the name at `start:end` into an organisation's name."""
     return bool(P.ORG_SUFFIX_AFTER.match(text, end)
                 or P.ORG_NAME_BEFORE.search(text, max(0, start - 60), start))
+
+
+def _adjacent(left: re.Match, right: re.Match, text: str) -> bool:
+    """Whether two name-shaped tokens are separated only by ordinary whitespace."""
+    gap = text[left.end():right.start()]
+    return bool(gap and re.fullmatch(P.SEP_NL, gap))
+
+
+def _first_name_candidates(text: str) -> list[str]:
+    """Full-name candidates whose first or last component is a listed first name.
+
+    The list is evidence, not a dictionary substitution: a first name never becomes a
+    seed alone. Adjacent listed/common words are also refused, which avoids treating
+    sentence openings and place names as a person while keeping ordinary
+    ``Given Surname`` and ``SURNAME GIVEN`` forms.
+    """
+    tokens = list(re.finditer(P.NAME_TOKEN, text))
+    listed = first_names()
+    common = common_words()
+    found: list[str] = []
+    seen: set[tuple[int, int]] = set()
+
+    def add(start: int, end: int) -> None:
+        span = (tokens[start].start(), tokens[end].end())
+        if P.ORG_SUFFIX_AFTER.match(text, span[1]):
+            return
+        if span not in seen:
+            seen.add(span)
+            found.append(text[span[0]:span[1]])
+
+    for index, token in enumerate(tokens):
+        if token.group(0).casefold() not in listed:
+            continue
+
+        # Given-name first: ``Ferruccio Malaspina`` or ``Amedeo Della Rovere``.
+        if index + 1 < len(tokens) and _adjacent(token, tokens[index + 1], text):
+            next_word = tokens[index + 1].group(0).casefold()
+            if next_word in listed:
+                # ``Federico Maria Sbaraglia``: two given names and one surname.
+                if (next_word != token.group(0).casefold()
+                        and "\n" not in text[token.end():tokens[index + 1].start()]
+                        and index + 2 < len(tokens)
+                        and _adjacent(tokens[index + 1], tokens[index + 2], text)
+                        and tokens[index + 2].group(0).casefold() not in common
+                        and tokens[index + 2].group(0).casefold() not in listed):
+                    add(index, index + 2)
+            elif next_word in _SURNAME_PARTICLES:
+                if (index + 2 < len(tokens)
+                        and _adjacent(tokens[index + 1], tokens[index + 2], text)
+                        and tokens[index + 2].group(0).casefold() not in common
+                        and tokens[index + 2].group(0).casefold() not in listed):
+                    add(index, index + 2)
+            elif next_word not in common and next_word not in listed:
+                add(index, index + 1)
+
+        # Surname first is accepted only in the ALL-CAPS style used by legal headers.
+        # In ordinary prose, ``Ieri Ferruccio Malaspina`` would otherwise make the
+        # sentence-opening word look like Ferruccio's surname.
+        if (index > 0
+                and token.group(0).isupper()
+                and tokens[index - 1].group(0).isupper()
+                and _adjacent(tokens[index - 1], token, text)):
+            previous = tokens[index - 1].group(0).casefold()
+            if previous not in common and previous not in listed:
+                start = index - 1
+                end = index
+                if (start > 0
+                        and _adjacent(tokens[start - 1], tokens[start], text)
+                        and tokens[start - 1].group(0).casefold() in _SURNAME_PARTICLES):
+                    start -= 1
+                if (index + 1 < len(tokens)
+                        and tokens[index + 1].group(0).isupper()
+                        and _adjacent(token, tokens[index + 1], text)
+                        and "\n" not in text[token.end():tokens[index + 1].start()]
+                        and tokens[index + 1].group(0).casefold() in listed):
+                    end += 1
+                add(start, end)
+
+    return found
 
 
 def collect(text: str, cfg) -> list[Entity]:
@@ -287,6 +381,14 @@ def collect(text: str, cfg) -> list[Entity]:
                 for name in _names_in_run(run.group(0)):
                     seeds.add(name, role, require_distinctive=False,
                               source="regex:legal_party_block")
+
+    # A first-name list cheaply finds people whom legal layout does not announce. It is
+    # deliberately weaker than context or NER: only a complete adjacent name is added,
+    # never a listed token on its own. Late policy treats this source as neutral.
+    if getattr(cfg, "first_names", True):
+        for name in _first_name_candidates(text):
+            seeds.add(name, "Nominativo", require_distinctive=False,
+                      source="lexicon:first_name")
 
     # Optional transformer NER, last: it reads sentences rather than layout, so it finds
     # the people no anchor announces. Its mentions go through exactly the same `add`

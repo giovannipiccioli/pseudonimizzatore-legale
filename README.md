@@ -92,6 +92,7 @@ from pseudonimizzatore_legale import Config, anonymize
 
 config = Config(
     companies="person_named",
+    first_names=True,
     keep_judges=True,
     keep_case_numbers=True,
     sanitize=True,
@@ -102,6 +103,12 @@ output, report = anonymize(source, config)
 # Equivalent for one option:
 output, report = anonymize(source, companies="person_named")
 ```
+
+`first_names=True` enables the bundled list of names registered in Italy. It is a weak
+signal rather than a replacement dictionary: a listed first name is never removed on
+its own, but can seed an adjacent full name such as `Ferruccio Malaspina`. Set it to
+`False` to use only contextual detectors. This also helps on short, non-legal strings,
+but it is not a separate general-text policy. The resource is loaded lazily and cached.
 
 `companies="person_named"` is deliberately precision-first. It replaces companies
 with explicit family wording (`F.lli`, `Fratelli`, or `Eredi`) and simple names made
@@ -228,12 +235,14 @@ recall is all-or-nothing: one surviving alias fails that identity.
 
 | Configuration | Complete entities | Surface recall | Span precision lower bound | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| regex only | 440/486 (90.5%) | 690/764 (90.3%) | 756/878 (86.1%) | 728/730 | 94/124 |
-| + Italian NER XXL | 470/486 (96.7%) | 738/764 (96.6%) | 825/1081 (76.3%) | 702/730 | 108/124 |
+| contextual baseline (`first_names=False`) | 446/488 (91.4%) | 702/768 (91.4%) | 779/896 (86.9%) | 724/726 | 96/124 |
+| default (+ first-name list) | 470/488 (96.3%) | 743/768 (96.7%) | 814/961 (84.7%) | 720/726 | 109/124 |
+| + Italian NER XXL, list disabled | 473/488 (96.9%) | 744/768 (96.9%) | 834/1079 (77.3%) | 698/726 | 109/124 |
 
-Both configurations remove 115/115 annotated structured identifiers. The review
-heuristic catches all 30 documents with annotated residuals, but also flags 90 without
-one. It is deliberately a recall-heavy review queue, not a safety certificate.
+All three configurations remove 115/115 annotated structured identifiers. The name
+list raises complete-name recall from 88.7% to 95.2% with no model dependency. The
+review heuristic catches every document with an annotated residual, but remains a
+deliberately noisy review queue rather than a safety certificate.
 
 See [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md) for definitions,
 source-level results, trade-offs, and reproduction commands.
@@ -286,3 +295,5 @@ personal data in an issue, test, or fixture. Security and privacy reports should
 
 MIT licensed. See [`LICENSE`](LICENSE). The license preserves the copyright notice for
 the Anonimator-derived portions as well as this Python implementation.
+The bundled first-name resource has separate attribution under CC BY 4.0; see
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

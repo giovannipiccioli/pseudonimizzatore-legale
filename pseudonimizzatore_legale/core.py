@@ -160,7 +160,7 @@ _PRIVATE_ROLE_SOURCES = {
 _STRICT_PRIVATE_ROLE_SOURCES = _PRIVATE_ROLE_SOURCES - {"regex:legal_party_block"}
 # A courtesy title names a person without saying which side they are on, and judges
 # carry one as often as anybody: "Relatore … il dott. Andrea De Col" is the judge.
-_NEUTRAL_SOURCES = frozenset({"regex:titolo"})
+_NEUTRAL_SOURCES = frozenset({"regex:titolo", "lexicon:first_name"})
 _COMPANY_INTRO = re.compile(
     r"(?i:(?:(?:di|del|della|dei|degli|delle|il|lo|la|le|gli|e)\s+)+)"
 )

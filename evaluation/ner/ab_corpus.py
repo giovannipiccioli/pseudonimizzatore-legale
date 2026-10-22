@@ -98,6 +98,8 @@ def main():
     ap.add_argument("--source", default=None, help="limit to one corpus source")
     ap.add_argument("--show", action="store_true", help="list what changed, per document")
     ap.add_argument("--compact", action="store_true", help="omit per-source rows")
+    ap.add_argument("--no-first-names", action="store_true",
+                    help="disable the bundled first-name detector in both runs")
     args = ap.parse_args()
 
     docs = sorted(CORPUS.rglob("*.gold.json"))
@@ -111,9 +113,15 @@ def main():
     print(f"{len(docs)} documents | model {' + '.join(models)} | "
           f"threshold {args.threshold}\n")
 
-    off = score(lambda g: Config(**g), docs, "regex only")
-    on = score(lambda g: Config(**g, ner=model_spec, ner_threshold=args.threshold,
-                                ner_device=args.device), docs, "regex + NER")
+    def config(gold, **overrides):
+        options = {**gold, **overrides}
+        if args.no_first_names:
+            options["first_names"] = False
+        return Config(**options)
+
+    off = score(lambda g: config(g), docs, "NER off")
+    on = score(lambda g: config(g, ner=model_spec, ner_threshold=args.threshold,
+                                ner_device=args.device), docs, "+ NER")
 
     hdr = (f"{'':18s} {'entity recall':>19s} {'surface recall':>19s} "
            f"{'precision LB':>16s} {'kept':>18s} {'complete docs':>13s} {'sec':>7s}")

@@ -15,28 +15,30 @@ python evaluation/score_corpus.py corte_conti
 python evaluation/score_corpus.py -v
 ```
 
-Current regex-only result:
+Current deterministic default (legal context plus the first-name list):
 
 | Source | Complete entities | Surface recall | Span precision LB | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| BDGT | 166/173 (96.0%) | 175/182 (96.2%) | 246/314 (78.3%) | 197/197 | 19/23 |
-| Cassazione | 46/51 (90.2%) | 73/81 (90.1%) | 79/95 (83.2%) | 137/137 | 23/25 |
-| CGUE | 0/2 (0.0%) | 0/3 (0.0%) | 0/0 | 17/17 | 7/8 |
-| Consiglio di Stato | 47/50 (94.0%) | 92/98 (93.9%) | 74/84 (88.1%) | 78/78 | 13/16 |
-| TAR | 97/106 (91.5%) | 189/204 (92.6%) | 199/215 (92.6%) | 85/85 | 16/21 |
-| Corte dei conti | 33/39 (84.6%) | 60/69 (87.0%) | 55/57 (96.5%) | 140/140 | 10/15 |
-| Merito civile | 51/65 (78.5%) | 101/127 (79.5%) | 103/113 (91.2%) | 74/76 | 6/16 |
-| **Total** | **440/486 (90.5%)** | **690/764 (90.3%)** | **756/878 (86.1%)** | **728/730** | **94/124** |
+| BDGT | 170/173 (98.3%) | 179/182 (98.4%) | 250/315 (79.4%) | 197/197 | 20/23 |
+| Cassazione | 48/51 (94.1%) | 78/81 (96.3%) | 88/110 (80.0%) | 137/137 | 24/25 |
+| CGUE | 1/2 (50.0%) | 2/3 (66.7%) | 1/1 (100.0%) | 17/17 | 7/8 |
+| Consiglio di Stato | 50/50 (100.0%) | 98/98 (100.0%) | 77/89 (86.5%) | 78/78 | 16/16 |
+| TAR | 102/106 (96.2%) | 197/204 (96.6%) | 205/227 (90.3%) | 81/85 | 18/21 |
+| Corte dei conti | 38/39 (97.4%) | 68/69 (98.6%) | 60/68 (88.2%) | 140/140 | 14/15 |
+| Merito civile | 61/67 (91.0%) | 121/131 (92.4%) | 133/151 (88.1%) | 70/72 | 10/16 |
+| **Total** | **470/488 (96.3%)** | **743/768 (96.7%)** | **814/961 (84.7%)** | **720/726** | **109/124** |
 
 The scorer also reports:
 
-- names: 325/371 complete (87.6%);
+- names: 355/373 complete (95.2%);
 - structured identifiers/other: 115/115 complete (100%);
-- character-overlap precision lower bound: 15,431/17,741 (87.0%);
-- damage-free documents (no protected value lost): 123/124 — `merito_civile/02_2020`
-  removes a giudice ausiliario introduced as "Avv. X … G.A. relatore";
-- review heuristic: TP/FN/FP/TN = 30/0/90/4, or 100% recall and 25.0%
+- character-overlap precision lower bound: 16,543/19,275 (85.8%);
+- damage-free documents (no protected value lost): 121/124;
+- review heuristic: TP/FN/FP/TN = 15/0/105/4, or 100% recall and 12.5%
   precision for finding documents with an annotated residual.
+
+Use `python evaluation/score_corpus.py --no-first-names` for the contextual baseline:
+446/488 complete entities, 331/373 complete names and 96/124 complete documents.
 
 ## Metric definitions
 

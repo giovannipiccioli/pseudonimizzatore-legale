@@ -56,6 +56,13 @@ class Config:
     min_token_len
         Shortest token that may propagate a name through the document. Below 4
         characters the false-positive risk outweighs the recall gain.
+    first_names
+        Use the bundled list of first names registered in Italy as a weak additional
+        person signal.
+        A listed word is never removed by itself: it must sit next to a distinct,
+        name-shaped token, and the resulting full name still passes the ordinary
+        institution, company and propagation guards. Enabled by default because it
+        materially improves recall without adding a model or runtime dependency.
     ner
         Hugging Face model id of a token-classification model, a tuple of model ids to
         union for recall-first use, or ``None`` (default) to run regex-only. When set,
@@ -92,6 +99,7 @@ class Config:
     keep_case_numbers: bool = True
     sanitize: bool = True
     min_token_len: int = 4
+    first_names: bool = True
     ner: str | tuple[str, ...] | None = None
     ner_threshold: float = 0.60
     ner_device: str | None = None

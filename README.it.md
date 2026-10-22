@@ -97,6 +97,7 @@ from pseudonimizzatore_legale import Config, anonymize
 
 configurazione = Config(
     companies="person_named",
+    first_names=True,
     keep_judges=True,
     keep_case_numbers=True,
     sanitize=True,
@@ -107,6 +108,14 @@ risultato, rapporto = anonymize(testo, configurazione)
 # Forma equivalente per una singola opzione:
 risultato, rapporto = anonymize(testo, companies="person_named")
 ```
+
+`first_names=True` attiva l'elenco incluso di nomi registrati in Italia. L'elenco è un
+segnale debole, non un dizionario di sostituzione: un nome dell'elenco non viene mai
+rimosso da solo, ma può far riconoscere un nome completo adiacente come `Ferruccio
+Malaspina`. Impostare `False` per usare soltanto i rilevatori contestuali.
+Questo aiuta anche con brevi stringhe non giuridiche, ma non costituisce una politica
+separata per testi generali. La risorsa viene caricata al primo utilizzo e poi conservata
+in memoria.
 
 `companies="person_named"` privilegia deliberatamente la precisione. Sostituisce le
 società con un richiamo familiare esplicito (`F.lli`, `Fratelli` o `Eredi`) e i nomi
@@ -242,13 +251,14 @@ anche un solo alias, l'intera identità è considerata non rimossa.
 
 | Configurazione | Entità complete | Richiamo sulle occorrenze | Limite inferiore di precisione | Valori protetti conservati | Documenti completi |
 |---|---:|---:|---:|---:|---:|
-| solo regex | 440/486 (90,5%) | 690/764 (90,3%) | 756/878 (86,1%) | 728/730 | 94/124 |
-| + NER italiano XXL | 470/486 (96,7%) | 738/764 (96,6%) | 825/1081 (76,3%) | 702/730 | 108/124 |
+| base contestuale (`first_names=False`) | 446/488 (91,4%) | 702/768 (91,4%) | 779/896 (86,9%) | 724/726 | 96/124 |
+| predefinita (+ elenco dei nomi) | 470/488 (96,3%) | 743/768 (96,7%) | 814/961 (84,7%) | 720/726 | 109/124 |
+| + NER italiano XXL, elenco disattivato | 473/488 (96,9%) | 744/768 (96,9%) | 834/1079 (77,3%) | 698/726 | 109/124 |
 
-Entrambe le configurazioni rimuovono 115/115 identificatori strutturati annotati.
-L'euristica di revisione intercetta tutti i 30 documenti con residui annotati, ma
-segnala anche 90 documenti senza residui. È intenzionalmente pensata come una revisione
-orientata a non perdere documenti con potenziali errori. Non è un certificato di sicurezza.
+Tutte e tre le configurazioni rimuovono 115/115 identificatori strutturati annotati.
+L'elenco porta il richiamo dei nomi completi dall'88,7% al 95,2% senza dipendenze da
+modelli. L'euristica di revisione intercetta ogni documento con residui annotati, ma
+rimane intenzionalmente rumorosa. Non è un certificato di sicurezza.
 
 Per definizioni, risultati per fonte, compromessi e comandi di riproduzione, vedere
 [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md).
@@ -308,3 +318,5 @@ segnalazioni relative a sicurezza e riservatezza, seguire
 Distribuito con licenza MIT. Vedere [`LICENSE`](LICENSE). La licenza conserva
 l'indicazione di copyright sia per le parti derivate da Anonimator sia per questa
 implementazione Python.
+La risorsa dei nomi inclusa ha un'attribuzione separata con licenza CC BY 4.0; vedere
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).

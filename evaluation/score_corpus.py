@@ -7,6 +7,7 @@ is "which shapes is it missing, and did that change?" — not "is it green?".
     python score_corpus.py                # every document, per-source totals
     python score_corpus.py cassazione     # one source
     python score_corpus.py -v             # show surrounding text for each leak
+    python score_corpus.py --no-first-names  # measure the contextual baseline
 
 The primary metric is **entity recall**: every occurrence and spelling of an identity
 must be gone or that entity fails. The historical surface-form recall and document
@@ -44,6 +45,7 @@ def accumulate(counter, score):
 def main():
     args = [a for a in sys.argv[1:] if not a.startswith("-")]
     verbose = "-v" in sys.argv
+    no_first_names = "--no-first-names" in sys.argv
     only = args[0] if args else None
 
     totals = Counter()
@@ -57,7 +59,10 @@ def main():
             continue
         gold = json.loads(gold_path.read_text(encoding="utf-8"))
         raw = doc.read_text(encoding="utf-8")
-        cfg = Config(**gold.get("config", {}))
+        config_options = dict(gold.get("config", {}))
+        if no_first_names:
+            config_options["first_names"] = False
+        cfg = Config(**config_options)
         original = text_mod.sanitize(raw) if cfg.sanitize else raw
         original = text_mod.normalize_quotes(original)
         out, rep = anonymize(raw, cfg)
