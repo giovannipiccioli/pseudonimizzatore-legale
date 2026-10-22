@@ -76,11 +76,11 @@ giudiziari italiani:
 | Evidenza | Comportamento predefinito |
 |---|---|
 | parti, difensori e persone fisiche private | sostituisci |
-| codici fiscali, email/PEC, IBAN, telefoni, targhe, documenti di identità e date di nascita | sostituisci |
-| indirizzi di residenza e di domicilio eletto accompagnati da un contesto personale | sostituisci |
+| codici fiscali, email/PEC, IBAN e numeri di conto, telefoni, targhe, documenti di identità e passaporti, numeri di iscrizione ad albi e registri, date di nascita | sostituisci |
+| indirizzi di residenza, di domicilio eletto, di studio e di immobili introdotti dal loro contesto, e le righe di indirizzo di intestazioni, firme e destinatari | sostituisci |
 | comuni di nascita e di residenza (`nato a Stia`), verificati sull'elenco ISTAT | sostituisci |
 | segmenti esatti relativi a magistrati e pubblici ministeri | conserva |
-| enti pubblici, istituzioni e altri nomi di luogo | conserva |
+| enti pubblici, istituzioni, le loro caselle istituzionali e i loro indirizzi, altri nomi di luogo | conserva |
 | numeri di procedimento ed ECLI | conserva |
 | società private | conserva; sostituisci le imprese probabilmente basate su nomi di persona con `companies="person_named"`, oppure tutte quelle rilevate con `companies=True` |
 | evidenze contrastanti di ruolo giudiziario e ruolo privato per la stessa identità | sostituisci e segnala per la revisione |
@@ -115,9 +115,11 @@ risultato, rapporto = anonymize(testo, companies="person_named")
 ```
 
 `first_names=True` attiva l'elenco incluso di nomi registrati in Italia. L'elenco è un
-segnale debole, non un dizionario di sostituzione: un nome dell'elenco non viene mai
-rimosso da solo, ma può far riconoscere un nome completo adiacente come `Ferruccio
-Malaspina`. Impostare `False` per usare soltanto i rilevatori contestuali.
+segnale debole, non un dizionario di sostituzione: riconosce un nome completo adiacente
+come `Ferruccio Malaspina`, mai dentro il nome di una via, di un santo o di un comune. Un
+nome proprio dell'elenco viene rimosso da solo soltanto come nome di una persona già
+rilevata, oppure dopo un saluto o un rapporto di parentela (`Caro Paolo,`, `il figlio
+minore Tommaso`). Impostare `False` per usare soltanto i rilevatori contestuali.
 Questo aiuta anche con brevi stringhe non giuridiche, ma non costituisce una politica
 separata per testi generali. La risorsa viene caricata al primo utilizzo e poi conservata
 in memoria.

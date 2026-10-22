@@ -99,10 +99,21 @@ class TestStructuredIdentifiers:
         assert re.search(r"CF_\d+", out)
 
     def test_email_inside_an_institution_domain_is_still_removed(self):
-        # An unbounded institution match used to shield this address.
-        text = "ope legis domicilia (pec.: ags.rm@mailcert.avvocaturastato.it);"
+        # An unbounded institution match used to shield this address. The Avvocatura's
+        # own office PEC is now kept as a public mailbox (next test), so the shape is
+        # checked on a private domain that also contains the word.
+        text = "ope legis domicilia (pec.: m.rossi@mailcert.avvocaturalegale.it);"
         out, _ = anonymize(text)
-        assert "ags.rm@mailcert.avvocaturastato.it" not in out
+        assert "m.rossi@mailcert.avvocaturalegale.it" not in out
+
+    def test_public_office_mailbox_is_kept(self):
+        # A public body's office address is not personal data, and a request to the
+        # Agency is unusable without it (documents benchmark, 2026-10-21).
+        text = ("ope legis domicilia (pec.: ags.rm@mailcert.avvocaturastato.it); "
+                "inviata a dp.treviso@pce.agenziaentrate.it")
+        out, report = anonymize(text)
+        assert out == text
+        assert report.risk < 0.9
 
 
 class TestNoCorruption:

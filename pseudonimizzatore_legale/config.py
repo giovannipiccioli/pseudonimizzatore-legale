@@ -63,10 +63,13 @@ class Config:
     first_names
         Use the bundled list of first names registered in Italy as a weak additional
         person signal.
-        A listed word is never removed by itself: it must sit next to a distinct,
-        name-shaped token, and the resulting full name still passes the ordinary
-        institution, company and propagation guards. Enabled by default because it
-        materially improves recall without adding a model or runtime dependency.
+        A listed word seeds a person only next to a distinct, name-shaped token, never
+        inside a street, saint's or town name, and the resulting full name still passes
+        the ordinary institution, company and propagation guards. It is removed on its
+        own only as the first name of a person already detected, matched
+        case-sensitively, or after a salutation or kinship cue ("Caro Paolo,", "il
+        figlio minore Tommaso"). Enabled by default because it materially improves
+        recall without adding a model or runtime dependency.
     ner
         Hugging Face model id of a token-classification model, a tuple of model ids to
         union for recall-first use, or ``None`` (default) to run regex-only. When set,
@@ -93,8 +96,10 @@ class Config:
         structured identifier, strongly cued person or known alias remains.
 
     Note there is no ``keep_places`` flag: place names are never detected in the first
-    place, so they survive unconditionally. Residential addresses *are* removed, but
-    they are anchored on ``residente``/``domiciliato`` rather than on the place name.
+    place, so they survive unconditionally. Addresses *are* removed, but they are
+    anchored on a personal cue (``residente``, ``domiciliato``, ``con studio in``,
+    ``sito in``) or on an address line of a private letterhead, signature or addressee
+    block, never on the place name.
     """
 
     profile: str = "legal"

@@ -112,3 +112,32 @@ def test_ordinary_capitalized_words_around_names_survive(text):
 
 def test_loaded_resource_is_cached():
     assert first_names() is first_names()
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "La sede è in Viale Pietro Pietramellara 11.",
+        "ROMA, PRESSO VIA CESARE BECCARIA",
+        "Ricoverato all'Ospedale di Vittorio Veneto.",
+        "La parrocchia di San Giorgio Martire.",
+    ],
+)
+def test_streets_saints_and_towns_are_not_people(text):
+    assert seeds_candidates(text) == []
+    assert anonymize(text)[0] == text
+
+
+def test_a_first_name_alone_follows_its_person_or_a_cue():
+    text = ("Egr. Avv. Paolo Gennari\n\nCaro Paolo,\nti scrivo. Ferruccio arrivò in "
+            "ritardo; il figlio minore Tommaso no.")
+    output, report = anonymize(text)
+
+    assert "Paolo" not in output and "Tommaso" not in output
+    assert "Ferruccio arrivò" in output
+    assert output.count("Nominativo_1") == 2       # "Caro Paolo" is the counsel
+
+
+def seeds_candidates(text):
+    from pseudonimizzatore_legale.seeds import _first_name_candidates
+    return _first_name_candidates(text)

@@ -192,3 +192,43 @@ python evaluation/score_documents.py              # three configurations, per-do
 python evaluation/score_documents.py -v email     # one family, with leak context
 python evaluation/score_documents.py --no-ner --quiet
 ```
+
+## 8. After the 2026-10-21 engine fixes
+
+The four output bugs of §3 and the five recall fixes of §5 are in the engine, each with
+positive and negative probes in `tests/test_document_shapes.py` and pattern tests in
+`tests/test_patterns.py`. Same corpus, same scorer, with the engine of the commit that adds
+this section.
+
+| Configuration | Complete entities | Names | Addresses | Birth data | Complete docs | Protected kept |
+|---|---:|---:|---:|---:|---:|---:|
+| default, before | 306/394 (77.7%) | 136/153 | 26/59 | 22/43 | 2/31 | 169/177 |
+| default, after | 378/394 (95.9%) | 145/153 | 56/59 | 43/43 | 18/31 | 177/177 |
+| `first_names=False`, before | 290/394 (73.6%) | 126/153 | 20/59 | 22/43 | 1/31 | 171/177 |
+| `first_names=False`, after | 367/394 (93.1%) | 134/153 | 56/59 | 43/43 | 14/31 | 177/177 |
+| + NER XXL, before | 315/394 (79.9%) | 145/153 | 26/59 | 22/43 | 3/31 | 168/177 |
+| + NER XXL, after | 382/394 (97.0%) | 149/153 | 56/59 | 43/43 | 20/31 | 176/177 |
+
+The decisions (`score_corpus.py`) are unchanged: 472/488 complete entities, 111/124
+complete documents, 720/726 kept; 448/488 and 97/124 with `first_names=False`. Their
+precision lower bound moves from 817/990 to 817/1003. The 13 extra replacements were
+read one by one: unannotated birth dates (7, including an adopted minor's), counsel's
+studio addresses, a public-housing tenant's home, and one shopping centre's address
+(the only over-removal). The fixes also remove six first-name false positives from the
+decisions (`Via Giovanni Bosco`, `CESARE BECCARIA`, `Ada Negri`…), keep a vertical bench
+the lexicon used to split across lines, and stop `nato 2 ottobre 2019` being read inside
+the judge's surname `Trevisanato`.
+
+Still open, each a strict xfail in `tests/test_document_shapes.py`: phones without a cue
+or with a foreign prefix (4), a sole trader's seat after `con sede` or an activity
+(3), an uncued sole trader, a second partner after `studio legale` and a website, names
+in a table, a surname-first bullet, a common-word part of a double surname, and a first
+name two detected people share. With NER the only lost value on legal documents is
+`Comune di Marostica`, as before.
+
+**Read these numbers with §6 in mind, and one more bias**: the fixes were written while
+looking at this corpus, so the after-figures overstate what the same rules will do on
+real uploads. The decision corpus was not what the rules were written for, so it is the
+better evidence that they cost nothing elsewhere; even so, three address guards (the
+Avvocatura's look-back, a statutory domicile at the court, a blank line ending a cue)
+were corrected after reading its diff.

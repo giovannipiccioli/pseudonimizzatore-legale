@@ -126,6 +126,9 @@ CASES = [
     pytest.param(
         "Serafina Cavalcanti, nata in Romania, residente in Italia.",
         ["Romania", "Italia"], [], id="countries-are-not-comuni"),
+    pytest.param(
+        "nato a San Giovanni in Fiore il 1.2.1950", [], ["1.2.1950"],
+        id="birth-date-after-multiword-town"),
 ]
 
 

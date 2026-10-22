@@ -72,11 +72,11 @@ The default policy is designed for published Italian legal decisions:
 | Evidence | Default action |
 |---|---|
 | parties, counsel, and private natural persons | replace |
-| tax IDs, email/PEC, IBAN, phone, plates, identity documents, birth dates | replace |
-| personally cued residential and elective-domicile addresses | replace |
+| tax IDs, email/PEC, IBAN and account numbers, phone, plates, identity documents and passports, professional register numbers, birth dates | replace |
+| residential, elective-domicile, studio and property addresses after their cue, and the address lines of letterheads, signatures and addressee blocks | replace |
 | birthplace and residence towns (`nato a Stia`), checked against ISTAT's comuni | replace |
 | exact judicial and public-prosecution role spans | keep |
-| public bodies, institutions, and other place names | keep |
+| public bodies, institutions, their office mailboxes and address blocks, and other place names | keep |
 | procedural case numbers and ECLI identifiers | keep |
 | private companies | keep; replace likely person-named firms with `companies="person_named"`, or all detected firms with `companies=True` |
 | conflicting judicial and private-role evidence for one identity | replace and flag for review |
@@ -110,8 +110,10 @@ output, report = anonymize(source, companies="person_named")
 ```
 
 `first_names=True` enables the bundled list of names registered in Italy. It is a weak
-signal rather than a replacement dictionary: a listed first name is never removed on
-its own, but can seed an adjacent full name such as `Ferruccio Malaspina`. Set it to
+signal rather than a replacement dictionary: it seeds an adjacent full name such as
+`Ferruccio Malaspina`, never one inside a street, saint's or town name. A listed first
+name is removed on its own only as the first name of a person already detected, or
+after a salutation or kinship cue (`Caro Paolo,`, `il figlio minore Tommaso`). Set it to
 `False` to use only contextual detectors. This also helps on short, non-legal strings,
 but it is not a separate general-text policy. The resource is loaded lazily and cached.
 

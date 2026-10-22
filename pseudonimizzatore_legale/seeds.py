@@ -124,7 +124,7 @@ class SeedSet:
 
     def add(self, raw: str, role: str, allow_single: bool = False,
             require_distinctive: bool = True, source: str = "regex",
-            trusted: bool = False) -> Entity | None:
+            trusted: bool = False, given_name: bool = False) -> Entity | None:
         """Register `raw` as a person, unless one of the guards refuses it.
 
         `require_distinctive` asks whether the name must contain a corpus-rare token.
@@ -137,6 +137,11 @@ class SeedSet:
 
         `trusted` skips the guards and lets `role` override the detected one: a
         reviewer who adds a name has read the document.
+
+        `given_name` lets a single listed first name through even when it is a common
+        word ("Luca", "Paolo"): a salutation or a kinship cue has said it is a person.
+        Such a seed folds into the one full name it belongs to, if there is one, and
+        is propagated only by `core`'s case-sensitive given-name pass.
         """
         name = _clean(raw)
         if trusted and name:
@@ -165,7 +170,8 @@ class SeedSet:
         # one-token seed then removes the P from the protected public body "I.N.P.S.".
         # Multi-token NER candidates may be made entirely of common names and still be
         # useful, but a singleton has to be distinctive enough to stand on its own.
-        if len(toks) == 1 and not distinctive:
+        if len(toks) == 1 and not distinctive and not (
+                given_name and toks[0].casefold() in first_names()):
             return None
         if require_distinctive and not distinctive:
             return None                      # nothing distinctive to key on
@@ -251,7 +257,14 @@ _SIMPLE_ANCHORS = (
     ("QUALIFICA", "Nominativo"),
     ("PROPOSTO_DA", "Ricorrente"),
     ("NEI_CONFRONTI", "Resistente"),
+    ("EMAIL_DISPLAY_NAME", "Nominativo"),
 )
+
+#: Anchors whose name may wrap onto the next line (they read FULL_NAME_NL), and
+#: whether the name stands *before* the evidence: CF_ADIACENTE reads the name that
+#: precedes a codice fiscale, the others the name after their cue.
+_WRAPPING_ANCHORS = {"COUNSEL": False, "DIFESO_DA": False, "PKI_FIRMA": False,
+                     "CF_ADIACENTE": True}
 
 # These cues identify a private person strongly enough that an all-common name such as
 # ``Antonio De Luca`` is still useful as an exact full-name seed. It contributes no
@@ -267,6 +280,7 @@ _ALLOW_COMMON_NAME = frozenset({
     "QUALIFICA",
     "PROPOSTO_DA",
     "NEI_CONFRONTI",
+    "EMAIL_DISPLAY_NAME",
 })
 
 #: Anchors whose cue is followed by organisations as often as by people: the "contro"
@@ -287,10 +301,71 @@ def _in_organisation(text: str, start: int, end: int) -> bool:
                 or P.ORG_NAME_BEFORE.search(text, max(0, start - 60), start))
 
 
+def _continues_name(text: str, start: int, end: int) -> bool:
+    """Whether the line segment ``text[start:end]`` reads as the wrapped rest of a name.
+
+    It does if every token is name-shaped, none is a heading or role word, none is a
+    common word unless it is a listed first name, and the segment is not a field label
+    (a colon follows it).
+    """
+    tokens = re.findall(P.NAME_TOKEN, text[start:end])
+    if not tokens or re.match(r"[^\S\n]*:", text[end:end + 40]):
+        return False
+    common, listed = common_words(), first_names()
+    return not any(
+        token.casefold() in P.SECTION_HEADING_TOKENS
+        or (token.casefold() in common and token.casefold() not in listed)
+        for token in tokens)
+
+
+def _one_name(text: str, start: int, end: int, before: bool = False) -> tuple[int, int]:
+    """Trim a name capture that crosses line breaks to the lines that hold one name.
+
+    Court text wraps names, so several anchors read a name across a line break
+    ("dall'avv. Gallusi⏎Sandro"). Past the break the capture is part of the name only
+    if it reads as its rest (`_continues_name`); otherwise it is the next line's first
+    words, and replacing them deletes those words and the break: "Giudice: avv. Biagio
+    Stomeo⏎Segretario: …" was one person "Biagio Stomeo Segretario", and "difeso
+    dall'avv. Mario Malaspina⏎Il ricorrente" took the "Il". The line next to the
+    evidence is always kept: the one after the cue, or, with `before`, the one before
+    the codice fiscale.
+    """
+    breaks = [start + i for i, char in enumerate(text[start:end]) if char == "\n"]
+    if not breaks:
+        return start, end
+    if before:
+        kept = breaks[-1] + 1
+        for i in reversed(range(len(breaks))):
+            segment_start = breaks[i - 1] + 1 if i else start
+            if not _continues_name(text, segment_start, breaks[i]):
+                break
+            kept = segment_start
+        return kept, end
+    kept = breaks[0]
+    for i, line_break in enumerate(breaks):
+        segment_end = breaks[i + 1] if i + 1 < len(breaks) else end
+        if not _continues_name(text, line_break + 1, segment_end):
+            break
+        kept = segment_end
+    return start, kept
+
+
 def _adjacent(left: re.Match, right: re.Match, text: str) -> bool:
-    """Whether two name-shaped tokens are separated only by ordinary whitespace."""
+    """Whether two name-shaped tokens are separated only by ordinary whitespace.
+
+    One line break is allowed, because names wrap ("avv. Gervasio Spadaccini ed
+    Anastasia⏎Belloccio"), but only where the next line reads as the rest of the name:
+    both tokens in the same case style, and `_continues_name`. The lexicon is weak
+    evidence, and the word after a break starts the next line as often as it finishes
+    a name: "Presidente: VERDI CARLO⏎Rossi insiste" made the phantom person "CARLO
+    Rossi", whose surname then went to a neutral tag instead of to the real party
+    "Mario Rossi".
+    """
     gap = text[left.end():right.start()]
-    return bool(gap and re.fullmatch(P.SEP_NL, gap))
+    if not gap or not re.fullmatch(P.SEP_NL, gap):
+        return False
+    return "\n" not in gap or (left.group(0).isupper() == right.group(0).isupper()
+                               and _continues_name(text, right.start(), right.end()))
 
 
 def _first_name_candidates(text: str) -> list[str]:
@@ -299,7 +374,10 @@ def _first_name_candidates(text: str) -> list[str]:
     The list is evidence, not a dictionary substitution: a first name never becomes a
     seed alone. Adjacent listed/common words are also refused, which avoids treating
     sentence openings and place names as a person while keeping ordinary
-    ``Given Surname`` and ``SURNAME GIVEN`` forms.
+    ``Given Surname`` and ``SURNAME GIVEN`` forms. Streets, saints and towns are named
+    after people too, and are refused: "Viale Pietro Pietramellara", "San Giorgio",
+    "Ospedale di Vittorio Veneto". Before this the street lost its name and kept its
+    number, and the "surname" Pietramellara went on to replace every other mention.
     """
     tokens = list(re.finditer(P.NAME_TOKEN, text))
     listed = first_names()
@@ -310,6 +388,10 @@ def _first_name_candidates(text: str) -> list[str]:
     def add(start: int, end: int) -> None:
         span = (tokens[start].start(), tokens[end].end())
         if P.ORG_SUFFIX_AFTER.match(text, span[1]):
+            return
+        if P.NAMED_PLACE_BEFORE.search(text, max(0, span[0] - 40), span[0]):
+            return
+        if place_key(text[span[0]:span[1]]) in comuni():
             return
         if span not in seen:
             seen.add(span)
@@ -378,8 +460,11 @@ def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
         for m in getattr(P, attr).finditer(text):
             if attr in _ORGANISATION_PRONE and _in_organisation(text, m.start(1), m.end(1)):
                 continue
+            start, end = m.span(1)
+            if attr in _WRAPPING_ANCHORS:
+                start, end = _one_name(text, start, end, before=_WRAPPING_ANCHORS[attr])
             seeds.add(
-                m.group(1),
+                text[start:end],
                 role,
                 require_distinctive=attr not in _ALLOW_COMMON_NAME,
                 source=f"regex:{attr.lower()}",
@@ -421,10 +506,24 @@ def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
                     seeds.add(name, role, require_distinctive=False,
                               source="regex:legal_party_block")
 
+    # Relatives and correspondents are named by first name alone: "il figlio minore
+    # Tommaso", "Caro Paolo,", "Un caro saluto,⏎Luca". The cue says it is a person; a
+    # lower-case or common-word name must also be a listed first name.
+    use_list = getattr(cfg, "first_names", True)
+    for attr in ("PARENTELA", "SALUTO"):
+        for m in getattr(P, attr).finditer(text):
+            name = m.group(m.lastindex)
+            first = name.split()[0].casefold()
+            listed = use_list and first in first_names()
+            if not listed and (attr == "SALUTO" or not name[0].isupper()):
+                continue
+            seeds.add(name, "Nominativo", allow_single=True, require_distinctive=False,
+                      given_name=listed, source=f"regex:{attr.lower()}")
+
     # A first-name list cheaply finds people whom legal layout does not announce. It is
     # deliberately weaker than context or NER: only a complete adjacent name is added,
     # never a listed token on its own. Late policy treats this source as neutral.
-    if getattr(cfg, "first_names", True):
+    if use_list:
         for name in _first_name_candidates(text):
             seeds.add(name, "Nominativo", require_distinctive=False,
                       source="lexicon:first_name")
@@ -442,14 +541,18 @@ def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
             for mention in backend.find_people(text):
                 # allow_single: the model has sentence-level evidence a regex does not,
                 # so a lone surname is worth trusting here where it would not be from
-                # a cue. SeedSet deduplicates agreement between ensemble members.
-                seeds.add(mention.text, mention.role, allow_single=True,
+                # a cue. SeedSet deduplicates agreement between ensemble members. A
+                # model can run a name into the next line's label as a regex can.
+                surface = mention.text
+                if text[mention.start:mention.end] == surface:
+                    surface = text[slice(*_one_name(text, mention.start, mention.end))]
+                seeds.add(surface, mention.role, allow_single=True,
                           require_distinctive=False, source=f"ner:{model_id}")
     # The same for a NER run outside this package (in a browser, say). Its offsets are
     # into this text, so the surface is read from it rather than from the model.
     for mention in mentions:
-        seeds.add(text[mention.start:mention.end], mention.role, allow_single=True,
-                  require_distinctive=False, source=mention.source)
+        seeds.add(text[slice(*_one_name(text, mention.start, mention.end))], mention.role,
+                  allow_single=True, require_distinctive=False, source=mention.source)
 
     # People a reviewer added skip every guard, but still fold into the names found
     # above and propagate like them.
@@ -511,6 +614,10 @@ def variant_patterns(entity: Entity, min_len: int,
                     full))
 
     for variant in entity.variants | {entity.display}:
+        # A lone common first name ("Luca", "Rosa") is no spelling to hunt without
+        # regard to case and context; `core` proposes it case-sensitively instead.
+        if len(variant.split()) == 1 and not rare_tokens(variant, min_len):
+            continue
         for order in name_orders(variant):
             toks = [re.escape(token) for token in order.split()]
             add(r"\s+".join(toks), full=True)

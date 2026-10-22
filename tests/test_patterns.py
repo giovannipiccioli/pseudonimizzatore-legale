@@ -402,3 +402,197 @@ class TestAdministrativeLayouts:
         assert P.BIOGRAFICO.search(
             "Stato di Reggio Calabria, domiciliata ex lege in Reggio Calabria") is None
         assert P.BIOGRAFICO.search("Mario Rossi, domiciliato in Roma").group(1) == "Mario Rossi"
+
+
+class TestDocumentLayouts:
+    """Patterns added for the documents benchmark (briefs, letters, contracts, e-mails,
+    minutes, forms); see tests/test_document_shapes.py for the same shapes end to end."""
+
+    def test_public_mailbox_needs_a_public_domain_and_no_first_name(self):
+        for value in ("dp.treviso@pce.agenziaentrate.it", "ags.rm@mailcert.avvocaturastato.it",
+                      "protocollo@pec.comune.verona.it", "urp@mef.gov.it"):
+            assert P.public_mailbox(value), value
+        for value in ("mario.rossi@agenziaentrate.it",
+                      "avv.giada.furlan@pec.ordineavvocatitreviso.it",
+                      "dp.treviso@agenziaentrate.it.example.com", "studio@pecgov.it"):
+            assert not P.public_mailbox(value), value
+
+    def test_telefono_stays_on_its_line(self):
+        assert P.TELEFONO.search("Tel. 0422 541 337\n12 marzo").group(1) == "0422 541 337"
+
+    def test_identity_documents_beyond_the_cie(self):
+        for text, number in (
+                ("passaporto tedesco n. C7HN4R2T9", "C7HN4R2T9"),
+                ("my passport (n. C2T9L4M8R)", "C2T9L4M8R"),
+                ("PATENTE DI GUIDA   n.   TV5338124P", "TV5338124P"),
+                ("patente di guida n. RM5123456K", "RM5123456K"),
+                ("C.I. n. AY 4571203", "AY 4571203")):
+            assert P.NUMERO_DOCUMENTO.search(text).group(1) == number, text
+        for text in ("patente di guida categoria B", "passaporto scaduto da DUEMILAVENTI",
+                     "passaporto n. ABCDEFGHI", "C.I.G. n. ZA12345678"):
+            assert not P.NUMERO_DOCUMENTO.search(text), text
+
+    def test_bank_account_needs_its_cue(self):
+        assert P.CONTO_CORRENTE.search("sul conto corrente n. 000012345678").group(1) == (
+            "000012345678")
+        assert P.CONTO_CORRENTE.search("c/c postale 12345678").group(1) == "12345678"
+        for text in ("conto corrente dedicato ex L. 136/2010", "ruolo n. 000012345678",
+                     "conto corrente n. 1234/2020"):
+            assert not P.CONTO_CORRENTE.search(text), text
+
+    def test_italian_iban_with_irregular_spacing_must_pass_its_check(self):
+        def found(text):
+            return [m.group() for m in P.IBAN.finditer(text) if P.iban_ok(m.group())]
+        assert found("IT 77 A 01030 03400 000063241578") == ["IT 77 A 01030 03400 000063241578"]
+        assert found("IT 78 A 01030 03400 000063241578") == []
+
+    def test_register_number(self):
+        for text, number in (
+                ("iscritto all'Albo dei Dottori Commercialisti e degli Esperti Contabili di "
+                 "Prato al n. 412/A, con studio", "412/A"),
+                ("Ordine degli Ingegneri della Provincia di Padova n. 3471", "3471"),
+                ("iscritto al Registro dei Revisori Legali al n. 158243;", "158243"),
+                ("iscritta al REA della CCIAA della Romagna al n. FO-312456", "FO-312456"),
+                ("REA della C.C.I.A.A. di Forlì n. FO-312456", "FO-312456")):
+            assert P.NUMERO_ALBO.search(text).group(1) == number, text
+        for text in ("Consiglio dell'Ordine degli Avvocati di Roma, delibera n. 12",
+                     "iscritto all'Ordine degli Avvocati, ricorso n. 1234/2023",
+                     "punto n. 3 dell'ordine del giorno", "albo pretorio al n. 345",
+                     "Ordine dei Medici di Roma. Con nota n. 7"):
+            assert not P.NUMERO_ALBO.search(text), text
+
+    def test_birth_date_after_province_country_form_and_words(self):
+        for text, date in (
+                ("nato a Lugo (RA) il 12/05/1968", "12/05/1968"),
+                ("nato a Roma l'11/01/1966", "11/01/1966"),
+                ("nato a Monaco di Baviera (Germania) il 12/12/1965", "12/12/1965"),
+                ("Nato/a a   TREVISO          Prov.   TV       il   15/05/1955", "15/05/1955"),
+                ("nato a Treviso il giorno 3 giugno 1968", "3 giugno 1968"),
+                ("data di nascita: 1° marzo 1950", "1° marzo 1950"),
+                ("nato il giorno quindici marzo millenovecentoquaranta (15 marzo 1940),",
+                 "quindici marzo millenovecentoquaranta (15 marzo 1940)")):
+            assert P.DATA_NASCITA.search(text).group(1) == date, text
+        # the cue must be a word: "Trevisanato 2 ottobre 2019" is a judge's signature
+        for text in ("Ornella Trevisanato 2 ottobre 2019", "il giorno sei del mese di febbraio",
+                     "nato a seguito del ricorso depositato il 3 giugno 2020"):
+            assert not P.DATA_NASCITA.search(text), text
+
+    def test_foreign_birthplace_carries_its_country(self):
+        m = P.LUOGO_BIOGRAFICO.search("nato a Wenzhou (Repubblica Popolare Cinese) il 8/9/1984")
+        assert (m.group(1), m.group(2)) == ("Wenzhou", "Repubblica Popolare Cinese")
+        assert P.LUOGO_BIOGRAFICO.search("Nato/a a   TREVISO   Prov.").group(1) == (
+            "TREVISO   Prov")
+        assert P.LUOGO_BIOGRAFICO.search("nato a Lugo (RA) il").group(2) is None  # a province
+
+    def test_studio_and_property_cues(self):
+        for text, street in (
+                ("con studio in Torino, Via Principe Amedeo 21, residente", "Via Principe Amedeo 21"),
+                ("presso il suo studio in Verona, Stradone San Fermo 11", "Stradone San Fermo 11"),
+                ("dell'abitazione sita in Verona, Via Giosuè Carducci n. 14,",
+                 "Via Giosuè Carducci n. 14"),
+                ("residente in Moncalieri (TO), Strada Revigliasco n. 154/7,",
+                 "Strada Revigliasco n. 154/7"),
+                ("residente in Sendlinger Straße 15, 80331 München", "Sendlinger Straße 15"),
+                ("residente in Francia, 14 rue des Martyrs, 75009 Paris", "14 rue des Martyrs")):
+            assert P.INDIRIZZO_RESIDENZA.search(text).group(1) == street, text
+        for text in ("lo studio della questione, in via preliminare, al punto 3",
+                     "domiciliati ex art. 25 c.p.a. presso la Segreteria, via Flaminia, 189",
+                     "con studio in Roma.\n\nAgenzia delle Entrate\nVia Giorgione n. 106",
+                     "il sito internet, nel corso del 2020"):
+            assert not P.INDIRIZZO_RESIDENZA.search(text), text
+
+    def test_address_line(self):
+        for text, street in (
+                ("STUDIO LEGALE X\nVia Santo Stefano 38 – 40125 Bologna\ntel.", "Via Santo Stefano 38"),
+                ("Sig. Remo Tagliaferri\nVia Lorenteggio, 157\n20146 MILANO", "Via Lorenteggio, 157"),
+                ("Studio Legale Battistella\nVia Mazzini 8, 37011 Bardolino (VR)\n", "Via Mazzini 8"),
+                ("Kretschmer Sabine\nLeopoldstraße 112\n80802 München", "Leopoldstraße 112")):
+            assert P.INDIRIZZO_RIGA.search(text).group(1) == street, text
+        for text in ("Via Roma 12 è la sede del Comune", "La via Crucis 3 volte",
+                     "Corso di formazione 2026 – 40 ore"):
+            assert not P.INDIRIZZO_RIGA.search(text), text
+
+    def test_notarial_studio_address(self):
+        text = "in Treviso, Via Indipendenza n. 7, nel mio studio."
+        assert P.INDIRIZZO_STUDIO_DOPO.search(text).group(1) == "Via Indipendenza n. 7"
+        assert not P.INDIRIZZO_STUDIO_DOPO.search("in Treviso, Via Indipendenza n. 7, oggi")
+
+    def test_named_place_before_a_name(self):
+        for head in ("Viale ", "Via dei ", "VIA ", "San ", "S. ", "Sant'"):
+            assert P.NAMED_PLACE_BEFORE.search(head), head
+        for head in ("il sig. ", "Caro ", "avvocato "):
+            assert not P.NAMED_PLACE_BEFORE.search(head), head
+
+    def test_judicial_abbreviations_and_titled_header_fields(self):
+        for text, name in (
+                ("R.G. n. 4512/2025 – G.I. dott.ssa Maria Luisa Cavazzuti", "Maria Luisa Cavazzuti"),
+                ("(Pres. ed Est. dott. Aurelio Bortolami)", "Aurelio Bortolami"),
+                ("Giudice: avv. Biagio Stomeo\nSegretario:", "Biagio Stomeo"),
+                ("Presidente: dott. Ettore Mangialardo\n", "Ettore Mangialardo")):
+            assert name in protect.collect(text).names, text
+        assert not protect.collect("Il G.I. ha sentito l'avv. Mario Malaspina").names
+        # "Giudice: avv." is a title, not a counsel cue; a counsel cue elsewhere still is
+        assert P.COUNSEL.search("Giudice: avv. Biagio Stomeo") is None
+        assert P.COUNSEL.search("Segretario: avv. Biagio Stomeo").group(1) == "Biagio Stomeo"
+
+    def test_lists_stop_at_a_blank_line(self):
+        m = P.COUNSEL_LIST.search("Avv. Paolo Gennari e Avv. Paolo Righetti,\n\nCaro Paolo,")
+        assert "Caro" not in m.group(1)
+        m = P.COUNSEL_LIST.search("avv. Gervasio Spadaccini,\nAnastasia Belloccio e\nIsotta Rossi")
+        assert m.group(1).endswith("Isotta Rossi")
+
+    def test_email_display_name_on_a_header_line(self):
+        assert P.EMAIL_DISPLAY_NAME.search(
+            "Mittente: Giorgia Esposito <g.esposito@studio.it>").group(1) == "Giorgia Esposito"
+        assert P.EMAIL_DISPLAY_NAME.search(
+            "From: francesca granfione <f@libero.it>").group(1) == "francesca granfione"
+        for text in ("scrivere a Giorgia Esposito <g.esposito@studio.it>",
+                     "From: <g.esposito@studio.it>", "Oggetto: Mario Rossi <atti>"):
+            assert not P.EMAIL_DISPLAY_NAME.search(text), text
+
+    def test_kinship_and_salutation(self):
+        for text, name in (("il figlio minore Tommaso.", "Tommaso"),
+                           ("con suo marito Jacopo (IBAN", "Jacopo"),
+                           ("mio figlio gabriele (a carico", "gabriele"),
+                           ("my brother Jens and I", "Jens")):
+            assert P.PARENTELA.search(text).group(1) == name, text
+        assert P.PARENTELA.search("il figlio del ricorrente").group(1) == "del"  # refused later
+        for text, name in (("Caro Paolo,\n", "Paolo"), ("Un caro saluto,\nLuca\n", "Luca"),
+                           ("grazie, francesca\n", "francesca")):
+            m = P.SALUTO.search(text)
+            assert m.group(m.lastindex) == name, text
+        for text in ("Gentile Sig.ra Rossi,", "Cordiali saluti\n\nAvv. Marco Ferretti\n",
+                     "Distinti saluti\n\nIl Direttore\n"):
+            assert not P.SALUTO.search(text), text
+
+
+class TestLineBreaks:
+    """A name capture that crosses a line break keeps the next line only if it reads as
+    the rest of the name."""
+
+    def test_one_name_drops_a_label_or_a_sentence(self):
+        text = "Giudice: avv. Biagio Stomeo\nSegretario: sig.ra Perrone"
+        start = text.index("Biagio")
+        assert text[slice(*seeds_mod._one_name(text, start, text.index(":", 20)))] == (
+            "Biagio Stomeo")
+        text = "dall'avv. Mario Malaspina\nIl ricorrente"
+        start = text.index("Mario")
+        assert text[slice(*seeds_mod._one_name(text, start, text.index("Il") + 2))] == (
+            "Mario Malaspina")
+
+    def test_one_name_keeps_a_wrapped_name(self):
+        text = "dall'avv. Gallusi\nSandro, con studio"
+        start = text.index("Gallusi")
+        assert text[slice(*seeds_mod._one_name(text, start, text.index(",")))] == (
+            "Gallusi\nSandro")
+
+    def test_one_name_before_a_codice_fiscale(self):
+        text = "Contribuente\nMario Malaspina RSSMRA80A01H501U"
+        end = text.index(" RSS")
+        assert text[slice(*seeds_mod._one_name(text, 0, end, before=True))] == "Mario Malaspina"
+
+    def test_first_name_scan_needs_one_case_style_across_a_break(self):
+        assert "CARLO\nRossi" not in seeds_mod._first_name_candidates(
+            "Presidente: VERDI CARLO\nRossi insiste.")
+        assert "Anastasia\nBelloccio" in seeds_mod._first_name_candidates(
+            "dagli avv. Gervasio Spadaccini ed Anastasia\nBelloccio, ed elettivamente")

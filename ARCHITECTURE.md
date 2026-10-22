@@ -71,10 +71,16 @@ being assigned arbitrarily.
 
 The bundled first-name list covers names registered in Italy and is intentionally used
 as weak evidence. One linear token scan proposes only adjacent full names: ordinary
-`Given Surname`, or the ALL-CAPS `SURNAME GIVEN` form used in headings. A listed first
-name alone is never a seed. Legal common words, public institutions and company suffixes
-remain guards, and the resulting identity follows the normal alias and late-policy
-path. The JSON resource is loaded once on first use; `Config(first_names=False)` turns
+`Given Surname`, or the ALL-CAPS `SURNAME GIVEN` form used in headings. Across a line
+break the two tokens must share a case style and the next line must read as the rest of
+the name, and a name inside a street, a saint's or a town's (`Viale Pietro
+Pietramellara`, `San Giorgio`, `Vittorio Veneto`) is refused. A listed first name alone
+is a seed only after a salutation or a kinship cue (`Caro Paolo,`, `il figlio minore
+Tommaso`), and folds into the one full name it belongs to. A common first name of a
+detected person (`Paolo` of `Paolo Gennari`) is then proposed case-sensitively, only when
+one detected person owns it, never after a street word or a saint and never next to
+another name token. Legal common words, public institutions and company suffixes remain
+guards, and the resulting identity follows the normal alias and late-policy path. The JSON resource is loaded once on first use; `Config(first_names=False)` turns
 the scan off.
 
 Party blocks are read as lists. After an applicant cue (`proposto da`, `ricorso di`) or
@@ -87,6 +93,14 @@ institutions inside it are left to the public-body guards. A name followed by
 same places, so a hit from these cues is refused when the text continues it into an
 organisation: a legal form after it (`… S.r.l.`), or a capitalised word and a
 preposition before it (`Comune di …`).
+
+Court text wraps names, so a few anchors read a name across a line break (counsel,
+`difeso da`, the codice fiscale's neighbour, the signature block, NER mentions). Past the
+break the capture keeps the next line only if it reads as the rest of the name: no
+common word unless a listed first name, no heading or role word, no field label after
+it. Otherwise `Giudice: avv. Biagio Stomeo⏎Segretario: …` became one person and the
+rewrite deleted the label and the break. Lists of counsel or parties may wrap but end at
+a blank line, and a phone number stays on its line.
 
 ### 4. Apply policy and resolve overlaps
 
@@ -101,7 +115,7 @@ detected private company. Public-institution guards apply before these choices.
 |---:|---|
 | 120 | structured personal data |
 | 100 | exact judicial-role and procedural-number keeps |
-| 40 | personally cued residential address |
+| 40 | cued or letterhead address, birthplace or residence town |
 | 35 | private company |
 | 30 | full person identity |
 | 20 | distinctive or ambiguous person token |
@@ -138,8 +152,17 @@ marks a person.
 `keep_judges=False` and `keep_case_numbers=False` remove their keep decisions; they do
 not add special redactors. Public institutions are rejected as person/company
 candidates. A place is proposed only in a biographic slot ("nato a Stia", "residente a
-Pratovecchio") and only if ISTAT lists it as a comune, current or suppressed; a court
-seat or any other mention of a town is never a candidate.
+Pratovecchio") and only if ISTAT lists it as a comune, current or suppressed, or, for a
+birthplace, when its country follows in brackets (`nato a Wenzhou (Repubblica Popolare
+Cinese)`); a court seat or any other mention of a town is never a candidate.
+
+An address is proposed after a personal cue (residence, domicile, `con studio in`, a
+property `sito in`) or as the address line of a letterhead, a signature or an addressee
+block. A block that names a public body or a company is theirs and stays, as do a
+registered office (`con sede in`), the Avvocatura's domicile, a statutory domicile at the
+court, and a property cue right after a public body. A public office's mailbox (an
+address on a public administration's domain with no first name in it, such as
+`dp.treviso@pce.agenziaentrate.it`) is not personal data and is not proposed either.
 
 ### 5. Allocate tags and render once
 

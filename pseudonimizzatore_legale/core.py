@@ -303,6 +303,75 @@ def _propose_people(
             ))
 
 
+#: A salutation right before a first name: "Caro Paolo", unlike "BIANCHI PAOLO", is not
+#: the end of someone else's surname-first name.
+_SALUTATION_BEFORE = re.compile(
+    r"(?<![\p{L}])(?i:car[oa]|carissim[oa]|gentil(?:e|issim[oa])|ciao|dear|hi)[^\S\n]+$")
+
+
+def _propose_given_names(
+    text: str,
+    entities: list[Entity],
+    cfg: Config,
+    out: list[Candidate],
+) -> None:
+    """Propose the first name alone of a detected person, where it is a common word.
+
+    A rare first name ("Ferruccio") already propagates as a distinctive token. A common
+    one ("Paolo", "Luca", "Marcello") does not, so "Caro Paolo," after "Egr. Avv. Paolo
+    Gennari", a letter signed "Luca" by "Avv. Luca Veronesi", or "per Rosalba e
+    Marcello" after the heirs' list stayed in clear. Conservatively:
+
+    * the name must be a listed first name and belong to exactly one detected person;
+    * it is matched case-sensitively, as capitalised, ALL-CAPS or as that person's
+      variants spell it ("francesca" in an e-mail);
+    * it may not follow a street word or a saint ("Via Paolo Sarpi", "San Paolo"), nor
+      sit next to another capitalised name token, which would make it part of someone
+      else's full name ("Paolo Rossi", "BIANCHI PAOLO").
+    """
+    listed = seeds_mod.first_names()
+    owners: dict[str, list[Entity]] = defaultdict(list)
+    for entity in entities:
+        distinctive = {token.casefold()
+                       for token in seeds_mod.rare_tokens(entity.display, cfg.min_token_len)}
+        for token in {token.casefold() for token in entity.display.split()}:
+            if token in listed and token not in distinctive:
+                owners[token].append(entity)
+
+    for name, entities_with_name in sorted(owners.items()):
+        if len(entities_with_name) != 1:
+            continue
+        entity = entities_with_name[0]
+        forms = {name.capitalize(), name.upper()} | {
+            token for variant in entity.variants for token in variant.split()
+            if token.casefold() == name}
+        pattern = re.compile(
+            r"(?<![\p{L}\p{N}'’])(?:" + "|".join(map(re.escape, sorted(forms))) +
+            r")(?![\p{L}\p{N}'’])")
+        for match in pattern.finditer(text):
+            before = text[max(0, match.start() - 40):match.start()]
+            if P.NAMED_PLACE_BEFORE.search(before):
+                continue                        # "Via Paolo Sarpi", "San Paolo"
+            if re.match(rf"[^\S\n]+{P.NAME_TOKEN}", text[match.end():match.end() + 40]):
+                continue                        # "Paolo Rossi"
+            if (re.search(rf"{P.NAME_TOKEN}[^\S\n]+$", before)
+                    and not _SALUTATION_BEFORE.search(before)):
+                continue                        # "BIANCHI PAOLO", but not "Caro Paolo"
+            out.append(_candidate(
+                text,
+                match.start(),
+                match.end(),
+                kind="PERSON",
+                source="+".join(sorted(entity.sources)) + "+given_name",
+                priority=PRI_PERSON_TOKEN,
+                role=entity.role,
+                full_name=False,
+                label=entity.role,
+                value=entity.display,
+                reason="first name of a detected person",
+            ))
+
+
 def _propose_structured(text: str, out: list[Candidate]) -> None:
     for label, pattern, group in P.STRUCTURED:
         for match in pattern.finditer(text):
@@ -324,29 +393,60 @@ def _propose_structured(text: str, out: list[Candidate]) -> None:
             ))
 
 
+def _public_block(text: str, start: int) -> bool:
+    """Whether the address line at `start` closes a block that names a public body or
+    a company: "Spett.le⏎Agenzia delle Entrate⏎Direzione Provinciale di Torino⏎Corso
+    Bolzano 30, 10121 Torino" is the Agency's address. The block runs back to the
+    previous blank line."""
+    head = re.split(r"\n[^\S\n]*\n", text[max(0, start - 300):start])[-1]
+    return bool(P.INSTITUTION_HEAD.search(head) or P.COMPANY_SUFFIX_RE.search(head))
+
+
+#: (pattern, source, reason) for each address rule; group 1 is the address.
+_ADDRESS_RULES = (
+    (P.INDIRIZZO_RESIDENZA, "regex:residential_address",
+     "residence, domicile, studio or property cue"),
+    (P.INDIRIZZO_STUDIO_DOPO, "regex:studio_address", "notarial studio address"),
+    (P.INDIRIZZO_RIGA, "regex:address_line",
+     "address line of a letterhead, signature or addressee block"),
+)
+
+
 def _propose_addresses(text: str, out: list[Candidate]) -> None:
-    for match in P.INDIRIZZO_RESIDENZA.finditer(text):
-        # A public body elects domicile at the Avvocatura dello Stato's offices ("…,
-        # domiciliata in Roma, via dei Portoghesi 12, presso l'Avvocatura generale"):
-        # a public address, like a registered office. Look a little either side,
-        # without crossing the semicolon that closes a party's clause.
-        before = text[max(0, match.start() - 80):match.start()].rsplit(";", 1)[-1]
-        after = text[match.end():match.end() + 60].split(";", 1)[0]
-        if re.search(r"(?i:avvocatura)", before + match.group(0) + after):
-            continue
-        value = re.sub(r"\s+", " ", match.group(1)).strip()
-        out.append(_candidate(
-            text,
-            match.start(1),
-            match.end(1),
-            kind="ADDRESS",
-            source="regex:residential_address",
-            priority=PRI_ADDRESS,
-            role="Indirizzo",
-            label="Indirizzo",
-            value=value,
-            reason="residential-address cue",
-        ))
+    for pattern, source, reason in _ADDRESS_RULES:
+        for match in pattern.finditer(text):
+            start, end = match.span(1)
+            # A public body elects domicile at the Avvocatura dello Stato's offices
+            # ("…, domiciliata in Roma, via dei Portoghesi 12, presso l'Avvocatura
+            # generale"), and a party may be domiciled by statute at the court's own
+            # office ("presso la Segreteria del Tar Lazio in Roma, via Flaminia, 189"):
+            # public addresses, like a registered office. Look a little either side,
+            # without crossing the semicolon that closes a party's clause.
+            before = text[max(0, match.start() - 80):match.start()].rsplit(";", 1)[-1]
+            after = text[end:end + 60].split(";", 1)[0]
+            if re.search(r"(?i:avvocatura|(?:segreteria|cancelleria)\s+d)",
+                         before + match.group(0) + after):
+                continue
+            # A property cue after a public body is that body's seat: "il Tribunale,
+            # sito in …".
+            if pattern is P.INDIRIZZO_RESIDENZA and P.PROPERTY_CUE.match(match.group(0)):
+                head = text[max(0, match.start() - 40):match.start()]
+                if P.INSTITUTION_HEAD.search(head) or P.COMPANY_SUFFIX_RE.search(head):
+                    continue
+            if pattern is P.INDIRIZZO_RIGA and _public_block(text, start):
+                continue
+            out.append(_candidate(
+                text,
+                start,
+                end,
+                kind="ADDRESS",
+                source=source,
+                priority=PRI_ADDRESS,
+                role="Indirizzo",
+                label="Indirizzo",
+                value=re.sub(r"\s+", " ", match.group(1)).strip(),
+                reason=reason,
+            ))
 
 
 def _propose_places(text: str, out: list[Candidate]) -> None:
@@ -354,22 +454,29 @@ def _propose_places(text: str, out: list[Candidate]) -> None:
     comuni = seeds_mod.comuni()
     for match in P.LUOGO_BIOGRAFICO.finditer(text):
         words = list(re.finditer(r"\S+", match.group(1)))
-        for word in reversed(words):            # longest prefix that is a comune
-            name = match.group(1)[:word.end()]
-            if seeds_mod.place_key(name) in comuni:
-                out.append(_candidate(
-                    text,
-                    match.start(1),
-                    match.start(1) + word.end(),
-                    kind="PLACE",
-                    source="regex:place",
-                    priority=PRI_ADDRESS,
-                    role="Luogo",
-                    label="Luogo",
-                    value=name,
-                    reason="birthplace or residence town",
-                ))
-                break
+        length = next((word.end() for word in reversed(words)       # longest prefix
+                       if seeds_mod.place_key(match.group(1)[:word.end()]) in comuni),
+                      None)                                         # that is a comune
+        # A foreign birthplace, followed by its country in brackets ("nato a Wenzhou
+        # (Repubblica Popolare Cinese)"). Two capitals are an Italian province instead.
+        country = match.group(2)
+        if (length is None and country and match.group(0)[:3].casefold() == "nat"
+                and re.fullmatch(r"\p{Lu}[\p{L}'’]+(?:\s+\p{L}[\p{L}'’]+){0,3}", country)
+                and not re.fullmatch(r"\p{Lu}{2}", country)):
+            length = len(match.group(1))
+        if length is not None:
+            out.append(_candidate(
+                text,
+                match.start(1),
+                match.start(1) + length,
+                kind="PLACE",
+                source="regex:place",
+                priority=PRI_ADDRESS,
+                role="Luogo",
+                label="Luogo",
+                value=match.group(1)[:length],
+                reason="birthplace or residence town",
+            ))
 
 
 def _person_named_company_start(
@@ -675,7 +782,7 @@ def residual_risk(anonymized: str, report: Report) -> float:
     if report.warnings:
         score = max(score, 0.5)
     if (any(P.codice_fiscale_ok(m.group()) for m in P.CODICE_FISCALE.finditer(anonymized))
-            or P.EMAIL.search(anonymized)):
+            or any(not P.public_mailbox(m.group()) for m in P.EMAIL.finditer(anonymized))):
         score = max(score, 0.9)
     return round(score, 3)
 
@@ -725,6 +832,8 @@ def analyze(
         _conflicting_judges(people, protection_evidence),
     )
     _propose_people(text, people, cfg, candidates)
+    if cfg.first_names:
+        _propose_given_names(text, people, cfg, candidates)
     _propose_structured(text, candidates)
     _propose_addresses(text, candidates)
     _propose_places(text, candidates)
