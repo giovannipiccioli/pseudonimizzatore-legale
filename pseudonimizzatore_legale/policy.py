@@ -10,7 +10,8 @@ from __future__ import annotations
 from .model import Candidate, Decision
 
 # Higher priority wins a contested span. These values describe evidence strength, not
-# detector execution order.
+# detector execution order. A reviewer's explicit edit outranks every detector.
+PRI_USER = 200
 PRI_STRUCTURED = 120
 PRI_PROTECTED = 100
 PRI_ADDRESS = 40
@@ -20,6 +21,8 @@ PRI_PERSON_TOKEN = 20
 
 
 def _enabled(candidate: Candidate, config) -> bool:
+    if candidate.protection == "user":
+        return True
     if candidate.protection == "judge":
         return config.keep_judges
     if candidate.protection == "case_number":

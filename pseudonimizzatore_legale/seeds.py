@@ -123,7 +123,8 @@ class SeedSet:
         self._min_len = min_token_len
 
     def add(self, raw: str, role: str, allow_single: bool = False,
-            require_distinctive: bool = True, source: str = "regex") -> Entity | None:
+            require_distinctive: bool = True, source: str = "regex",
+            trusted: bool = False) -> Entity | None:
         """Register `raw` as a person, unless one of the guards refuses it.
 
         `require_distinctive` asks whether the name must contain a corpus-rare token.
@@ -133,8 +134,14 @@ class SeedSet:
         so "Giovanni Esposito" is a person even though both halves are common Italian
         names. Such a seed still replaces its exact spellings; it just contributes no
         bare token to propagate, which `variant_patterns` handles by emitting none.
+
+        `trusted` skips the guards and lets `role` override the detected one: a
+        reviewer who adds a name has read the document.
         """
-        name = _truncate_at_heading(_clean(raw))
+        name = _clean(raw)
+        if trusted and name:
+            return self._register(name, role, source, trusted=True)
+        name = _truncate_at_heading(name)
         toks = [t for t in re.split(r"\s+", name) if t]
         if not ((1 if allow_single else 2) <= len(toks) <= 4):
             return None
@@ -162,7 +169,10 @@ class SeedSet:
             return None
         if require_distinctive and not distinctive:
             return None                      # nothing distinctive to key on
+        return self._register(name, role, source)
 
+    def _register(self, name: str, role: str, source: str,
+                  trusted: bool = False) -> Entity:
         entity = Entity(display=name, role=role)
         entity.sources.add(source)
         existing = self._by_key.get(entity.key)
@@ -172,7 +182,7 @@ class SeedSet:
             return entity
         existing.variants.add(name)
         existing.sources.add(source)
-        if _ROLE_RANK.get(role, 9) < _ROLE_RANK.get(existing.role, 9):
+        if trusted or _ROLE_RANK.get(role, 9) < _ROLE_RANK.get(existing.role, 9):
             existing.role = role
         # Prefer the longer spelling as the canonical display form.
         if len(name) > len(existing.display):
@@ -356,8 +366,12 @@ def _first_name_candidates(text: str) -> list[str]:
     return found
 
 
-def collect(text: str, cfg) -> list[Entity]:
-    """Find document-local person entities; policy is applied later."""
+def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
+    """Find document-local person entities; policy is applied later.
+
+    `mentions` are person `Mention`s from a NER the caller ran on this same text;
+    `people` are ``(surface, role)`` pairs a reviewer added.
+    """
     seeds = SeedSet(cfg.min_token_len)
 
     for attr, role in _SIMPLE_ANCHORS:
@@ -431,6 +445,16 @@ def collect(text: str, cfg) -> list[Entity]:
                 # a cue. SeedSet deduplicates agreement between ensemble members.
                 seeds.add(mention.text, mention.role, allow_single=True,
                           require_distinctive=False, source=f"ner:{model_id}")
+    # The same for a NER run outside this package (in a browser, say). Its offsets are
+    # into this text, so the surface is read from it rather than from the model.
+    for mention in mentions:
+        seeds.add(text[mention.start:mention.end], mention.role, allow_single=True,
+                  require_distinctive=False, source=mention.source)
+
+    # People a reviewer added skip every guard, but still fold into the names found
+    # above and propagate like them.
+    for surface, role in people:
+        seeds.add(surface, role, source="user", trusted=True)
 
     return seeds.all()
 

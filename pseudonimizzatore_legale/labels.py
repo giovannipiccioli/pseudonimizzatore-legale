@@ -33,26 +33,44 @@ RESERVED = frozenset({
 
 
 class Registry:
-    """Allocates one stable tag per distinct entity, per document."""
+    """Allocates one stable tag per distinct entity, per document.
 
-    def __init__(self) -> None:
+    `prior` is an earlier `mapping()` of the same document. Its entities keep their
+    tags and new ones are numbered after them, so a review edit never renumbers the
+    rest:
+
+    >>> registry = Registry({"Mario Rossi": "Nominativo_2"})
+    >>> registry.tag("Nominativo", "Anna Verdi"), registry.tag("Nominativo", "MARIO ROSSI")
+    ('Nominativo_3', 'Nominativo_2')
+    """
+
+    def __init__(self, prior: dict[str, str] | None = None) -> None:
         self._counters: dict[str, int] = defaultdict(int)
         self._tags: dict[tuple[str, str], str] = {}      # (role, key) -> tag
         self._display: dict[tuple[str, str], str] = {}   # (role, key) -> readable text
+        self._prior: dict[tuple[str, str], str] = {}
+        for value, tag in (prior or {}).items():
+            role, _, number = tag.rpartition("_")
+            if number.isdigit():
+                self._prior[(role, value.casefold())] = tag
+                self._counters[role] = max(self._counters[role], int(number))
 
-    def tag(self, role: str, value: str) -> str:
+    def tag(self, role: str, value: str, fixed: str | None = None) -> str:
         """Return the tag for `value`, allocating a new one on first sight.
 
         Entities are deduplicated case-insensitively — the same e-mail address written
         two ways is one entity and gets one tag — while the report keeps the first
-        spelling actually seen, so it stays readable.
+        spelling actually seen, so it stays readable. `fixed` is a tag chosen by the
+        reviewer; it consumes no number.
         """
         key = (role, value.casefold())
         existing = self._tags.get(key)
         if existing is not None:
             return existing
-        self._counters[role] += 1
-        tag = f"{role}_{self._counters[role]}"
+        tag = fixed or self._prior.get(key)
+        if tag is None:
+            self._counters[role] += 1
+            tag = f"{role}_{self._counters[role]}"
         self._tags[key] = tag
         self._display[key] = value
         return tag

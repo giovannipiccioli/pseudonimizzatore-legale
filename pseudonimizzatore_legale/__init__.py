@@ -18,15 +18,17 @@ and one for short free-form input, with a limit worth reading about first:
 
     anonymize(query, profile="query")
 
+A review tool calls the two halves of `anonymize` itself — `analyze` to detect and tag,
+`render` to rewrite and verify — and passes a reviewer's corrections back as `Edits`.
+
 The substitution is **one-way by design** — there is no de-pseudonymization path, and
 nothing is persisted that would allow one unless you explicitly request a sidecar.
 This is pseudonymization, not anonymization: the output is still personal data.
 
 See README.md to get started, ARCHITECTURE.md for how and why it works.
 """
-from .batch import anonymize_batch, anonymize_file
 from .config import Config
-from .core import Report, anonymize
+from .core import Analysis, Edits, Report, analyze, anonymize, normalize, render
 from .model import Decision, EntityRecord, Mention, ResidualFinding
 from ._version import __version__
 
@@ -34,6 +36,11 @@ __all__ = [
     "anonymize",
     "anonymize_batch",
     "anonymize_file",
+    "analyze",
+    "render",
+    "normalize",
+    "Analysis",
+    "Edits",
     "Config",
     "Report",
     "Mention",
@@ -42,3 +49,12 @@ __all__ = [
     "ResidualFinding",
     "__version__",
 ]
+
+
+def __getattr__(name: str):
+    # The batch driver pulls in multiprocessing and tempfile, which a browser runtime
+    # such as Pyodide cannot use; load it only when it is asked for.
+    if name in ("anonymize_batch", "anonymize_file"):
+        from . import batch
+        return getattr(batch, name)
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

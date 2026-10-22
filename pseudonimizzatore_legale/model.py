@@ -48,7 +48,7 @@ class Candidate:
     priority: int
     label: str | None = None
     value: str | None = None
-    protection: str | None = None       # ``judge`` or ``case_number``
+    protection: str | None = None       # ``judge``, ``case_number`` or ``user``
     reason: str = ""
 
 
@@ -72,7 +72,11 @@ class Decision:
 
 @dataclass(frozen=True)
 class EntityRecord:
-    """Compact audit record for one accepted document-local entity."""
+    """Compact audit record for one accepted document-local entity.
+
+    One review-panel row: the tag (``entity_id``), every spelling, and every span in
+    normalized-input coordinates.
+    """
 
     entity_id: str
     kind: str
@@ -80,6 +84,7 @@ class EntityRecord:
     action: str
     aliases: tuple[str, ...]
     sources: tuple[str, ...]
+    spans: tuple[tuple[int, int], ...] = ()
 
 
 @dataclass(frozen=True)
