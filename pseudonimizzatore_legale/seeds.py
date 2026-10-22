@@ -232,6 +232,17 @@ _ALLOW_COMMON_NAME = frozenset({
     "NEI_CONFRONTI",
 })
 
+#: Anchors whose cue is followed by organisations as often as by people: the "contro"
+#: heading of NEI_CONFRONTI, and BIOGRAFICO's "rappresentato e difeso", which follows a
+#: company or a public body just as it follows a party.
+_ORGANISATION_PRONE = frozenset({"BIOGRAFICO", "NEI_CONFRONTI"})
+
+
+def _in_organisation(text: str, start: int, end: int) -> bool:
+    """True if the text continues the name at `start:end` into an organisation's name."""
+    return bool(P.ORG_SUFFIX_AFTER.match(text, end)
+                or P.ORG_NAME_BEFORE.search(text, max(0, start - 60), start))
+
 
 def collect(text: str, cfg) -> list[Entity]:
     """Find document-local person entities; policy is applied later."""
@@ -239,6 +250,8 @@ def collect(text: str, cfg) -> list[Entity]:
 
     for attr, role in _SIMPLE_ANCHORS:
         for m in getattr(P, attr).finditer(text):
+            if attr in _ORGANISATION_PRONE and _in_organisation(text, m.start(1), m.end(1)):
+                continue
             seeds.add(
                 m.group(1),
                 role,
@@ -256,6 +269,8 @@ def collect(text: str, cfg) -> list[Entity]:
     # counter-interested parties of a public competition — and, as with counsel, the
     # single-name anchors only see the first. The cue decides the side.
     for m in P.PARTY_LIST.finditer(text):
+        if _in_organisation(text, m.start(1), m.end(1)):
+            continue
         role = _party_role(m.group(0))
         for part in P.COUNSEL_LIST_SEP.split(m.group(1)):
             seeds.add(part, role, require_distinctive=False, source="regex:party_list")

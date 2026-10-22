@@ -125,6 +125,47 @@ CASES = [
         "dall'Avv.to Celeste Bonaventura, domiciliatario giusta delega in atti.",
         ["Augusto Corbellini"], ["Celeste Bonaventura"],
         id="merito_civile/03_2022-judge-also-counsel"),
+    # parties under a "contro" heading, or named before "rappresentato e difeso"
+    pytest.param(
+        "APPELLANTE CONTRO\nIldegarda Quarantotto, Amedeo Della Rovere, ciascuno in "
+        "qualità di coerede, tutti rappresentati e difesi dall'avv. Osvaldo Di Benedetto",
+        [], ["Ildegarda Quarantotto", "Amedeo Della Rovere", "Osvaldo Di Benedetto"],
+        id="merito_civile/01_2023-respondents-after-contro"),
+    pytest.param(
+        "sul ricorso proposto da Ferruccio Malaspina, rappresentato e difeso dall'avv. "
+        "Anastasia Belloccio,\ncontro\nOrtensia Vimercati, rappresentata e difesa "
+        "dall'avv. Gervasio Spadaccini,\nper la riforma della sentenza",
+        [], ["Ferruccio Malaspina", "Ortensia Vimercati"],
+        id="respondent-after-contro-mixed-case"),
+    pytest.param(
+        "Ministero della Difesa, in persona del Ministro pro tempore\ncontro\n\n"
+        "Serafina Cavalcanti, non costituita in giudizio;\n\nper la riforma della sentenza",
+        [], ["Serafina Cavalcanti"],
+        id="consiglio_stato-appellee-not-appearing"),
+    pytest.param(
+        "TRA\nRosalinda Pizzigoni, nata a Trani il 14.6.1951, rappresentata e difesa "
+        "dagli avv.ti Ermenegildo Trentacoste e Isotta Malinverni;\n-Appellante-\nE\n"
+        "Ortensia Vimercati, rappresentata e difesa dall'avv. Gervasio Spadaccini;\n"
+        "-Appellata-",
+        [], ["Rosalinda Pizzigoni", "Ortensia Vimercati"],
+        id="civil-heading-second-party"),
+    # …while an organisation in the same place stays
+    pytest.param(
+        "contro\n\nAutorità Garante della Concorrenza e del Mercato, in persona del legale "
+        "rappresentante pro tempore, rappresentata e difesa dall'Avvocatura Generale dello "
+        "Stato;",
+        ["Autorità Garante della Concorrenza e del Mercato"], [],
+        id="authority-after-contro"),
+    pytest.param(
+        "- ricorrente -\ncontro\nRosalinda Pizzigoni S.n.c., in persona del legale "
+        "rappresentante pro tempore, rappresentata e difesa dall'avv. Gervasio Spadaccini;",
+        ["Rosalinda Pizzigoni S.n.c."], ["Gervasio Spadaccini"],
+        id="cassazione/16-person-named-company-after-contro"),
+    pytest.param(
+        "contro\n\nComune di Fonte Nuova, rappresentato e difeso dall'avv. Anastasia "
+        "Belloccio;",
+        ["Comune di Fonte Nuova"], ["Anastasia Belloccio"],
+        id="tar/07-town-before-rappresentato-e-difeso"),
     # known gaps
     pytest.param(
         "Sezione per le controversie in materia di lavoro - composta dai Magistrati:      1)\n"
@@ -137,28 +178,6 @@ CASES = [
         marks=gap("a giudice ausiliario titled 'Avv.' is read as counsel; 'G.A. relatore' "
                   "is not a judicial role"),
         id="merito_civile/02_2020-giudice-ausiliario"),
-    pytest.param(
-        "APPELLANTE CONTRO\nIldegarda Quarantotto, Amedeo Della Rovere, ciascuno in "
-        "qualità di coerede, tutti rappresentati e difesi dall'avv. Osvaldo Di Benedetto",
-        [], ["Ildegarda Quarantotto", "Amedeo Della Rovere", "Osvaldo Di Benedetto"],
-        marks=gap("respondents listed after 'CONTRO' are not read as a party list"),
-        id="merito_civile/01_2023-respondents-after-contro"),
-    pytest.param(
-        "sul ricorso proposto da Ferruccio Malaspina, rappresentato e difeso dall'avv. "
-        "Anastasia Belloccio,\ncontro\nOrtensia Vimercati, rappresentata e difesa "
-        "dall'avv. Gervasio Spadaccini,\nper la riforma della sentenza",
-        [], ["Ferruccio Malaspina", "Ortensia Vimercati"],
-        marks=gap("a respondent after 'contro' is found in capitals or beside a codice "
-                  "fiscale, not in mixed case"),
-        id="respondent-after-contro-mixed-case"),
-    pytest.param(
-        "TRA\nRosalinda Pizzigoni, nata a Trani il 14.6.1951, rappresentata e difesa "
-        "dagli avv.ti Ermenegildo Trentacoste e Isotta Malinverni;\n-Appellante-\nE\n"
-        "Ortensia Vimercati, rappresentata e difesa dall'avv. Gervasio Spadaccini;\n"
-        "-Appellata-",
-        [], ["Rosalinda Pizzigoni", "Ortensia Vimercati"],
-        marks=gap("the second party of a civil 'TRA … E …' heading is left in clear"),
-        id="civil-heading-second-party"),
 ]
 
 

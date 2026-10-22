@@ -69,11 +69,15 @@ one detected person, the token is still redacted under a neutral identity instea
 being assigned arbitrarily.
 
 Party blocks are read as lists. After an applicant cue (`proposto da`, `ricorso di`) or
-a counter-party cue (`nei confronti di`, or `nei confronti` alone on its line, as the TAR
-prints it) every name of a list separated by commas, semicolons or `e` is seeded, not
-only the first: a mass appeal lists dozens of applicants after one cue. The list ends at
-the first item that is not name-shaped, and institutions inside it are left to the
-public-body guards.
+a counter-party cue (`nei confronti di`, or `nei confronti` or `contro` ending its line,
+as the administrative and civil headings print them) every name of a list separated by
+commas, semicolons or `e` is seeded, not only the first: a mass appeal lists dozens of
+applicants after one cue. The list ends at the first item that is not name-shaped, and
+institutions inside it are left to the public-body guards. A name followed by
+`rappresentato e difeso` is a party as well. Companies and public bodies stand in the
+same places, so a hit from these cues is refused when the text continues it into an
+organisation: a legal form after it (`… S.r.l.`), or a capitalised word and a
+preposition before it (`Comune di …`).
 
 ### 4. Apply policy and resolve overlaps
 

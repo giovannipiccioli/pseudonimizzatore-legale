@@ -43,7 +43,9 @@ KEPT_JUDGES = {
 }
 
 CONFLICTS = {
-    "merito_civile/01_2023_corte_d_appello_di_bari": ["Ornella Trevisanato", "Trevisanato"],
+    "merito_civile/01_2023_corte_d_appello_di_bari": [
+        "Federico Maria Sbaraglia", "Ornella Trevisanato", "Sbaraglia", "Trevisanato"],
+    "merito_civile/02_2020_corte_d_appello_di_bari": ["Federico Maria Sbaraglia", "Sbaraglia"],
     "merito_civile/03_2022_corte_d_appello_di_brescia": ["Bonaventura", "Celeste Bonaventura"],
     "merito_civile/03_2023_corte_d_appello_di_catanzaro": [
         "Bonaventura", "Celeste Bonaventura"],

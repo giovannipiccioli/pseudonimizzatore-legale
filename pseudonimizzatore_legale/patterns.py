@@ -186,6 +186,12 @@ JUDGE_ANCHORS = [
     # "dal Consigliere CHIECA Danilo" / "dal consigliere dott. Alberto Crivelli"
     re.compile(rf"(?i:d(?:al|a|el)\s+(?:{JUDICIAL_ROLE})\s+"
                rf"(?:dott\.?(?:ssa)?\s+|avv\.?\s+)?)({FULL_NAME})"),
+    # "il consigliere\nrelatore Arcangelo Monteleone" — this narrow form covers a
+    # wrapped secondary role without treating every role word in running text as a
+    # new bench declaration.
+    re.compile(rf"(?i:(?:il|la)\s+)?(?i:consiglier[ea])\s+"
+               rf"(?i:relatore|estensore)\s+"
+               rf"(?:(?i:dott\.?(?:ssa)?|dr\.?(?:ssa)?|avv\.)\s*)?({FULL_NAME})"),
     # "Sostituto procuratore generale Tommaso Basile"
     re.compile(rf"(?i:sostituto\s+procuratore(?:\s+generale)?\s+"
                rf"(?:dott\.?(?:ssa)?\s+)?)({FULL_NAME})"),
@@ -300,7 +306,7 @@ INSTITUTION_HEAD = re.compile(
     r"\b(?i:agenzi[ae]|ag\.?\s+entrat|minister[oi]|ministro|i\.?n\.?p\.?s\.?|"
     r"inail|inpgi|inpdap|istitut[oi]|"
     r"avvocatura|generale\s+dello\b|roma\s+capitale\b|comune|regione|provincia|città\s+metropolitana|universit|"
-    r"azienda\s+(?:ospedaliera|sanitaria)|a\.?s\.?l\.?|equitalia|riscossione|ader|"
+    r"azienda\s+(?:ospedaliera|sanitaria|unit[àa])|a\.?s\.?l\.?|equitalia|riscossione|ader|"
     # health authorities by acronym ("Asur Marche Area Vasta n. 1", "ASP di Catania");
     # word-bounded, so the surname Aspesi is not one
     r"(?:asur|asp|ausl|usl|ulss|asst|ats|aou|irccs)\b|area\s+vasta|"
@@ -310,7 +316,11 @@ INSTITUTION_HEAD = re.compile(
     r"guardia\s+di\s+finanza|polizia|carabinieri|repubblica|stato|governo|senato|"
     r"parlamento|demanio|dogan|monopoli|finanz|erario|tesoro|assessorat|"
     r"soprintendenz|motorizzazione|ispettorat|sovrintendenz|"
-    r"fallimento|curatela|condominio|parrocchia|diocesi)")
+    r"fallimento|curatela|condominio|parrocchia|diocesi|catast[oa]|"
+    # bodies that stand after "contro" in administrative headings: "Autorità Garante della
+    # Concorrenza e del Mercato", "Parco Regionale dei Castelli Romani", "Unione dei Comuni"
+    # and its CUC; word-bounded, so the surname Cucchi is not one
+    r"autorit[àa]|parco\s+(?:regionale|nazionale|naturale)|unione\s+(?:dei\s+)?comuni|cuc\b)")
 # NOTE: leading \b only. A trailing \b silently disabled every *prefix* alternative —
 # "universit" no longer matched "UNIVERSITARIA", so "AZIENDA OSPEDALIERA UNIVERSITARIA
 # FEDERICO II" was cut into the "person" FEDERICO II. Over-matching is safe here because
@@ -401,7 +411,8 @@ TITOLO = re.compile(
     rf"(?i:dott\.(?:ssa)?|dr\.(?:ssa)?|sig\.(?:ra)?|signor(?:a)?|ing\.|prof\.(?:ssa)?|"
     rf"geom\.|arch\.|rag\.|not(?:aio|\.))\s*({FULL_NAME})")
 
-#: Name immediately followed by biographic or fiscal detail. The separator tolerates a
+#: Name immediately followed by biographic or fiscal detail, or by the "rappresentato e
+#: difeso" that follows a party named in a heading. The separator tolerates a
 #: line break and an adverb ("CAVALCANTI SERAFINA\n, ivi residente"), which is how these
 #: clauses wrap in converted court text — but it must be **at least one real character**
 #: (whitespace or a comma). Allow a zero-width gap and the cue `nat[oa]\b` matches the
@@ -414,7 +425,8 @@ BIOGRAFICO = re.compile(
     rf"(?<![\p{{L}}])({FULL_NAME})(?:\s*,\s*|\s+)"
     rf"(?:(?i:ivi|già|quivi|attualmente)\s+)?"
     rf"(?i:nat[oa]\b|residente\b|domiciliat[oa]\b(?!\s+ex\s+lege)|dimorante\b|c\.?f\.?\b|"
-    rf"codice\s+fiscale\b|in\s+proprio\b|quale\s+erede\b|in\s+qualità\s+di\b)")
+    rf"codice\s+fiscale\b|in\s+proprio\b|quale\s+erede\b|in\s+qualità\s+di\b|"
+    rf"rappresentat[oaie]\s+e\s+difes[oaie]\b)")
 
 #: Name adjacent to a codice fiscale — the strongest anchor there is.
 CF_ADIACENTE = re.compile(
@@ -437,9 +449,12 @@ PARTY_ROLE = re.compile(
 #: Institutions and companies following the same cue are refused downstream.
 APPLICANT_CUE = (r"(?i:proposto\s+da(?:l(?:la)?|i|gli|lle)?|ricorso\s+di|promoss[oa]\s+da)"
                  r"(?:\s+(?i:i\s+)?(?i:signori|sigg?\.\s?(?:ri|re)|sig\.(?:ra)?))?")
-#: …and the other side: "nei confronti di X" in running text, or the administrative
-#: courts' label "nei confronti" alone on its line, with the parties below it.
-COUNTERPARTY_CUE = r"(?i:nei\s+confronti(?:\s+di\b|(?=[^\S\n]*\n)))"
+#: …and the other side: "nei confronti di X" in running text, or a heading that ends its
+#: line with the parties below it: the administrative courts' "nei confronti", or the
+#: "contro" before the respondents. A "contro" inside a line is prose ("ricorso contro la
+#: sentenza") and stays out.
+COUNTERPARTY_CUE = (r"(?i:nei\s+confronti(?:\s+di\b|(?=[^\S\n]*\n))|"
+                    r"\bcontro(?=[^\S\n]*:?[^\S\n]*\n))")
 PROPOSTO_DA = re.compile(rf"{APPLICANT_CUE}\s*:?\s*({FULL_NAME})")
 NEI_CONFRONTI = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({FULL_NAME})")
 
@@ -451,6 +466,15 @@ NEI_CONFRONTI = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({FULL_NAME})")
 PARTY_LIST = re.compile(
     rf"(?:{APPLICANT_CUE}|{COUNTERPARTY_CUE})\s*:?\s*"
     rf"({FULL_NAME}(?:\s*[,;]\s*{FULL_NAME})*(?:\s*[,;]?\s*(?i:ed?)\s+{FULL_NAME})?)")
+
+#: What makes a party cue's capture part of an organisation rather than a person: a legal
+#: form right after it ("Rosalinda Pizzigoni S.r.l."), or a capitalised word and a
+#: preposition right before it ("Comune di Fonte Nuova, rappresentato e difeso",
+#: "Istituto Nazionale della Previdenza Sociale, rappresentato e difeso").
+ORG_SUFFIX_AFTER = re.compile(rf"[^\S\n]*(?:{COMPANY_SUFFIX})(?![\p{{L}}])", re.I)
+ORG_NAME_BEFORE = re.compile(
+    r"[\p{Lu}][\p{L}'’.]*[^\S\n]+(?i:di|del|della|dello|dei|degli|delle|dell['’]|d['’])"
+    r"[^\S\n]*$")
 
 #: Civil-law capacities that introduce a named individual in the body of a decision:
 #: "all'altro socio TAGLIAFERRI NICODEMO", "la ditta di PICCININI GUALTIERO".
