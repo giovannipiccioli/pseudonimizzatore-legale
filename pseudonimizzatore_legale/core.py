@@ -95,7 +95,7 @@ class Edits:
     people
         ``(surface, role)``: a person detection missed. No seed guard refuses it, and
         it folds, propagates and shares surnames like any detected person. A judge
-        added here is redacted.
+        added here is redacted. The role shows in the tag only with ``roles=True``.
     terms
         ``(surface, label)``: other data to redact wherever it occurs, any case.
     exclude
@@ -541,8 +541,12 @@ def _allocate_replacements(
     decisions: list[Decision],
     custom: dict[tuple, str] | None = None,
     prior: dict[str, str] | None = None,
+    roles: bool = True,
 ) -> tuple[list[Decision], Registry]:
-    """Allocate tags only for accepted redactions, in document order."""
+    """Allocate tags only for accepted redactions, in document order.
+
+    Without `roles` every person is tagged ``Nominativo``; the decision keeps its role.
+    """
     registry = Registry(prior)
     custom = custom or {}
     allocated: list[Decision] = []
@@ -553,6 +557,8 @@ def _allocate_replacements(
         label = decision.label or decision.role or "Nominativo"
         value = decision.value or decision.text
         fixed = custom.get((label, value.casefold()))
+        if not roles and decision.kind == "PERSON":
+            label = "Nominativo"
         tag = registry.tag(label, value, fixed)
         allocated.append(replace(decision, replacement=tag, entity_id=tag))
     return allocated, registry
@@ -727,7 +733,7 @@ def analyze(
 
     accepted = resolve(candidates, len(text), cfg)
     accepted, registry = _allocate_replacements(
-        accepted, custom, dict(edits.prior_tags))
+        accepted, custom, dict(edits.prior_tags), cfg.roles)
     return Analysis(
         text=text,
         config=cfg,

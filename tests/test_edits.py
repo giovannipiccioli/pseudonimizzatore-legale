@@ -26,7 +26,7 @@ DOC = (
 
 def run(edits=Edits(), **kwargs):
     # Role tags make these tests readable: which entity ended up where.
-    analysis = analyze(DOC, edits=edits, **kwargs)
+    analysis = analyze(DOC, Config(roles=True), edits=edits, **kwargs)
     output, report = render(analysis)
     return analysis, output, report
 
@@ -174,18 +174,18 @@ def test_placeholder_sets_a_custom_tag():
 def test_prior_tags_stop_renumbering_after_an_exclusion():
     text = "Difesi dall'avv. Marco Ferretti e dall'avv. Paolo Gualtieri."
     before = analyze(text)
-    assert before.mapping == {"Marco Ferretti": "Difensore_1", "Paolo Gualtieri": "Difensore_2"}
+    assert before.mapping == {"Marco Ferretti": "Nominativo_1", "Paolo Gualtieri": "Nominativo_2"}
     edits = Edits(exclude=("Marco Ferretti",))
-    assert "Difensore_1" in render(analyze(text, edits=edits))[0]
+    assert "Nominativo_1" in render(analyze(text, edits=edits))[0]
     edits = Edits(exclude=("Marco Ferretti",), prior_tags=tuple(before.mapping.items()))
     output, _ = render(analyze(text, edits=edits))
-    assert output == "Difesi dall'avv. Marco Ferretti e dall'avv. Difensore_2."
+    assert output == "Difesi dall'avv. Marco Ferretti e dall'avv. Nominativo_2."
 
 
 def test_prior_tags_do_not_carry_a_tag_to_another_role():
     edits = Edits(people=(("Marco Ferretti", "Ricorrente"),),
                   prior_tags=(("Marco Ferretti", "Difensore_1"),))
-    output, _ = render(analyze("Difeso dall'avv. Marco Ferretti.", edits=edits))
+    output, _ = render(analyze("Difeso dall'avv. Marco Ferretti.", Config(roles=True), edits=edits))
     assert output == "Difeso dall'avv. Ricorrente_1."
 
 

@@ -4,8 +4,8 @@
 
     text, report = anonymize(open("sentenza.txt").read())
 
-Parties, counsel and personal identifiers become role tags (`Ricorrente_1`,
-`Difensore_1`, `CF_1`). Judges, public bodies, places and case numbers stay in clear.
+Parties, counsel and personal identifiers become tags (`Nominativo_1`, `CF_1`;
+`roles=True` names a person's role: `Ricorrente_1`, `Difensore_1`). Judges, public bodies, places and case numbers stay in clear.
 Companies are opt-in. Every surface form of the same person gets the same tag, so a
 party pseudonymized in the header is not still readable in the body.
 

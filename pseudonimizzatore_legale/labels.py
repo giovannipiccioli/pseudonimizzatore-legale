@@ -1,19 +1,22 @@
 """Pseudonym allocation for Italian legal documents.
 
-Tags name the *role*, never the person:
+Tags name the *kind* of data, never the person:
 
-    Ricorrente_1, Resistente_1, Difensore_1, Nominativo_1, Società_1,
-    CF_1, Email_1, Pec_1, IVA_1, Iban_1, Telefono_1, Indirizzo_1, …
+    Nominativo_1, Società_1, CF_1, Email_1, Pec_1, IVA_1, Iban_1, Telefono_1,
+    Indirizzo_1, …
+
+and, with ``Config(roles=True)``, a person's role: Ricorrente_1, Resistente_1,
+Difensore_1. Roles help a reader follow a decision, but they are inferred, so the
+default keeps the plainer tag.
 
 The obvious alternative — initials, "Mario Rossi" → "M. R." — is worse on every axis
 that matters here. Initials still carry information (the Garante treats them as
 pseudonymous, not anonymous), they collide constantly at corpus scale, and the
-disambiguation they then need ("M. R. (2)") reads badly. A role tag says what the
-person *is* in the proceeding, which is the part a reader actually needs, and says
-nothing about who they are.
+disambiguation they then need ("M. R. (2)") reads badly. A tag says nothing about who
+the person is.
 
 **Counters restart at 1 for every document.** Consistency is per document by design, so
-`Ricorrente_1` in one file has no relationship to `Ricorrente_1` in another. Two
+`Nominativo_1` in one file has no relationship to `Nominativo_1` in another. Two
 consequences follow, and both are deliberate: the batch path needs no shared state and
 parallelises trivially, and two documents about the same person cannot be linked back
 together through their tags.

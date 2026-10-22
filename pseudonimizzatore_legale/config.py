@@ -36,6 +36,10 @@ class Config:
         ``Fratelli``, or two surname-shaped words joined by ``e`` or ``&``.
         ``True`` replaces every detected private company. Public bodies are never
         pseudonymized regardless of this option.
+    roles
+        ``False`` (the default) tags every person ``Nominativo_N``. ``True`` names the
+        detected role instead: ``Ricorrente_N``, ``Resistente_N``, ``Difensore_N``.
+        Detection is identical either way, and the report keeps the role.
     keep_judges
         Keep exact names that appear in a judicial role — Presidente, Relatore, Consigliere,
         Giudice, Sostituto Procuratore, and the bench lists of collegiate panels. On by
@@ -95,6 +99,7 @@ class Config:
 
     profile: str = "legal"
     companies: CompanyPolicy = False
+    roles: bool = False
     keep_judges: bool = True
     keep_case_numbers: bool = True
     sanitize: bool = True

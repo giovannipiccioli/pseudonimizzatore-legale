@@ -38,7 +38,7 @@ class TestLocalConsistency:
     """
 
     def test_all_surface_forms_of_a_party_collapse_to_one_tag(self):
-        out, rep = anonymize(DECISION)
+        out, rep = anonymize(DECISION, roles=True)
         assert "BENATTI" not in out and "Benatti" not in out
         tags = {t for t in re.findall(r"\b(?:Ricorrente|Resistente)_\d+", out)}
         assert len(tags) == 1, f"header and body mentions disagree: {tags}"
@@ -49,9 +49,15 @@ class TestLocalConsistency:
         assert "Rossella" not in out
 
     def test_counsel_is_pseudonymized(self):
-        out, _ = anonymize(DECISION)
+        out, _ = anonymize(DECISION, roles=True)
         assert "Gallusi" not in out
         assert "Difensore_1" in out
+
+    def test_people_are_nominativo_unless_roles_are_asked_for(self):
+        out, report = anonymize(DECISION)
+        assert "Gallusi" not in out
+        assert not re.search(r"\b(?:Ricorrente|Resistente|Difensore)_\d", out)
+        assert any(d.role == "Difensore" for d in report.decisions)    # kept for review
 
 
 class TestLateKeepPolicy:
@@ -343,14 +349,14 @@ class TestAdministrativeParties:
             "giudizio;\n\nper l'annullamento\n\ndel provvedimento n. 12/2024.")
 
     def test_every_co_applicant_is_removed(self):
-        out, report = anonymize(self.HEAD)
+        out, report = anonymize(self.HEAD, roles=True)
         for name in ("Giulia Balestri", "Lucia Surpo", "Maurita Perfetti", "Anna Vezzi"):
             assert name not in out
         applicants = sorted(t for t in report.mapping.values() if t.startswith("Ricorrente"))
         assert applicants == ["Ricorrente_1", "Ricorrente_2", "Ricorrente_3", "Ricorrente_4"]
 
     def test_counter_interested_parties_are_the_other_side(self):
-        out, report = anonymize(self.HEAD)
+        out, report = anonymize(self.HEAD, roles=True)
         assert "Fiorenzi" not in out and "Rinaldi" not in out
         assert report.mapping["Davide Fiorenzi"].startswith("Resistente")
 

@@ -23,7 +23,7 @@ print(risultato)
 ```
 
 ```text
-Il ricorrente Ricorrente_1, C.F. CF_1, è rappresentato dall'avv. Difensore_1.
+Il ricorrente Nominativo_1, C.F. CF_1, è rappresentato dall'avv. Nominativo_2.
 ```
 
 Il `rapporto` restituito spiega le operazioni effettuate:
@@ -31,9 +31,9 @@ Il `rapporto` restituito spiega le operazioni effettuate:
 ```python
 print(rapporto.mapping)
 # {
-#   'Mario Rossi': 'Ricorrente_1',
+#   'Mario Rossi': 'Nominativo_1',
 #   'RSSMRA80A01H501U': 'CF_1',
-#   'Laura Bianchi': 'Difensore_1'
+#   'Laura Bianchi': 'Nominativo_2'
 # }
 
 print(rapporto.status)
@@ -85,6 +85,9 @@ giudiziari italiani:
 | società private | conserva; sostituisci le imprese probabilmente basate su nomi di persona con `companies="person_named"`, oppure tutte quelle rilevate con `companies=True` |
 | evidenze contrastanti di ruolo giudiziario e ruolo privato per la stessa identità | sostituisci e segnala per la revisione |
 
+Ogni persona diventa `Nominativo_N`. Con `roles=True` l'etichetta indica invece il ruolo
+rilevato (`Ricorrente_1`, `Resistente_1`, `Difensore_1`); ciò che viene rimosso non cambia.
+
 Le etichette sono stabili soltanto all'interno del singolo documento. In questo modo
 non si crea un identificatore persistente che possa collegare la stessa persona tra
 provvedimenti diversi.
@@ -98,6 +101,7 @@ from pseudonimizzatore_legale import Config, anonymize
 
 configurazione = Config(
     companies="person_named",
+    roles=False,
     first_names=True,
     keep_judges=True,
     keep_case_numbers=True,

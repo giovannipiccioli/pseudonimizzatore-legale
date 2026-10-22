@@ -22,7 +22,7 @@ print(output)
 ```
 
 ```text
-Il ricorrente Ricorrente_1, C.F. CF_1, è rappresentato dall'avv. Difensore_1.
+Il ricorrente Nominativo_1, C.F. CF_1, è rappresentato dall'avv. Nominativo_2.
 ```
 
 The returned `report` explains what happened:
@@ -30,9 +30,9 @@ The returned `report` explains what happened:
 ```python
 print(report.mapping)
 # {
-#   'Mario Rossi': 'Ricorrente_1',
+#   'Mario Rossi': 'Nominativo_1',
 #   'RSSMRA80A01H501U': 'CF_1',
-#   'Laura Bianchi': 'Difensore_1'
+#   'Laura Bianchi': 'Nominativo_2'
 # }
 
 print(report.status)
@@ -81,6 +81,9 @@ The default policy is designed for published Italian legal decisions:
 | private companies | keep; replace likely person-named firms with `companies="person_named"`, or all detected firms with `companies=True` |
 | conflicting judicial and private-role evidence for one identity | replace and flag for review |
 
+Every person is tagged `Nominativo_N`. Pass `roles=True` to name the detected role
+instead (`Ricorrente_1`, `Resistente_1`, `Difensore_1`); what is removed is the same.
+
 Tags are stable only inside one document. This avoids creating a persistent identifier
 that could link the same person across different decisions.
 
@@ -93,6 +96,7 @@ from pseudonimizzatore_legale import Config, anonymize
 
 config = Config(
     companies="person_named",
+    roles=False,
     first_names=True,
     keep_judges=True,
     keep_case_numbers=True,
