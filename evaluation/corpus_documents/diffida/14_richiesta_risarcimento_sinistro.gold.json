@@ -1,0 +1,210 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "diffida",
+ "note": "Claim letter to an insurer: 'e p.c.' addressee, oggetto with 'Cognome Nome' and spaced plates, witnesses with phone, treating doctor, body-shop sole trader 'Carrozzeria Pavan Sergio', health data in the narrative (not annotated).",
+ "config": {},
+ "must_remove": [
+  "Flavia De Lazzari",
+  "Silvano Bortolin",
+  "Bortolin Silvano",
+  "Bortolin",
+  "Nives Boscolo",
+  "Boscolo Nives",
+  "Boscolo",
+  "Gastone Pizzolato",
+  "Marisa Dal Col",
+  "Ruggero Biasion",
+  "Pavan Sergio",
+  "0422 590 412",
+  "flavia.delazzari@studiodelazzari.it",
+  "EZ 418 TN",
+  "GB 207 MX",
+  "BSCNVS90S63C638T",
+  "IT67I0832703200000000456123",
+  "347 1189023",
+  "340 2218790",
+  "Viale Giuseppe Verdi 18",
+  "Via Castellana 140",
+  "Strada di Sant'Artemio n. 6",
+  "23/11/1990",
+  "Chioggia"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Flavia De Lazzari"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "assicurato",
+   "values": [
+    "Silvano Bortolin",
+    "Bortolin Silvano",
+    "Bortolin"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "danneggiata",
+   "values": [
+    "Nives Boscolo",
+    "Boscolo Nives",
+    "Boscolo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "testimone",
+   "values": [
+    "Gastone Pizzolato"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "testimone",
+   "values": [
+    "Marisa Dal Col"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "medico",
+   "values": [
+    "Ruggero Biasion"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "carrozziere",
+   "values": [
+    "Pavan Sergio"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "0422 590 412"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "flavia.delazzari@studiodelazzari.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "assicurato",
+   "values": [
+    "EZ 418 TN"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "danneggiata",
+   "values": [
+    "GB 207 MX"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "danneggiata",
+   "values": [
+    "BSCNVS90S63C638T"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "danneggiata",
+   "values": [
+    "IT67I0832703200000000456123"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "danneggiata",
+   "values": [
+    "347 1189023"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "testimone",
+   "values": [
+    "340 2218790"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "avvocato",
+   "values": [
+    "Viale Giuseppe Verdi 18"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "assicurato",
+   "values": [
+    "Via Castellana 140"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "danneggiata",
+   "values": [
+    "Strada di Sant'Artemio n. 6"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "danneggiata",
+   "values": [
+    "23/11/1990"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "danneggiata",
+   "values": [
+    "Chioggia"
+   ]
+  }
+ ],
+ "shapes": {
+  "Flavia De Lazzari": "letterhead",
+  "Silvano Bortolin": "full-name",
+  "Bortolin Silvano": "surname-first",
+  "Bortolin": "title-surname",
+  "Nives Boscolo": "full-name",
+  "Boscolo Nives": "surname-first",
+  "Boscolo": "title-surname",
+  "Gastone Pizzolato": "full-name",
+  "Marisa Dal Col": "full-name",
+  "Ruggero Biasion": "full-name",
+  "Pavan Sergio": "ditta-individuale",
+  "0422 590 412": "phone",
+  "flavia.delazzari@studiodelazzari.it": "email",
+  "EZ 418 TN": "targa",
+  "GB 207 MX": "targa",
+  "BSCNVS90S63C638T": "cf",
+  "IT67I0832703200000000456123": "iban-it",
+  "347 1189023": "phone",
+  "340 2218790": "phone",
+  "Viale Giuseppe Verdi 18": "address-studio",
+  "Via Castellana 140": "address-cap-next-line",
+  "Strada di Sant'Artemio n. 6": "address-no-cap",
+  "23/11/1990": "birth-date",
+  "Chioggia": "birthplace"
+ },
+ "must_keep": [
+  "d.lgs. 7 settembre 2005, n. 209",
+  "Polizia Locale di Treviso",
+  "n. 1123/2025",
+  "Ospedale Ca' Foncello di Treviso"
+ ]
+}

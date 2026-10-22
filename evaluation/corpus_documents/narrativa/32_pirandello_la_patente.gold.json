@@ -1,0 +1,50 @@
+{
+ "source": "Luigi Pirandello, «La patente» (1911), Novelle per un anno; text from it.wikisource.org/wiki/La_patente_(novella) (CC BY-SA 3.0 transcription of a public-domain work), page markers removed",
+ "family": "narrativa",
+ "note": "Public-domain short story about a defamation complaint: the examining judge is 'il giudice D'Andrea' and later just 'il D'Andrea' (kept, as an explicit judge); the plaintiff is called by surname with the article, the two defence lawyers by title + surname. No layout cues at all.",
+ "config": {},
+ "must_remove": [
+  "Rosario Chiàrchiaro",
+  "Chiàrchiaro",
+  "Grigli",
+  "Manin Baracca",
+  "Baracca"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "querelante",
+   "values": [
+    "Rosario Chiàrchiaro",
+    "Chiàrchiaro"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Grigli"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Manin Baracca",
+    "Baracca"
+   ]
+  }
+ ],
+ "shapes": {
+  "Rosario Chiàrchiaro": "full-name",
+  "Chiàrchiaro": "article-surname",
+  "Grigli": "title-surname",
+  "Manin Baracca": "full-name",
+  "Baracca": "article-surname"
+ },
+ "must_keep": [
+  "D'Andrea",
+  "Napoli",
+  "Madonna Santissima"
+ ]
+}

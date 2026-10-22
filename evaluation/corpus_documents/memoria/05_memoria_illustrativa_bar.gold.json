@@ -1,0 +1,99 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "memoria",
+ "note": "Memoria illustrativa: sole trader 'titolare dell'omonima ditta individuale', Agency official named, witnesses in a whitespace-flattened 'Cognome Nome' table, supplier whose surname is also his company's name (company kept, only the full name annotated).",
+ "config": {},
+ "must_remove": [
+  "MARANGONI TOBIA",
+  "Alvise Rigon",
+  "Marisa Gelmetti",
+  "Rambaldi Pierluigi",
+  "Rambaldi",
+  "Bonomi Cristina",
+  "Bonomi",
+  "Damiano Furlani",
+  "MRNTBO62L14L781Z",
+  "Corso della Vittoria 33"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "ricorrente",
+   "values": [
+    "MARANGONI TOBIA"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Alvise Rigon"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "funzionario",
+   "values": [
+    "Marisa Gelmetti"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "testimone",
+   "values": [
+    "Rambaldi Pierluigi",
+    "Rambaldi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "testimone",
+   "values": [
+    "Bonomi Cristina",
+    "Bonomi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "fornitore",
+   "values": [
+    "Damiano Furlani"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "MRNTBO62L14L781Z"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "ricorrente",
+   "values": [
+    "Corso della Vittoria 33"
+   ]
+  }
+ ],
+ "shapes": {
+  "MARANGONI TOBIA": "caps-surname-first",
+  "Alvise Rigon": "full-name",
+  "Marisa Gelmetti": "public-official",
+  "Rambaldi Pierluigi": "table-row",
+  "Rambaldi": "title-surname",
+  "Bonomi Cristina": "table-row",
+  "Bonomi": "title-surname",
+  "Damiano Furlani": "full-name",
+  "MRNTBO62L14L781Z": "cf",
+  "Corso della Vittoria 33": "address-business"
+ },
+ "must_keep": [
+  "CORTE DI GIUSTIZIA TRIBUTARIA DI PRIMO GRADO DI VERONA",
+  "R.G.R. n. 1187/2025",
+  "Direzione Provinciale di Verona",
+  "Guardia di Finanza",
+  "Tenenza di Legnago",
+  "art. 32 del d.lgs. 31 dicembre 1992, n. 546",
+  "TZ8030700456/2025"
+ ]
+}

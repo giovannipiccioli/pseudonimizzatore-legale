@@ -1,0 +1,156 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "contratto",
+ "note": "Engagement letter: letterhead STUDIO LEGALE <SURNAME>, client 'Cognome Nome' with spaced CIE, phone and e-mail, fee table, substitute colleague, studio IBAN 'intestato a Studio Legale <Name>', two-column signature.",
+ "config": {},
+ "must_remove": [
+  "Iannuzzi Rocco",
+  "Rocco Iannuzzi",
+  "Mariagrazia Lorusso",
+  "Lorusso",
+  "LORUSSO",
+  "Donato Santarsiero",
+  "NNZRCC69M10G942E",
+  "CA 30917 FZ",
+  "320 5548193",
+  "rocco.iannuzzi69@gmail.com",
+  "LRSMGR78P49G942K",
+  "01456770286",
+  "mariagrazia.lorusso@cert.ordineavvocatipotenza.it",
+  "IT71H0503411701000000067890",
+  "Via Pretoria n. 88",
+  "Corso XVIII Agosto 1860 n. 42",
+  "10/08/1969"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "cliente",
+   "values": [
+    "Iannuzzi Rocco",
+    "Rocco Iannuzzi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Mariagrazia Lorusso",
+    "Lorusso",
+    "LORUSSO"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "collaboratore",
+   "values": [
+    "Donato Santarsiero"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "NNZRCC69M10G942E"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "CA 30917 FZ"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "320 5548193"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "rocco.iannuzzi69@gmail.com"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "LRSMGR78P49G942K"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "01456770286"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "mariagrazia.lorusso@cert.ordineavvocatipotenza.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "IT71H0503411701000000067890"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "cliente",
+   "values": [
+    "Via Pretoria n. 88"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "avvocato",
+   "values": [
+    "Corso XVIII Agosto 1860 n. 42"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "cliente",
+   "values": [
+    "10/08/1969"
+   ]
+  }
+ ],
+ "shapes": {
+  "Iannuzzi Rocco": "surname-first",
+  "Rocco Iannuzzi": "signature",
+  "Mariagrazia Lorusso": "full-name",
+  "Lorusso": "studio-legale",
+  "LORUSSO": "letterhead",
+  "Donato Santarsiero": "full-name",
+  "NNZRCC69M10G942E": "cf",
+  "CA 30917 FZ": "cie-spaced",
+  "320 5548193": "phone",
+  "rocco.iannuzzi69@gmail.com": "email",
+  "LRSMGR78P49G942K": "cf",
+  "01456770286": "piva",
+  "mariagrazia.lorusso@cert.ordineavvocatipotenza.it": "pec",
+  "IT71H0503411701000000067890": "iban-it",
+  "Via Pretoria n. 88": "address-no-cap",
+  "Corso XVIII Agosto 1860 n. 42": "address-studio",
+  "10/08/1969": "birth-date"
+ },
+ "must_keep": [
+  "legge 31 dicembre 2012, n. 247",
+  "D.M. 10 marzo 2014, n. 55",
+  "Agenzia delle Entrate-Riscossione",
+  "Corte di giustizia tributaria di primo grado di Potenza",
+  "d.lgs. 21 novembre 2007, n. 231",
+  "Foro di Potenza",
+  "105 2025 00012345 67 000"
+ ]
+}

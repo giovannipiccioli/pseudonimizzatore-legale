@@ -1,0 +1,135 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "diffida",
+ "note": "Riservata between lawyers: associate-firm letterhead with two surnames (one is also the adjective 'veronesi'), 'Caro Paolo', 'signora Delfina', opposing client by surname only, first-name signature 'Luca'.",
+ "config": {},
+ "must_remove": [
+  "Luca Veronesi",
+  "Luca",
+  "VERONESI",
+  "BONFADINI",
+  "Bonfadini",
+  "Paolo Gennari",
+  "Paolo",
+  "Morandini",
+  "Delfina Righetti",
+  "Delfina",
+  "Righetti",
+  "segreteria@studioveronesibonfadini.it",
+  "045 8031944",
+  "paolo.gennari@pec.ordineavvocativr.it",
+  "348 9102774",
+  "Corso Porta Nuova 76",
+  "Via Roma 9"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Luca Veronesi",
+    "Luca",
+    "VERONESI"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "BONFADINI",
+    "Bonfadini"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "collega",
+   "values": [
+    "Paolo Gennari",
+    "Paolo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "controparte",
+   "values": [
+    "Morandini"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "cliente",
+   "values": [
+    "Delfina Righetti",
+    "Delfina",
+    "Righetti"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "studio",
+   "values": [
+    "segreteria@studioveronesibonfadini.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "studio",
+   "values": [
+    "045 8031944"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "collega",
+   "values": [
+    "paolo.gennari@pec.ordineavvocativr.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "348 9102774"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "studio",
+   "values": [
+    "Corso Porta Nuova 76"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "collega",
+   "values": [
+    "Via Roma 9"
+   ]
+  }
+ ],
+ "shapes": {
+  "Luca Veronesi": "signature",
+  "Luca": "first-name-only",
+  "VERONESI": "letterhead",
+  "BONFADINI": "letterhead",
+  "Bonfadini": "bare-surname",
+  "Paolo Gennari": "full-name",
+  "Paolo": "first-name-only",
+  "Morandini": "title-surname",
+  "Delfina Righetti": "full-name",
+  "Delfina": "first-name-only",
+  "Righetti": "title-surname",
+  "segreteria@studioveronesibonfadini.it": "email-office",
+  "045 8031944": "phone",
+  "paolo.gennari@pec.ordineavvocativr.it": "pec",
+  "348 9102774": "phone",
+  "Corso Porta Nuova 76": "address-studio",
+  "Via Roma 9": "address-studio"
+ },
+ "must_keep": [
+  "art. 48 del Codice deontologico forense",
+  "art. 411 c.p.c.",
+  "INPS",
+  "Sede di Verona"
+ ]
+}

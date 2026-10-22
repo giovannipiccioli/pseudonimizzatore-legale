@@ -1,0 +1,102 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "verbale",
+ "note": "S.r.l. shareholders' minutes: sole director as 'Presidente', bulleted shareholder list 'Cognome Nome, titolare di una quota... C.F.', corporate shareholder's legal representative, statutory auditor with register number.",
+ "config": {},
+ "must_remove": [
+  "Mirko Venturelli",
+  "Venturelli Mirko",
+  "Venturelli",
+  "Annalisa Ferrari",
+  "Corradini Elena",
+  "Corradini",
+  "Ugo Malagoli",
+  "Fabrizio Tosatti",
+  "Tosatti",
+  "VNTMRK85D20F257D",
+  "CRRLNE87S51F257K",
+  "158243"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "amministratore unico",
+   "values": [
+    "Mirko Venturelli",
+    "Venturelli Mirko",
+    "Venturelli"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "segretaria",
+   "values": [
+    "Annalisa Ferrari"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "socia",
+   "values": [
+    "Corradini Elena",
+    "Corradini"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "legale rappresentante",
+   "values": [
+    "Ugo Malagoli"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "revisore",
+   "values": [
+    "Fabrizio Tosatti",
+    "Tosatti"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "amministratore unico",
+   "values": [
+    "VNTMRK85D20F257D"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "socia",
+   "values": [
+    "CRRLNE87S51F257K"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "revisore",
+   "values": [
+    "158243"
+   ]
+  }
+ ],
+ "shapes": {
+  "Mirko Venturelli": "presidente-privato",
+  "Venturelli Mirko": "surname-first",
+  "Venturelli": "bare-surname",
+  "Annalisa Ferrari": "full-name",
+  "Corradini Elena": "surname-first",
+  "Corradini": "bare-surname",
+  "Ugo Malagoli": "full-name",
+  "Fabrizio Tosatti": "full-name",
+  "Tosatti": "title-surname",
+  "VNTMRK85D20F257D": "cf",
+  "CRRLNE87S51F257K": "cf",
+  "158243": "albo-number"
+ },
+ "must_keep": [
+  "art. 2479-bis c.c.",
+  "art. 2430 c.c.",
+  "Registro delle Imprese di Modena",
+  "Registro dei Revisori Legali"
+ ]
+}

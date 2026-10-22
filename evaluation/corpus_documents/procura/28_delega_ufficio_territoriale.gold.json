@@ -1,0 +1,145 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "procura",
+ "note": "Agency delega form flattened to text: Cognome/Nome in separate fields, CF typed one character per box, address split across Via/n. fields, spaced CIE, driving licence.",
+ "config": {},
+ "must_remove": [
+  "PAVAN",
+  "LUCIANA",
+  "Luciana Pavan",
+  "BERNARDI",
+  "MATTEO",
+  "P V N L C N 5 5 E 5 5 L 4 0 7 Z",
+  "0422 725 618",
+  "luciana.pavan55@alice.it",
+  "CA 38152 KX",
+  "BRNMTT90P22C957C",
+  "TV5338124P",
+  "VIA LOMBARDIA",
+  "TREVISO",
+  "15/05/1955",
+  "CONEGLIANO",
+  "22/09/1990"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "delegante",
+   "values": [
+    "PAVAN",
+    "LUCIANA",
+    "Luciana Pavan"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "delegato",
+   "values": [
+    "BERNARDI",
+    "MATTEO"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "delegante",
+   "values": [
+    "P V N L C N 5 5 E 5 5 L 4 0 7 Z"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "delegante",
+   "values": [
+    "0422 725 618"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "delegante",
+   "values": [
+    "luciana.pavan55@alice.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "delegante",
+   "values": [
+    "CA 38152 KX"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "delegato",
+   "values": [
+    "BRNMTT90P22C957C"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "delegato",
+   "values": [
+    "TV5338124P"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "delegante",
+   "values": [
+    "VIA LOMBARDIA"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "delegante",
+   "values": [
+    "TREVISO"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "delegante",
+   "values": [
+    "15/05/1955"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "delegato",
+   "values": [
+    "CONEGLIANO"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "delegato",
+   "values": [
+    "22/09/1990"
+   ]
+  }
+ ],
+ "shapes": {
+  "PAVAN": "form-field",
+  "LUCIANA": "form-field",
+  "Luciana Pavan": "signature",
+  "BERNARDI": "form-field",
+  "MATTEO": "form-field",
+  "P V N L C N 5 5 E 5 5 L 4 0 7 Z": "cf-spaced",
+  "0422 725 618": "phone",
+  "luciana.pavan55@alice.it": "email",
+  "CA 38152 KX": "cie-spaced",
+  "BRNMTT90P22C957C": "cf",
+  "TV5338124P": "patente",
+  "VIA LOMBARDIA": "address-form-field",
+  "TREVISO": "birthplace-form-field",
+  "15/05/1955": "birth-date",
+  "CONEGLIANO": "birthplace-form-field",
+  "22/09/1990": "birth-date"
+ },
+ "must_keep": [
+  "Ufficio Territoriale di Treviso",
+  "COMUNE DI SPRESIANO",
+  "MIT-UCO",
+  "Via Giorgione n. 106",
+  "Agenzia delle Entrate"
+ ]
+}

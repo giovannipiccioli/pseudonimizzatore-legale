@@ -1,0 +1,136 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "ricorso",
+ "note": "Atto di appello CGT II grado: APPELLANTE: label header with omocodic CF, two counsel 'avv.ti prof. X e Y', judge cited as 'Pres. ed Est. dott.', notary and surveyor in the facts, sibling sharing the surname.",
+ "config": {},
+ "must_remove": [
+  "PAVANELLO ERNESTA",
+  "Nereo Pavanello",
+  "Pavanello",
+  "Gianmaria Folladore",
+  "Elettra Bonsembiante",
+  "Eugenio Varisco",
+  "Valter Zennaro",
+  "Zennaro",
+  "PVNRST59B61L73SH",
+  "gianmaria.folladore@ordineavvocatipadova.it",
+  "Via Piave n. 112/B",
+  "Riviera Tito Livio 14",
+  "21/02/1959"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "appellante",
+   "values": [
+    "PAVANELLO ERNESTA"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "fratello",
+   "values": [
+    "Nereo Pavanello"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "famiglia",
+   "values": [
+    "Pavanello"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Gianmaria Folladore"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Elettra Bonsembiante"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "notaio",
+   "values": [
+    "Eugenio Varisco"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "perito",
+   "values": [
+    "Valter Zennaro",
+    "Zennaro"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "appellante",
+   "values": [
+    "PVNRST59B61L73SH"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "gianmaria.folladore@ordineavvocatipadova.it"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "appellante",
+   "values": [
+    "Via Piave n. 112/B"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "difensore",
+   "values": [
+    "Riviera Tito Livio 14"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "appellante",
+   "values": [
+    "21/02/1959"
+   ]
+  }
+ ],
+ "shapes": {
+  "PAVANELLO ERNESTA": "caps-surname-first",
+  "Nereo Pavanello": "full-name",
+  "Pavanello": "title-surname",
+  "Gianmaria Folladore": "full-name",
+  "Elettra Bonsembiante": "full-name",
+  "Eugenio Varisco": "notary",
+  "Valter Zennaro": "full-name",
+  "Zennaro": "title-surname",
+  "PVNRST59B61L73SH": "cf-omocodic",
+  "gianmaria.folladore@ordineavvocatipadova.it": "pec",
+  "Via Piave n. 112/B": "address-no-cap",
+  "Riviera Tito Livio 14": "address-studio",
+  "21/02/1959": "birth-date"
+ },
+ "must_keep": [
+  "CORTE DI GIUSTIZIA TRIBUTARIA DI SECONDO GRADO DEL VENETO",
+  "Direzione Provinciale di Venezia",
+  "Corte di giustizia tributaria di primo grado di Venezia",
+  "n. 412/2025",
+  "R.G.R. n. 1187/2024",
+  "TV3010B400213/2023",
+  "Aurelio Bortolami",
+  "art. 67, comma 1, lett. b), del TUIR",
+  "legge 28 dicembre 2001, n. 448",
+  "art. 112 c.p.c.",
+  "d.l. 24 dicembre 2002, n. 282"
+ ]
+}

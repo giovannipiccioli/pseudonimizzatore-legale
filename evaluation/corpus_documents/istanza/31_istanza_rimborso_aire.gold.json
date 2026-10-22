@@ -1,0 +1,110 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "istanza",
+ "note": "Refund request by an AIRE resident: French address with the number first, sister co-heir with CF, deceased mother with a compound first name, grouped FR IBAN, French phone.",
+ "config": {},
+ "must_remove": [
+  "Duccio Mannucci",
+  "Ginevra Mannucci",
+  "Maria Grazia Bencini",
+  "MNNDCC80A25D612Q",
+  "MNNGVR83H54D612F",
+  "FR76 1027 8060 3100 0204 5170 120",
+  "duccio.mannucci@orange.fr",
+  "+33 6 12 47 88 03",
+  "14 rue des Martyrs",
+  "25/01/1980"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "istante",
+   "values": [
+    "Duccio Mannucci"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "coerede",
+   "values": [
+    "Ginevra Mannucci"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "de cuius",
+   "values": [
+    "Maria Grazia Bencini"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "MNNDCC80A25D612Q"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "coerede",
+   "values": [
+    "MNNGVR83H54D612F"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "FR76 1027 8060 3100 0204 5170 120"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "duccio.mannucci@orange.fr"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "+33 6 12 47 88 03"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "istante",
+   "values": [
+    "14 rue des Martyrs"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "istante",
+   "values": [
+    "25/01/1980"
+   ]
+  }
+ ],
+ "shapes": {
+  "Duccio Mannucci": "full-name",
+  "Ginevra Mannucci": "full-name",
+  "Maria Grazia Bencini": "full-name",
+  "MNNDCC80A25D612Q": "cf",
+  "MNNGVR83H54D612F": "cf",
+  "FR76 1027 8060 3100 0204 5170 120": "iban-foreign-grouped",
+  "duccio.mannucci@orange.fr": "email",
+  "+33 6 12 47 88 03": "phone",
+  "14 rue des Martyrs": "address-foreign",
+  "25/01/1980": "birth-date"
+ },
+ "must_keep": [
+  "Direzione Provinciale di Firenze",
+  "Ufficio Territoriale di Firenze",
+  "art. 38 del d.P.R. 29 settembre 1973, n. 602",
+  "legge 7 gennaio 1992, n. 20",
+  "Comune di Firenze",
+  "Caisse nationale d'assurance vieillesse"
+ ]
+}

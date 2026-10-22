@@ -1,0 +1,97 @@
+{
+ "source": "Italo Svevo, «La coscienza di Zeno» (1923), chapter 'Storia di un'associazione commerciale' (excerpt); text from it.wikisource.org/wiki/La_coscienza_di_Zeno_(1930)/Storia_di_un'associazione_commerciale (CC BY-SA 3.0 transcription of a public-domain work), page markers removed",
+ "family": "narrativa",
+ "note": "Public-domain novel about a failing business partnership: family members, a newborn son, the partner's mistress and the company clerk, all by first name or 'la signora <Surname>' / 'l'Olivi'.",
+ "config": {},
+ "must_remove": [
+  "Ada",
+  "Maria",
+  "Augusta",
+  "Alfio",
+  "Guido",
+  "Alberta",
+  "Malfenti",
+  "Carmen",
+  "Olivi"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "cognata",
+   "values": [
+    "Ada"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "zia",
+   "values": [
+    "Maria"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "moglie",
+   "values": [
+    "Augusta"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "figlio neonato",
+   "values": [
+    "Alfio"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "socio",
+   "values": [
+    "Guido"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "cognata",
+   "values": [
+    "Alberta"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "suocera",
+   "values": [
+    "Malfenti"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "impiegata",
+   "values": [
+    "Carmen"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "procuratore",
+   "values": [
+    "Olivi"
+   ]
+  }
+ ],
+ "shapes": {
+  "Ada": "first-name-only",
+  "Maria": "first-name-only",
+  "Augusta": "first-name-only",
+  "Alfio": "minor-first-name",
+  "Guido": "first-name-only",
+  "Alberta": "first-name-only",
+  "Malfenti": "title-surname",
+  "Carmen": "first-name-only",
+  "Olivi": "article-surname"
+ },
+ "must_keep": [
+  "Bologna",
+  "Inghilterra"
+ ]
+}

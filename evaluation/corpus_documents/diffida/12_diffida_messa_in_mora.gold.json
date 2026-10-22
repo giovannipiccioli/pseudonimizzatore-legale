@@ -1,0 +1,156 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "diffida",
+ "note": "Diffida on a lawyer's letterhead: addressee block with 'Via X, 157' and CAP+CITY on the next line, oggetto with 'Sig.ra Cognome Nome / Sig. Cognome Nome', causale 'Coppola/Tagliaferri', two IBANs, son named once.",
+ "config": {},
+ "must_remove": [
+  "Arnaldo Malvestiti",
+  "Remo Tagliaferri",
+  "Tagliaferri Remo",
+  "Tagliaferri",
+  "Coppola Assunta",
+  "Assunta Coppola",
+  "Coppola",
+  "Gerardo Pirozzi",
+  "arnaldo.malvestiti@bergamo.pecavvocati.it",
+  "035 248117",
+  "339 4417208",
+  "remo.tagliaferri77@gmail.com",
+  "CPPSNT53A43F839A",
+  "IT52C0623060420000045219876",
+  "IT11 S030 3224 3000 1000 0098 712",
+  "Via Torquato Tasso 12",
+  "Via Lorenteggio, 157",
+  "Via Borgo Palazzo n. 77"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Arnaldo Malvestiti"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "debitore",
+   "values": [
+    "Remo Tagliaferri",
+    "Tagliaferri Remo",
+    "Tagliaferri"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "creditrice",
+   "values": [
+    "Coppola Assunta",
+    "Assunta Coppola",
+    "Coppola"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "figlio",
+   "values": [
+    "Gerardo Pirozzi"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "arnaldo.malvestiti@bergamo.pecavvocati.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "035 248117"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "339 4417208"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "debitore",
+   "values": [
+    "remo.tagliaferri77@gmail.com"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "creditrice",
+   "values": [
+    "CPPSNT53A43F839A"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "creditrice",
+   "values": [
+    "IT52C0623060420000045219876"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "IT11 S030 3224 3000 1000 0098 712"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "avvocato",
+   "values": [
+    "Via Torquato Tasso 12"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "debitore",
+   "values": [
+    "Via Lorenteggio, 157"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "creditrice",
+   "values": [
+    "Via Borgo Palazzo n. 77"
+   ]
+  }
+ ],
+ "shapes": {
+  "Arnaldo Malvestiti": "letterhead",
+  "Remo Tagliaferri": "full-name",
+  "Tagliaferri Remo": "surname-first",
+  "Tagliaferri": "slash-joined",
+  "Coppola Assunta": "surname-first",
+  "Assunta Coppola": "full-name",
+  "Coppola": "slash-joined",
+  "Gerardo Pirozzi": "full-name",
+  "arnaldo.malvestiti@bergamo.pecavvocati.it": "pec",
+  "035 248117": "phone",
+  "339 4417208": "phone",
+  "remo.tagliaferri77@gmail.com": "email",
+  "CPPSNT53A43F839A": "cf",
+  "IT52C0623060420000045219876": "iban-it",
+  "IT11 S030 3224 3000 1000 0098 712": "iban-it-grouped",
+  "Via Torquato Tasso 12": "address-studio",
+  "Via Lorenteggio, 157": "address-cap-next-line",
+  "Via Borgo Palazzo n. 77": "address-no-cap"
+ },
+ "must_keep": [
+  "art. 1219 c.c.",
+  "art. 2943 c.c.",
+  "Tribunale di Bergamo",
+  "art. 633 c.p.c."
+ ]
+}

@@ -1,0 +1,158 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "verbale",
+ "note": "Condominium minutes: whitespace-flattened attendance table 'Cognome Nome | unità | millesimi | delega a X', joint owners 'Hu Weiming e Zhang Li', 'Eredi Lunardi', a private person introduced as 'Presidente', administrator's firm 'Studio <Surname> Amministrazioni', sole-trader contractor.",
+ "config": {},
+ "must_remove": [
+  "Sartori Giacomo",
+  "Giacomo Sartori",
+  "Sartori",
+  "Bortolan Lidia",
+  "Bortolan",
+  "Hu Weiming",
+  "Hu",
+  "Zhang Li",
+  "Cecchinato Ugo",
+  "Cecchinato",
+  "Lunardi",
+  "Ferrarese Marta",
+  "Ferrarese",
+  "Ivano Zampieri",
+  "Zampieri",
+  "Aldo Schiavon",
+  "Schiavon",
+  "Michela Pegoraro",
+  "Serena Mazzucato",
+  "marta.ferrarese@gmail.com",
+  "Via Matteotti n. 9"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "presidente assemblea",
+   "values": [
+    "Sartori Giacomo",
+    "Giacomo Sartori",
+    "Sartori"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "condomina",
+   "values": [
+    "Bortolan Lidia",
+    "Bortolan"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "condomino",
+   "values": [
+    "Hu Weiming",
+    "Hu"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "condomina",
+   "values": [
+    "Zhang Li"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "condomino",
+   "values": [
+    "Cecchinato Ugo",
+    "Cecchinato"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "condomini",
+   "values": [
+    "Lunardi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "condomina",
+   "values": [
+    "Ferrarese Marta",
+    "Ferrarese"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "amministratore",
+   "values": [
+    "Ivano Zampieri",
+    "Zampieri"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "impresa",
+   "values": [
+    "Aldo Schiavon",
+    "Schiavon"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "tecnico",
+   "values": [
+    "Michela Pegoraro"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Serena Mazzucato"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "condomina",
+   "values": [
+    "marta.ferrarese@gmail.com"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "amministratore",
+   "values": [
+    "Via Matteotti n. 9"
+   ]
+  }
+ ],
+ "shapes": {
+  "Sartori Giacomo": "table-row",
+  "Giacomo Sartori": "presidente-privato",
+  "Sartori": "bare-surname",
+  "Bortolan Lidia": "table-row",
+  "Bortolan": "title-surname",
+  "Hu Weiming": "table-row",
+  "Hu": "short-surname",
+  "Zhang Li": "table-row",
+  "Cecchinato Ugo": "table-row",
+  "Cecchinato": "title-surname",
+  "Lunardi": "bare-surname",
+  "Ferrarese Marta": "table-row",
+  "Ferrarese": "title-surname",
+  "Ivano Zampieri": "full-name",
+  "Zampieri": "person-named-firm",
+  "Aldo Schiavon": "ditta-individuale",
+  "Schiavon": "ditta-individuale",
+  "Michela Pegoraro": "full-name",
+  "Serena Mazzucato": "full-name",
+  "marta.ferrarese@gmail.com": "email",
+  "Via Matteotti n. 9": "address-studio"
+ },
+ "must_keep": [
+  "art. 1136 c.c.",
+  "art. 63 disp. att. c.c.",
+  "Foro di Padova"
+ ]
+}

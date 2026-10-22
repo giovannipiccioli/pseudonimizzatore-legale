@@ -1,0 +1,198 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "contratto",
+ "note": "Residential lease: LOCATORE/CONDUTTORE blocks, CIE, mobile and e-mail of the tenant, grouped IBAN, guarantor son sharing the surname, condominium administrator and APE architect, signatures in parentheses in three columns.",
+ "config": {},
+ "must_remove": [
+  "CARLUCCI SETTIMIO",
+  "Settimio Carlucci",
+  "Morello Ivana",
+  "Ivana Morello",
+  "Fausto Morello",
+  "Alfio Scuderi",
+  "Debora Marchionni",
+  "CRLSTM66A11H501J",
+  "MRLVNI49L47L219N",
+  "MRLFST75P30F335C",
+  "CA48213LK",
+  "347 6619021",
+  "ivana.morello49@libero.it",
+  "IT94 L020 0836 8700 0010 1234 567",
+  "Via Cola di Rienzo 212",
+  "Via Gregorio VII n. 186",
+  "Strada Revigliasco 88",
+  "Viale delle Milizie 34",
+  "11/01/1966",
+  "07/07/1949",
+  "30/09/1975"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "locatore",
+   "values": [
+    "CARLUCCI SETTIMIO",
+    "Settimio Carlucci"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "conduttore",
+   "values": [
+    "Morello Ivana",
+    "Ivana Morello"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "garante",
+   "values": [
+    "Fausto Morello"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "amministratore",
+   "values": [
+    "Alfio Scuderi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "tecnico",
+   "values": [
+    "Debora Marchionni"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "locatore",
+   "values": [
+    "CRLSTM66A11H501J"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "conduttore",
+   "values": [
+    "MRLVNI49L47L219N"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "garante",
+   "values": [
+    "MRLFST75P30F335C"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "conduttore",
+   "values": [
+    "CA48213LK"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "conduttore",
+   "values": [
+    "347 6619021"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "conduttore",
+   "values": [
+    "ivana.morello49@libero.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "locatore",
+   "values": [
+    "IT94 L020 0836 8700 0010 1234 567"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "locatore",
+   "values": [
+    "Via Cola di Rienzo 212"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "conduttore",
+   "values": [
+    "Via Gregorio VII n. 186"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "garante",
+   "values": [
+    "Strada Revigliasco 88"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "amministratore",
+   "values": [
+    "Viale delle Milizie 34"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "locatore",
+   "values": [
+    "11/01/1966"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "conduttore",
+   "values": [
+    "07/07/1949"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "garante",
+   "values": [
+    "30/09/1975"
+   ]
+  }
+ ],
+ "shapes": {
+  "CARLUCCI SETTIMIO": "caps-surname-first",
+  "Settimio Carlucci": "signature",
+  "Morello Ivana": "surname-first",
+  "Ivana Morello": "signature",
+  "Fausto Morello": "full-name",
+  "Alfio Scuderi": "full-name",
+  "Debora Marchionni": "full-name",
+  "CRLSTM66A11H501J": "cf",
+  "MRLVNI49L47L219N": "cf",
+  "MRLFST75P30F335C": "cf",
+  "CA48213LK": "cie",
+  "347 6619021": "phone",
+  "ivana.morello49@libero.it": "email",
+  "IT94 L020 0836 8700 0010 1234 567": "iban-it-grouped",
+  "Via Cola di Rienzo 212": "address-no-cap",
+  "Via Gregorio VII n. 186": "address-property",
+  "Strada Revigliasco 88": "address-no-cap",
+  "Viale delle Milizie 34": "address-studio",
+  "11/01/1966": "birth-date",
+  "07/07/1949": "birth-date",
+  "30/09/1975": "birth-date"
+ },
+ "must_keep": [
+  "legge 9 dicembre 1998, n. 431",
+  "Comune di Torino",
+  "Comune di Roma",
+  "art. 3 del d.lgs. 14 marzo 2011, n. 23",
+  "legge 27 luglio 1978, n. 392",
+  "Agenzia delle Entrate",
+  "artt. 1341 e 1342 c.c."
+ ]
+}

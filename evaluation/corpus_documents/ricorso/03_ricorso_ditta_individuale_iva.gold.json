@@ -1,0 +1,169 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "ricorso",
+ "note": "Ricorso of a sole trader with a Chinese owner: 'EMPORIO ORIENTE di <Name>', 'la ditta individuale di <Name>', workers in a pipe-flattened PVC table, two-letter surnames (Hu Jun), commercialista as counsel with albo number.",
+ "config": {},
+ "must_remove": [
+  "Chen Jialin",
+  "CHEN JIALIN",
+  "Chen",
+  "Lorenzo Baldanzi",
+  "Baldanzi",
+  "WANG XIAOMEI",
+  "Wang Xiaomei",
+  "Wang",
+  "HU JUN",
+  "Hu Jun",
+  "ZHOU LEI",
+  "CHNJLN84P08Z210F",
+  "04129950228",
+  "412/A",
+  "lorenzo.baldanzi@pec.commercialistiprato.it",
+  "Via Pistoiese 288",
+  "Via Filippino Lippi 41",
+  "Piazza San Francesco 7",
+  "08/09/1984",
+  "Wenzhou"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "ricorrente",
+   "values": [
+    "Chen Jialin",
+    "CHEN JIALIN",
+    "Chen"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Lorenzo Baldanzi",
+    "Baldanzi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "dipendente",
+   "values": [
+    "WANG XIAOMEI",
+    "Wang Xiaomei",
+    "Wang"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "dipendente",
+   "values": [
+    "HU JUN",
+    "Hu Jun"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "dipendente",
+   "values": [
+    "ZHOU LEI"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "CHNJLN84P08Z210F"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "04129950228"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "412/A"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "lorenzo.baldanzi@pec.commercialistiprato.it"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "ricorrente",
+   "values": [
+    "Via Pistoiese 288"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "ricorrente",
+   "values": [
+    "Via Filippino Lippi 41"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "difensore",
+   "values": [
+    "Piazza San Francesco 7"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "ricorrente",
+   "values": [
+    "08/09/1984"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "ricorrente",
+   "values": [
+    "Wenzhou"
+   ]
+  }
+ ],
+ "shapes": {
+  "Chen Jialin": "ditta-individuale",
+  "CHEN JIALIN": "caps-name",
+  "Chen": "title-surname",
+  "Lorenzo Baldanzi": "full-name",
+  "Baldanzi": "title-surname",
+  "WANG XIAOMEI": "table-row",
+  "Wang Xiaomei": "full-name",
+  "Wang": "title-surname",
+  "HU JUN": "table-row",
+  "Hu Jun": "full-name",
+  "ZHOU LEI": "table-row",
+  "CHNJLN84P08Z210F": "cf",
+  "04129950228": "piva",
+  "412/A": "albo-number",
+  "lorenzo.baldanzi@pec.commercialistiprato.it": "pec",
+  "Via Pistoiese 288": "address-business",
+  "Via Filippino Lippi 41": "address-no-cap",
+  "Piazza San Francesco 7": "address-studio",
+  "08/09/1984": "birth-date",
+  "Wenzhou": "birthplace"
+ },
+ "must_keep": [
+  "CORTE DI GIUSTIZIA TRIBUTARIA DI PRIMO GRADO DI PRATO",
+  "Direzione Provinciale di Prato",
+  "TQ1031400877/2025",
+  "Guardia di Finanza",
+  "Compagnia di Prato",
+  "art. 39, secondo comma, del d.P.R. n. 600/1973",
+  "art. 55 del d.P.R. n. 633/1972",
+  "d.lgs. n. 127/2015",
+  "art. 47 del d.lgs. n. 546/1992",
+  "Comune di Prato",
+  "Ordine dei Dottori Commercialisti e degli Esperti Contabili di Prato"
+ ]
+}

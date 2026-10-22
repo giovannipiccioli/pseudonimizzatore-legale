@@ -1,0 +1,159 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "perizia",
+ "note": "CTU report: expert letterhead with albo number, G.I. to keep, parties in caps in the caption with counsel in parentheses, sole trader 'IMPRESA EDILE GOTTARDO DINO', CTPs and counsel by title+surname in the operations log, pipe table of defects.",
+ "config": {},
+ "must_remove": [
+  "Gianluca Visentin",
+  "CALLEGARO MATTIA",
+  "Mattia Callegaro",
+  "PASQUALOTTO DEBORA",
+  "Debora Pasqualotto",
+  "Pasqualotto",
+  "Ilenia Fabris",
+  "Fabris",
+  "GOTTARDO DINO",
+  "Dino Gottardo",
+  "Gottardo",
+  "Severino Mattiazzo",
+  "Loris Bertin",
+  "Bertin",
+  "Silvia Toniolo",
+  "Toniolo",
+  "049 8751122",
+  "g.visentin@studiovisentin.eu",
+  "3471",
+  "Via Altinate 112",
+  "Via Borgo Vicenza n. 27"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "CTU",
+   "values": [
+    "Gianluca Visentin"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "attore",
+   "values": [
+    "CALLEGARO MATTIA",
+    "Mattia Callegaro"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "attrice",
+   "values": [
+    "PASQUALOTTO DEBORA",
+    "Debora Pasqualotto",
+    "Pasqualotto"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Ilenia Fabris",
+    "Fabris"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "convenuto",
+   "values": [
+    "GOTTARDO DINO",
+    "Dino Gottardo",
+    "Gottardo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Severino Mattiazzo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "CTP",
+   "values": [
+    "Loris Bertin",
+    "Bertin"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "CTP",
+   "values": [
+    "Silvia Toniolo",
+    "Toniolo"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "CTU",
+   "values": [
+    "049 8751122"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "CTU",
+   "values": [
+    "g.visentin@studiovisentin.eu"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "CTU",
+   "values": [
+    "3471"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "CTU",
+   "values": [
+    "Via Altinate 112"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "attori",
+   "values": [
+    "Via Borgo Vicenza n. 27"
+   ]
+  }
+ ],
+ "shapes": {
+  "Gianluca Visentin": "letterhead",
+  "CALLEGARO MATTIA": "caps-surname-first",
+  "Mattia Callegaro": "full-name",
+  "PASQUALOTTO DEBORA": "caps-surname-first",
+  "Debora Pasqualotto": "full-name",
+  "Pasqualotto": "title-surname",
+  "Ilenia Fabris": "full-name",
+  "Fabris": "title-surname",
+  "GOTTARDO DINO": "ditta-individuale",
+  "Dino Gottardo": "full-name",
+  "Gottardo": "title-surname",
+  "Severino Mattiazzo": "full-name",
+  "Loris Bertin": "full-name",
+  "Bertin": "title-surname",
+  "Silvia Toniolo": "full-name",
+  "Toniolo": "title-surname",
+  "049 8751122": "phone",
+  "g.visentin@studiovisentin.eu": "email",
+  "3471": "albo-number",
+  "Via Altinate 112": "address-studio",
+  "Via Borgo Vicenza n. 27": "address-property"
+ },
+ "must_keep": [
+  "TRIBUNALE ORDINARIO DI PADOVA",
+  "R.G. n. 6731/2024",
+  "Federica Zorzan",
+  "Ordine degli Ingegneri della Provincia di Padova"
+ ]
+}

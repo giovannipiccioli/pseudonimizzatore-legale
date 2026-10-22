@@ -1,0 +1,149 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "email",
+ "note": "English/Italian thread with a German client: 'Mr./Mrs./Ms' titles, German postal block 'Cognome Nome / Straße / PLZ', brother by first name, deceased father, German passport, grouped DE IBAN, +49 phone.",
+ "config": {},
+ "must_remove": [
+  "Sabine Kretschmer",
+  "Kretschmer Sabine",
+  "Jens",
+  "Horst Kretschmer",
+  "Kretschmer",
+  "Chiara Battistella",
+  "Battistella",
+  "s.kretschmer@web.de",
+  "c.battistella@battistellalaw.it",
+  "KRTSBN71H59Z112A",
+  "C2T9L4M8R",
+  "DE53 5001 0517 5407 3241 87",
+  "+49 89 2180 4471",
+  "+39 045 721 0098",
+  "Leopoldstraße 112",
+  "Via Mazzini 8"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "cliente",
+   "values": [
+    "Sabine Kretschmer",
+    "Kretschmer Sabine"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "fratello",
+   "values": [
+    "Jens"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "de cuius",
+   "values": [
+    "Horst Kretschmer"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "famiglia",
+   "values": [
+    "Kretschmer"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Chiara Battistella",
+    "Battistella"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "s.kretschmer@web.de"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "c.battistella@battistellalaw.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "KRTSBN71H59Z112A"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "C2T9L4M8R"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "DE53 5001 0517 5407 3241 87"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "+49 89 2180 4471"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "+39 045 721 0098"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "cliente",
+   "values": [
+    "Leopoldstraße 112"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "avvocato",
+   "values": [
+    "Via Mazzini 8"
+   ]
+  }
+ ],
+ "shapes": {
+  "Sabine Kretschmer": "foreign-name",
+  "Kretschmer Sabine": "surname-first",
+  "Jens": "first-name-only",
+  "Horst Kretschmer": "foreign-name",
+  "Kretschmer": "english-title-surname",
+  "Chiara Battistella": "email-display-name",
+  "Battistella": "english-title-surname",
+  "s.kretschmer@web.de": "email",
+  "c.battistella@battistellalaw.it": "email",
+  "KRTSBN71H59Z112A": "cf",
+  "C2T9L4M8R": "passport",
+  "DE53 5001 0517 5407 3241 87": "iban-foreign-grouped",
+  "+49 89 2180 4471": "phone",
+  "+39 045 721 0098": "phone",
+  "Leopoldstraße 112": "address-foreign",
+  "Via Mazzini 8": "address-studio"
+ },
+ "must_keep": [
+  "Ufficio Territoriale di Verona",
+  "Corte di giustizia tributaria di primo grado di Verona",
+  "Law no. 212/2000"
+ ]
+}

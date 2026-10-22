@@ -1,0 +1,227 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "contratto",
+ "note": "Preliminare: spouses in a dash list, hyphen-joined 'coniugi Dalmonte-Siboni', German buyer with foreign address, passport and grouped DE IBAN, estate agent named inside a person-named S.a.s. and in person, notary, signature lines.",
+ "config": {},
+ "must_remove": [
+  "DALMONTE ERMES",
+  "Ermes Dalmonte",
+  "Dalmonte",
+  "SIBONI BENEDETTA",
+  "Benedetta Siboni",
+  "Siboni",
+  "Klaus Dieter Hoffmann",
+  "Hoffmann",
+  "Elisa Montanari",
+  "Montanari",
+  "Federico Amabile",
+  "DLMRMS82E05D704F",
+  "SBNBDT84M54C573O",
+  "HFFKSD65T12Z112B",
+  "C7HN4R2T9",
+  "DE35 3704 0044 0532 0130 99",
+  "IT68D0306912345100000012345",
+  "FO-312456",
+  "elisa@casaromagna-immobiliare.it",
+  "Via Giorgio Regnoli n. 41",
+  "Sendlinger Straße 15",
+  "Via Duca d'Aosta n. 7",
+  "05/05/1982",
+  "14/08/1984",
+  "Cesena",
+  "12/12/1965",
+  "Monaco di Baviera"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "venditore",
+   "values": [
+    "DALMONTE ERMES",
+    "Ermes Dalmonte",
+    "Dalmonte"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "venditrice",
+   "values": [
+    "SIBONI BENEDETTA",
+    "Benedetta Siboni",
+    "Siboni"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "acquirente",
+   "values": [
+    "Klaus Dieter Hoffmann",
+    "Hoffmann"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "mediatore",
+   "values": [
+    "Elisa Montanari",
+    "Montanari"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "notaio",
+   "values": [
+    "Federico Amabile"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "venditore",
+   "values": [
+    "DLMRMS82E05D704F"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "venditrice",
+   "values": [
+    "SBNBDT84M54C573O"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "acquirente",
+   "values": [
+    "HFFKSD65T12Z112B"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "acquirente",
+   "values": [
+    "C7HN4R2T9"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "acquirente",
+   "values": [
+    "DE35 3704 0044 0532 0130 99"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "venditori",
+   "values": [
+    "IT68D0306912345100000012345"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "mediatore",
+   "values": [
+    "FO-312456"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "mediatore",
+   "values": [
+    "elisa@casaromagna-immobiliare.it"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "venditori",
+   "values": [
+    "Via Giorgio Regnoli n. 41"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "acquirente",
+   "values": [
+    "Sendlinger Straße 15"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "acquirente",
+   "values": [
+    "Via Duca d'Aosta n. 7"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "venditore",
+   "values": [
+    "05/05/1982"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "venditrice",
+   "values": [
+    "14/08/1984"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "venditrice",
+   "values": [
+    "Cesena"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "acquirente",
+   "values": [
+    "12/12/1965"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "acquirente",
+   "values": [
+    "Monaco di Baviera"
+   ]
+  }
+ ],
+ "shapes": {
+  "DALMONTE ERMES": "caps-surname-first",
+  "Ermes Dalmonte": "signature",
+  "Dalmonte": "hyphen-joined",
+  "SIBONI BENEDETTA": "caps-surname-first",
+  "Benedetta Siboni": "signature",
+  "Siboni": "hyphen-joined",
+  "Klaus Dieter Hoffmann": "foreign-name",
+  "Hoffmann": "title-surname",
+  "Elisa Montanari": "person-named-company",
+  "Montanari": "title-surname",
+  "Federico Amabile": "notary",
+  "DLMRMS82E05D704F": "cf",
+  "SBNBDT84M54C573O": "cf",
+  "HFFKSD65T12Z112B": "cf",
+  "C7HN4R2T9": "passport",
+  "DE35 3704 0044 0532 0130 99": "iban-foreign-grouped",
+  "IT68D0306912345100000012345": "iban-it",
+  "FO-312456": "albo-number",
+  "elisa@casaromagna-immobiliare.it": "email",
+  "Via Giorgio Regnoli n. 41": "address-no-cap",
+  "Sendlinger Straße 15": "address-foreign",
+  "Via Duca d'Aosta n. 7": "address-property",
+  "05/05/1982": "birth-date",
+  "14/08/1984": "birth-date",
+  "Cesena": "birthplace",
+  "12/12/1965": "birth-date",
+  "Monaco di Baviera": "birthplace-multiword"
+ },
+ "must_keep": [
+  "d.P.R. 26 aprile 1986, n. 131",
+  "art. 1385 c.c.",
+  "art. 2645-bis c.c.",
+  "Agenzia delle Entrate",
+  "CCIAA della Romagna",
+  "Comune di Forlimpopoli"
+ ]
+}

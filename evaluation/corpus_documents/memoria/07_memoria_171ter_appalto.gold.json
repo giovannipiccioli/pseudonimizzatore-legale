@@ -1,0 +1,126 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "memoria",
+ "note": "Civil memoria ex art. 171-ter c.p.c.: 'Cognome Nome' party line, company's legal representative, witness list with common-word surnames (Porta, Gallo, Leone, Fiore), named G.I. to keep.",
+ "config": {},
+ "must_remove": [
+  "Fiore Loredana",
+  "Fiore",
+  "Ruggero Pellizzari",
+  "Renzo Battocchio",
+  "Battocchio",
+  "Matilde Cristofoletti",
+  "Nazzareno Leone",
+  "Leone",
+  "Aldo Porta",
+  "Beatrice Gallo",
+  "FRILDN80C65L781D",
+  "Stradone San Fermo 11",
+  "Via Giosuè Carducci n. 14",
+  "Via Camporosolo n. 7"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "attrice",
+   "values": [
+    "Fiore Loredana",
+    "Fiore"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Ruggero Pellizzari"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "legale rappresentante",
+   "values": [
+    "Renzo Battocchio",
+    "Battocchio"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Matilde Cristofoletti"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "direttore lavori",
+   "values": [
+    "Nazzareno Leone",
+    "Leone"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "testimone",
+   "values": [
+    "Aldo Porta"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "testimone",
+   "values": [
+    "Beatrice Gallo"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "attrice",
+   "values": [
+    "FRILDN80C65L781D"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "difensore",
+   "values": [
+    "Stradone San Fermo 11"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "attrice",
+   "values": [
+    "Via Giosuè Carducci n. 14"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "testimone",
+   "values": [
+    "Via Camporosolo n. 7"
+   ]
+  }
+ ],
+ "shapes": {
+  "Fiore Loredana": "surname-first",
+  "Fiore": "common-word-surname",
+  "Ruggero Pellizzari": "full-name",
+  "Renzo Battocchio": "full-name",
+  "Battocchio": "title-surname",
+  "Matilde Cristofoletti": "full-name",
+  "Nazzareno Leone": "full-name",
+  "Leone": "common-word-surname",
+  "Aldo Porta": "common-word-surname",
+  "Beatrice Gallo": "common-word-surname",
+  "FRILDN80C65L781D": "cf",
+  "Stradone San Fermo 11": "address-studio",
+  "Via Giosuè Carducci n. 14": "address-no-cap",
+  "Via Camporosolo n. 7": "address-no-cap"
+ },
+ "must_keep": [
+  "TRIBUNALE ORDINARIO DI VERONA",
+  "R.G. n. 4512/2025",
+  "Maria Luisa Cavazzuti",
+  "art. 171-ter, primo comma, n. 1, c.p.c."
+ ]
+}

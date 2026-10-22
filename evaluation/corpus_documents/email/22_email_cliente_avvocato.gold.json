@@ -1,0 +1,143 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "email",
+ "note": "Outlook thread: 'Da: Nome Cognome <email>' headers, first-name greeting and signature, brother in Cc, husband by first name, signature block with letterhead and website, disclaimer, '>'-quoted older message.",
+ "config": {},
+ "must_remove": [
+  "Ottavia Spinelli",
+  "Ottavia",
+  "Lanfranco Spinelli",
+  "Lanfranco",
+  "Marco Ferretti",
+  "FERRETTI",
+  "Jacopo",
+  "ottavia.spinelli88@gmail.com",
+  "lanfranco.spinelli@outlook.it",
+  "m.ferretti@studioferretti.it",
+  "www.studioferretti.it",
+  "SPNTTV88C53G224L",
+  "333 718 4402",
+  "+39 049 660 2231",
+  "IT58A0103063200000001234598",
+  "Via Altinate 64"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "cliente",
+   "values": [
+    "Ottavia Spinelli",
+    "Ottavia"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "fratello",
+   "values": [
+    "Lanfranco Spinelli",
+    "Lanfranco"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Marco Ferretti",
+    "FERRETTI"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "marito",
+   "values": [
+    "Jacopo"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "ottavia.spinelli88@gmail.com"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "fratello",
+   "values": [
+    "lanfranco.spinelli@outlook.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "m.ferretti@studioferretti.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "www.studioferretti.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "SPNTTV88C53G224L"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "333 718 4402"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "+39 049 660 2231"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "IT58A0103063200000001234598"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "avvocato",
+   "values": [
+    "Via Altinate 64"
+   ]
+  }
+ ],
+ "shapes": {
+  "Ottavia Spinelli": "email-display-name",
+  "Ottavia": "first-name-only",
+  "Lanfranco Spinelli": "email-display-name",
+  "Lanfranco": "first-name-only",
+  "Marco Ferretti": "email-display-name",
+  "FERRETTI": "letterhead",
+  "Jacopo": "first-name-only",
+  "ottavia.spinelli88@gmail.com": "email",
+  "lanfranco.spinelli@outlook.it": "email",
+  "m.ferretti@studioferretti.it": "email",
+  "www.studioferretti.it": "url",
+  "SPNTTV88C53G224L": "cf",
+  "333 718 4402": "phone",
+  "+39 049 660 2231": "phone",
+  "IT58A0103063200000001234598": "iban-it",
+  "Via Altinate 64": "address-studio"
+ },
+ "must_keep": [
+  "art. 21 del d.lgs. n. 546/1992",
+  "Regolamento (UE) 2016/679",
+  "Agenzia delle Entrate di Padova"
+ ]
+}

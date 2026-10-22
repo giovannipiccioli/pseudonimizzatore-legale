@@ -1,0 +1,87 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "email",
+ "note": "Forwarded PEC delivery receipt: client 'Cognome Nome' inside the subject, lawyer's PEC repeated in the receipt, firm 'Studio Legale <A> & <B>'; the Agency's PEC address must survive.",
+ "config": {},
+ "must_remove": [
+  "Giada Furlan",
+  "Furlan",
+  "Bortoluzzi",
+  "Bellomo Tarcisio",
+  "Bellomo",
+  "avv.giada.furlan@pec.ordineavvocatitreviso.it",
+  "tarcisio.bellomo@gmail.com",
+  "0422 541 337",
+  "Piazza dei Signori 22"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "avvocato",
+   "values": [
+    "Giada Furlan",
+    "Furlan"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "socio",
+   "values": [
+    "Bortoluzzi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "cliente",
+   "values": [
+    "Bellomo Tarcisio",
+    "Bellomo"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "avv.giada.furlan@pec.ordineavvocatitreviso.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "tarcisio.bellomo@gmail.com"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "avvocato",
+   "values": [
+    "0422 541 337"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "avvocato",
+   "values": [
+    "Piazza dei Signori 22"
+   ]
+  }
+ ],
+ "shapes": {
+  "Giada Furlan": "email-display-name",
+  "Furlan": "studio-legale",
+  "Bortoluzzi": "studio-legale",
+  "Bellomo Tarcisio": "surname-first",
+  "Bellomo": "title-surname",
+  "avv.giada.furlan@pec.ordineavvocatitreviso.it": "pec",
+  "tarcisio.bellomo@gmail.com": "email",
+  "0422 541 337": "phone",
+  "Piazza dei Signori 22": "address-studio"
+ },
+ "must_keep": [
+  "dp.treviso@pce.agenziaentrate.it",
+  "Corte di giustizia tributaria di primo grado di Treviso",
+  "art. 16-bis d.lgs. 546/1992",
+  "Portale della Giustizia Tributaria"
+ ]
+}

@@ -1,0 +1,138 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "istanza",
+ "note": "Accertamento con adesione: architect with P.IVA, studio and residence (slash house number), commercialista with mobile and PEC, private client named in the facts; Agency address and PEC must survive.",
+ "config": {},
+ "must_remove": [
+  "Davide Gribaudo",
+  "Federico Ravera",
+  "Ottorino Bergese",
+  "GRBDVD77L03G674Q",
+  "08912340786",
+  "011 562 3381",
+  "335 612 0947",
+  "federico.ravera@odcec.torino.legalmail.it",
+  "Via Principe Amedeo 21",
+  "Strada Revigliasco n. 154/7",
+  "Corso Vittorio Emanuele II n. 68",
+  "03/07/1977",
+  "Pinerolo"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "istante",
+   "values": [
+    "Davide Gribaudo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "procuratore",
+   "values": [
+    "Federico Ravera"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "committente",
+   "values": [
+    "Ottorino Bergese"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "GRBDVD77L03G674Q"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "08912340786"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "procuratore",
+   "values": [
+    "011 562 3381"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "procuratore",
+   "values": [
+    "335 612 0947"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "procuratore",
+   "values": [
+    "federico.ravera@odcec.torino.legalmail.it"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "istante",
+   "values": [
+    "Via Principe Amedeo 21"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "istante",
+   "values": [
+    "Strada Revigliasco n. 154/7"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "procuratore",
+   "values": [
+    "Corso Vittorio Emanuele II n. 68"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "istante",
+   "values": [
+    "03/07/1977"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "istante",
+   "values": [
+    "Pinerolo"
+   ]
+  }
+ ],
+ "shapes": {
+  "Davide Gribaudo": "full-name",
+  "Federico Ravera": "full-name",
+  "Ottorino Bergese": "full-name",
+  "GRBDVD77L03G674Q": "cf",
+  "08912340786": "piva",
+  "011 562 3381": "phone",
+  "335 612 0947": "phone",
+  "federico.ravera@odcec.torino.legalmail.it": "pec",
+  "Via Principe Amedeo 21": "address-studio",
+  "Strada Revigliasco n. 154/7": "address-no-cap",
+  "Corso Vittorio Emanuele II n. 68": "address-studio",
+  "03/07/1977": "birth-date",
+  "Pinerolo": "birthplace"
+ },
+ "must_keep": [
+  "Direzione Provinciale di Torino",
+  "Corso Bolzano 30",
+  "dp.torino@pce.agenziaentrate.it",
+  "d.lgs. 19 giugno 1997, n. 218",
+  "T8F03A101234/2026",
+  "art. 54 del TUIR",
+  "art. 6-bis della legge 27 luglio 2000, n. 212"
+ ]
+}

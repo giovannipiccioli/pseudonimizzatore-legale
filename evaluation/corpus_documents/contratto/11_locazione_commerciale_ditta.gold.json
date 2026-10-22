@@ -1,0 +1,98 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "contratto",
+ "note": "Commercial lease: company landlord with a named sole director, sole trader 'FERRAMENTA BRAMBATI di Brambati Ezio' as tenant, consultant named for invoicing.",
+ "config": {},
+ "must_remove": [
+  "Graziella Pedrinazzi",
+  "Brambati Ezio",
+  "Ezio Brambati",
+  "BRAMBATI",
+  "Brambati",
+  "Vania Bettinelli",
+  "02633180241",
+  "BRMZEI71B28D150V",
+  "Via Giuseppe Mazzini 31",
+  "Via Bottesini 6",
+  "28/02/1971"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "amministratore",
+   "values": [
+    "Graziella Pedrinazzi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "conduttore",
+   "values": [
+    "Brambati Ezio",
+    "Ezio Brambati",
+    "BRAMBATI",
+    "Brambati"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "consulente",
+   "values": [
+    "Vania Bettinelli"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "conduttore",
+   "values": [
+    "02633180241"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "conduttore",
+   "values": [
+    "BRMZEI71B28D150V"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "conduttore",
+   "values": [
+    "Via Giuseppe Mazzini 31"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "conduttore",
+   "values": [
+    "Via Bottesini 6"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "conduttore",
+   "values": [
+    "28/02/1971"
+   ]
+  }
+ ],
+ "shapes": {
+  "Graziella Pedrinazzi": "full-name",
+  "Brambati Ezio": "ditta-individuale",
+  "Ezio Brambati": "full-name",
+  "BRAMBATI": "ditta-individuale",
+  "Brambati": "title-surname",
+  "Vania Bettinelli": "full-name",
+  "02633180241": "piva",
+  "BRMZEI71B28D150V": "cf",
+  "Via Giuseppe Mazzini 31": "address-business",
+  "Via Bottesini 6": "address-no-cap",
+  "28/02/1971": "birth-date"
+ },
+ "must_keep": [
+  "legge 27 luglio 1978, n. 392",
+  "art. 29 della legge n. 392/1978",
+  "ISTAT"
+ ]
+}

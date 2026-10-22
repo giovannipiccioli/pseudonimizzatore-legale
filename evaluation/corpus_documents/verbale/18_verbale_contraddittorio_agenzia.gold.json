@@ -1,0 +1,121 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "verbale",
+ "note": "Agency contraddittorio minutes: two officials, taxpayer with a double surname later called by the first half only ('la sig.ra Esposito'), driving licence, commercialista, tenant and his flat.",
+ "config": {},
+ "must_remove": [
+  "Daniela Petrocchi",
+  "Massimo Ceccarelli",
+  "ESPOSITO ABATE CONCETTA",
+  "Concetta Esposito Abate",
+  "Esposito",
+  "Renato Fiorentini",
+  "Fiorentini",
+  "Alessio Mariani",
+  "SPSCCT61B42F839I",
+  "RM5123456K",
+  "Via Tiburtina n. 402",
+  "02/02/1961",
+  "Napoli"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "funzionaria",
+   "values": [
+    "Daniela Petrocchi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "funzionario",
+   "values": [
+    "Massimo Ceccarelli"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "contribuente",
+   "values": [
+    "ESPOSITO ABATE CONCETTA",
+    "Concetta Esposito Abate",
+    "Esposito"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "consulente",
+   "values": [
+    "Renato Fiorentini",
+    "Fiorentini"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "conduttore",
+   "values": [
+    "Alessio Mariani"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "contribuente",
+   "values": [
+    "SPSCCT61B42F839I"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "contribuente",
+   "values": [
+    "RM5123456K"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "conduttore",
+   "values": [
+    "Via Tiburtina n. 402"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "contribuente",
+   "values": [
+    "02/02/1961"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "contribuente",
+   "values": [
+    "Napoli"
+   ]
+  }
+ ],
+ "shapes": {
+  "Daniela Petrocchi": "public-official",
+  "Massimo Ceccarelli": "public-official",
+  "ESPOSITO ABATE CONCETTA": "caps-surname-first",
+  "Concetta Esposito Abate": "signature",
+  "Esposito": "partial-surname",
+  "Renato Fiorentini": "full-name",
+  "Fiorentini": "title-surname",
+  "Alessio Mariani": "full-name",
+  "SPSCCT61B42F839I": "cf",
+  "RM5123456K": "patente",
+  "Via Tiburtina n. 402": "address-property",
+  "02/02/1961": "birth-date",
+  "Napoli": "birthplace"
+ },
+ "must_keep": [
+  "DIREZIONE PROVINCIALE I DI ROMA",
+  "Tribunale di Roma",
+  "R.G. n. 41237/2021",
+  "art. 26, comma 1, del TUIR",
+  "legge 27 luglio 2000, n. 212",
+  "Prot. n. 2026/RM1/88213",
+  "2026/SCH/004512",
+  "MIT-UCO"
+ ]
+}

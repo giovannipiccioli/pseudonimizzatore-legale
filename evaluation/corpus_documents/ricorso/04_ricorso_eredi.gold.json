@@ -1,0 +1,230 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "ricorso",
+ "note": "Ricorso by three heirs in a numbered list (shared surname, 'vedova Zinanni'), deceased taxpayer, tenant named in the facts, apostrophe surname (Dall'Aglio), first names alone for quotas.",
+ "config": {},
+ "must_remove": [
+  "ZINANNI ROSALBA",
+  "Zinanni Rosalba",
+  "Rosalba",
+  "ZINANNI MARCELLO",
+  "Marcello",
+  "ZINANNI GUALBERTO",
+  "Zinanni",
+  "FERRO ADA",
+  "Ferro",
+  "Cesira Dall'Aglio",
+  "Dall'Aglio",
+  "Jacopo Sereni",
+  "Sereni",
+  "ZNNRLB70H57G337L",
+  "ZNNMCL73D02G337T",
+  "FRRDAA45T49B034F",
+  "ZNNGBR41A30G337X",
+  "DLLCSR74D56G337E",
+  "Strada Madregolo n. 9",
+  "Corso di Porta Romana 61",
+  "Borgo Giacomo Tommasini 20",
+  "Via Farini 17",
+  "17/06/1970",
+  "02/04/1973",
+  "09/12/1945",
+  "Borgo Val di Taro",
+  "30/01/1941"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "erede",
+   "values": [
+    "ZINANNI ROSALBA",
+    "Zinanni Rosalba",
+    "Rosalba"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "erede",
+   "values": [
+    "ZINANNI MARCELLO",
+    "Marcello"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "de cuius",
+   "values": [
+    "ZINANNI GUALBERTO"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "famiglia",
+   "values": [
+    "Zinanni"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "erede",
+   "values": [
+    "FERRO ADA",
+    "Ferro"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Cesira Dall'Aglio",
+    "Dall'Aglio"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "conduttore",
+   "values": [
+    "Jacopo Sereni",
+    "Sereni"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "erede",
+   "values": [
+    "ZNNRLB70H57G337L"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "erede",
+   "values": [
+    "ZNNMCL73D02G337T"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "erede",
+   "values": [
+    "FRRDAA45T49B034F"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "de cuius",
+   "values": [
+    "ZNNGBR41A30G337X"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "DLLCSR74D56G337E"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "erede",
+   "values": [
+    "Strada Madregolo n. 9"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "erede",
+   "values": [
+    "Corso di Porta Romana 61"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "difensore",
+   "values": [
+    "Borgo Giacomo Tommasini 20"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "conduttore",
+   "values": [
+    "Via Farini 17"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "erede",
+   "values": [
+    "17/06/1970"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "erede",
+   "values": [
+    "02/04/1973"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "erede",
+   "values": [
+    "09/12/1945"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "erede",
+   "values": [
+    "Borgo Val di Taro"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "de cuius",
+   "values": [
+    "30/01/1941"
+   ]
+  }
+ ],
+ "shapes": {
+  "ZINANNI ROSALBA": "caps-surname-first",
+  "Zinanni Rosalba": "surname-first",
+  "Rosalba": "first-name-only",
+  "ZINANNI MARCELLO": "caps-surname-first",
+  "Marcello": "first-name-only",
+  "ZINANNI GUALBERTO": "caps-surname-first",
+  "Zinanni": "bare-surname",
+  "FERRO ADA": "caps-surname-first",
+  "Ferro": "title-surname",
+  "Cesira Dall'Aglio": "full-name",
+  "Dall'Aglio": "apostrophe-surname",
+  "Jacopo Sereni": "full-name",
+  "Sereni": "title-surname",
+  "ZNNRLB70H57G337L": "cf",
+  "ZNNMCL73D02G337T": "cf",
+  "FRRDAA45T49B034F": "cf",
+  "ZNNGBR41A30G337X": "cf",
+  "DLLCSR74D56G337E": "cf",
+  "Strada Madregolo n. 9": "address-no-cap",
+  "Corso di Porta Romana 61": "address-no-cap",
+  "Borgo Giacomo Tommasini 20": "address-studio",
+  "Via Farini 17": "address-no-cap",
+  "17/06/1970": "birth-date",
+  "02/04/1973": "birth-date",
+  "09/12/1945": "birth-date",
+  "Borgo Val di Taro": "birthplace-multiword",
+  "30/01/1941": "birth-date"
+ },
+ "must_keep": [
+  "CORTE DI GIUSTIZIA TRIBUTARIA DI PRIMO GRADO DI PARMA",
+  "Direzione Provinciale di Parma",
+  "TFP01R100234/2025",
+  "art. 65, quarto comma, del d.P.R. 29 settembre 1973, n. 600",
+  "art. 8 del d.lgs. 18 dicembre 1997, n. 472",
+  "art. 26 del TUIR",
+  "d.l. 30 aprile 2019, n. 34",
+  "Ufficio Territoriale di Parma",
+  "Foro di Parma"
+ ]
+}

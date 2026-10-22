@@ -25,3 +25,12 @@ The packaged resource contains only the case-folded names, Italian and other-lan
 of current and suppressed comuni. Codes and the other columns are not redistributed.
 
 This notice does not imply endorsement by ISTAT.
+
+## Literary excerpts in the document benchmark
+
+`evaluation/corpus_documents/narrativa/` holds four short excerpts of public-domain works
+by Pirandello, Verga, Foscolo and Svevo, used only as evaluation data. The text comes from
+the [it.wikisource.org](https://it.wikisource.org) transcriptions, available under
+[CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/); each excerpt's work and
+page are in the `source` field of its `.gold.json`. The excerpts are not part of the
+installed package.

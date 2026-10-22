@@ -1,0 +1,149 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "procura",
+ "note": "Notarial procura: notary in the intestazione, comparente and son in caps with birth dates in words, deceased wife born in a town that is a common word (Paese), bank account number, 'F.to:' signatures.",
+ "config": {},
+ "must_remove": [
+  "Ippolito Sbrogiò",
+  "LUNARDON PRIMO",
+  "Primo Lunardon",
+  "LUNARDON FABIO",
+  "BARBON ELDA",
+  "LNRPRM40C15L407V",
+  "LNRFBA68H03L407K",
+  "000012345678",
+  "Via Indipendenza n. 7",
+  "Borgo Cavour n. 40",
+  "Via Postumia n. 55",
+  "quindici marzo millenovecentoquaranta",
+  "15 marzo 1940",
+  "3 giugno 1968",
+  "2 febbraio 1943",
+  "Paese"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "notaio",
+   "values": [
+    "Ippolito Sbrogiò"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "mandante",
+   "values": [
+    "LUNARDON PRIMO",
+    "Primo Lunardon"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "procuratore",
+   "values": [
+    "LUNARDON FABIO"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "de cuius",
+   "values": [
+    "BARBON ELDA"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "mandante",
+   "values": [
+    "LNRPRM40C15L407V"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "procuratore",
+   "values": [
+    "LNRFBA68H03L407K"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "mandante",
+   "values": [
+    "000012345678"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "notaio",
+   "values": [
+    "Via Indipendenza n. 7"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "mandante",
+   "values": [
+    "Borgo Cavour n. 40"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "procuratore",
+   "values": [
+    "Via Postumia n. 55"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "mandante",
+   "values": [
+    "quindici marzo millenovecentoquaranta",
+    "15 marzo 1940"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "procuratore",
+   "values": [
+    "3 giugno 1968"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "de cuius",
+   "values": [
+    "2 febbraio 1943"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "de cuius",
+   "values": [
+    "Paese"
+   ]
+  }
+ ],
+ "shapes": {
+  "Ippolito Sbrogiò": "notary",
+  "LUNARDON PRIMO": "caps-surname-first",
+  "Primo Lunardon": "signature",
+  "LUNARDON FABIO": "caps-surname-first",
+  "BARBON ELDA": "caps-surname-first",
+  "LNRPRM40C15L407V": "cf",
+  "LNRFBA68H03L407K": "cf",
+  "000012345678": "bank-account",
+  "Via Indipendenza n. 7": "address-studio",
+  "Borgo Cavour n. 40": "address-no-cap",
+  "Via Postumia n. 55": "address-no-cap",
+  "quindici marzo millenovecentoquaranta": "birth-date-words",
+  "15 marzo 1940": "birth-date-text",
+  "3 giugno 1968": "birth-date-text",
+  "2 febbraio 1943": "birth-date-text",
+  "Paese": "birthplace-common-word"
+ },
+ "must_keep": [
+  "Collegio Notarile dei Distretti Riuniti di Treviso e Belluno",
+  "Agenzia delle Entrate-Riscossione",
+  "REPUBBLICA ITALIANA"
+ ]
+}

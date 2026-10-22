@@ -1,0 +1,123 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "istanza",
+ "note": "Autotutela request: Neapolitan 'Parco X 98, scala B' address, spouse's CF in an F24 table flattened by spaces, paper ID card 'AY 4571203'.",
+ "config": {},
+ "must_remove": [
+  "Iolanda Sannino",
+  "Salvatore Ascione",
+  "Ascione",
+  "SNNLND67R70L259D",
+  "347 2290614",
+  "iolanda.sannino@virgilio.it",
+  "IT92R0306903496100000004127",
+  "AY 4571203",
+  "SCNSVT65T08F839A",
+  "Parco Comola Ricci 98",
+  "30/10/1967",
+  "Torre del Greco"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "istante",
+   "values": [
+    "Iolanda Sannino"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "coniuge",
+   "values": [
+    "Salvatore Ascione",
+    "Ascione"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "SNNLND67R70L259D"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "347 2290614"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "iolanda.sannino@virgilio.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "IT92R0306903496100000004127"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "istante",
+   "values": [
+    "AY 4571203"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "coniuge",
+   "values": [
+    "SCNSVT65T08F839A"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "istante",
+   "values": [
+    "Parco Comola Ricci 98"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "istante",
+   "values": [
+    "30/10/1967"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "istante",
+   "values": [
+    "Torre del Greco"
+   ]
+  }
+ ],
+ "shapes": {
+  "Iolanda Sannino": "full-name",
+  "Salvatore Ascione": "full-name",
+  "Ascione": "title-surname",
+  "SNNLND67R70L259D": "cf",
+  "347 2290614": "phone",
+  "iolanda.sannino@virgilio.it": "email",
+  "IT92R0306903496100000004127": "iban-it",
+  "AY 4571203": "id-card-paper",
+  "SCNSVT65T08F839A": "cf",
+  "Parco Comola Ricci 98": "address-no-cap",
+  "30/10/1967": "birth-date",
+  "Torre del Greco": "birthplace-multiword"
+ },
+ "must_keep": [
+  "Direzione Provinciale I di Napoli",
+  "Ufficio Territoriale di Napoli 1",
+  "dp.1napoli@pce.agenziaentrate.it",
+  "art. 10-quater della legge 27 luglio 2000, n. 212",
+  "art. 36-bis del d.P.R. 29 settembre 1973, n. 600",
+  "0213456789",
+  "Comune di Napoli"
+ ]
+}

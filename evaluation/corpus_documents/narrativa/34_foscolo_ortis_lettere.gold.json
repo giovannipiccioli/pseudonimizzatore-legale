@@ -1,0 +1,65 @@
+{
+ "source": "Ugo Foscolo, «Ultime lettere di Jacopo Ortis» (1802 edition text, Parte prima), letters of 11-26 October 1797; text from it.wikisource.org/wiki/Ultime_lettere_di_Jacopo_Ortis/Parte_prima (CC BY-SA 3.0 transcription of a public-domain work), page markers removed",
+ "family": "narrativa",
+ "note": "Public-domain epistolary novel: the addressee only by vocative first name ('o Lorenzo'), other people by first name only, a man already masked as 'T***'; ancient authors and heroes named as references must survive.",
+ "config": {},
+ "must_remove": [
+  "Lorenzo",
+  "Lauretta",
+  "Eugenio",
+  "Michele",
+  "Teresa"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "destinatario",
+   "values": [
+    "Lorenzo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "amica",
+   "values": [
+    "Lauretta"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "fidanzato",
+   "values": [
+    "Eugenio"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "servitore",
+   "values": [
+    "Michele"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "Teresa",
+   "values": [
+    "Teresa"
+   ]
+  }
+ ],
+ "shapes": {
+  "Lorenzo": "first-name-only",
+  "Lauretta": "first-name-only",
+  "Eugenio": "first-name-only",
+  "Michele": "first-name-only",
+  "Teresa": "first-name-only"
+ },
+ "must_keep": [
+  "Plutarco",
+  "Licurgo",
+  "Timoleone",
+  "Venezia",
+  "Padova",
+  "Italia"
+ ]
+}

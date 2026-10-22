@@ -1,0 +1,107 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "procura",
+ "note": "Separate procura: 'Il sottoscritto Nome Cognome, nato a X il <date in words>', person-named S.r.l. (company kept; only the full name annotated), two defenders with CF, 'Firma:' line.",
+ "config": {},
+ "must_remove": [
+  "Teodoro Ballarin",
+  "Nadia Crivellari",
+  "Umberto Siviero",
+  "BLLTDR64L19H620Y",
+  "CRVNDA81B67H620Q",
+  "SVRMRT70R05A059P",
+  "nadia.crivellari@pec.ordineavvocatirovigo.it",
+  "Corso Vittorio Emanuele II n. 241",
+  "Corso del Popolo 312",
+  "19 luglio 1964"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "mandante",
+   "values": [
+    "Teodoro Ballarin"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Nadia Crivellari"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Umberto Siviero"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "mandante",
+   "values": [
+    "BLLTDR64L19H620Y"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "CRVNDA81B67H620Q"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "SVRMRT70R05A059P"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "nadia.crivellari@pec.ordineavvocatirovigo.it"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "mandante",
+   "values": [
+    "Corso Vittorio Emanuele II n. 241"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "difensore",
+   "values": [
+    "Corso del Popolo 312"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "mandante",
+   "values": [
+    "19 luglio 1964"
+   ]
+  }
+ ],
+ "shapes": {
+  "Teodoro Ballarin": "full-name",
+  "Nadia Crivellari": "full-name",
+  "Umberto Siviero": "full-name",
+  "BLLTDR64L19H620Y": "cf",
+  "CRVNDA81B67H620Q": "cf",
+  "SVRMRT70R05A059P": "cf",
+  "nadia.crivellari@pec.ordineavvocatirovigo.it": "pec",
+  "Corso Vittorio Emanuele II n. 241": "address-no-cap",
+  "Corso del Popolo 312": "address-studio",
+  "19 luglio 1964": "birth-date-text"
+ },
+ "must_keep": [
+  "Corte di giustizia tributaria di primo grado di Rovigo",
+  "TPR03B200871/2025",
+  "Regolamento (UE) 2016/679"
+ ]
+}

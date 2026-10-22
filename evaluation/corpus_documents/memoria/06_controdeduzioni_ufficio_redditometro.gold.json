@@ -1,0 +1,139 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "memoria",
+ "note": "Controdeduzioni written by the Agency: taxpayer, spouse with CF, minor child by first name only, deceased mother, car plate, second-home address, signing officials and an office phone.",
+ "config": {},
+ "must_remove": [
+  "SANVIDO ROMEO",
+  "Sanvido",
+  "Benedetta Zago",
+  "Zago",
+  "Silvana Ghedina",
+  "Ghedina",
+  "Tommaso",
+  "Gemma Dal Pra",
+  "Tiziana Moretto",
+  "Enrico Pagnin",
+  "SNVRMO55R06D530P",
+  "GHDSVN83M59C258L",
+  "FG482KT",
+  "049 8213456",
+  "Via Cesare Battisti 21"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "ricorrente",
+   "values": [
+    "SANVIDO ROMEO",
+    "Sanvido"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Benedetta Zago",
+    "Zago"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "coniuge",
+   "values": [
+    "Silvana Ghedina",
+    "Ghedina"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "figlio minore",
+   "values": [
+    "Tommaso"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "madre",
+   "values": [
+    "Gemma Dal Pra"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "funzionario",
+   "values": [
+    "Tiziana Moretto"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "funzionario",
+   "values": [
+    "Enrico Pagnin"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "SNVRMO55R06D530P"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "coniuge",
+   "values": [
+    "GHDSVN83M59C258L"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "FG482KT"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "funzionario",
+   "values": [
+    "049 8213456"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "ricorrente",
+   "values": [
+    "Via Cesare Battisti 21"
+   ]
+  }
+ ],
+ "shapes": {
+  "SANVIDO ROMEO": "caps-surname-first",
+  "Sanvido": "title-surname",
+  "Benedetta Zago": "full-name",
+  "Zago": "title-surname",
+  "Silvana Ghedina": "full-name",
+  "Ghedina": "title-surname",
+  "Tommaso": "minor-first-name",
+  "Gemma Dal Pra": "full-name",
+  "Tiziana Moretto": "public-official",
+  "Enrico Pagnin": "public-official",
+  "SNVRMO55R06D530P": "cf",
+  "GHDSVN83M59C258L": "cf",
+  "FG482KT": "targa",
+  "049 8213456": "phone-office",
+  "Via Cesare Battisti 21": "address-no-cap"
+ },
+ "must_keep": [
+  "DIREZIONE PROVINCIALE DI PADOVA",
+  "Corte di giustizia tributaria di primo grado di Padova",
+  "R.G.R. n. 233/2026",
+  "TPD01S200789/2025",
+  "art. 38, quarto comma, del d.P.R. n. 600/1973",
+  "art. 23 del d.lgs. 31 dicembre 1992, n. 546",
+  "Ufficio Legale e Riscossione",
+  "Prot. n. 2026/45123"
+ ]
+}

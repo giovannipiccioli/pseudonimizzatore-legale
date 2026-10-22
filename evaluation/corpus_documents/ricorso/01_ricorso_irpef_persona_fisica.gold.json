@@ -1,0 +1,192 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "ricorso",
+ "note": "Ricorso CGT I grado, persona fisica: letterhead in caps, COGNOME NOME header, residence without CAP, 'Studio Legale <Name>', sig./dott. + bare surname, mother-in-law named only in the facts, IBAN in the narrative, procura in calce.",
+ "config": {},
+ "must_remove": [
+  "BRACCHETTI OTTAVIO",
+  "Ottavio Bracchetti",
+  "Bracchetti",
+  "Fulvio Scardamaglia",
+  "Scardamaglia",
+  "SCARDAMAGLIA",
+  "Corrado Lanzillotta",
+  "Lanzillotta",
+  "Ilaria Tozzoli",
+  "Tozzoli",
+  "Wanda Ceroni",
+  "Ceroni",
+  "BRCTTV68E12E730J",
+  "SCRFLV75S03A944X",
+  "02187430372",
+  "IT30X0538702400000004521793",
+  "avv.scardamaglia@pec.ordineavvocatibologna.it",
+  "051 2961847",
+  "051 2961848",
+  "Via Emilia Ponente 214",
+  "Via Santo Stefano 38",
+  "12/05/1968",
+  "Lugo"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "ricorrente",
+   "values": [
+    "BRACCHETTI OTTAVIO",
+    "Ottavio Bracchetti",
+    "Bracchetti"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Fulvio Scardamaglia",
+    "Scardamaglia",
+    "SCARDAMAGLIA"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "consulente",
+   "values": [
+    "Corrado Lanzillotta",
+    "Lanzillotta"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "coniuge",
+   "values": [
+    "Ilaria Tozzoli",
+    "Tozzoli"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "terzo",
+   "values": [
+    "Wanda Ceroni",
+    "Ceroni"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "BRCTTV68E12E730J"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "SCRFLV75S03A944X"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "02187430372"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "IT30X0538702400000004521793"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "avv.scardamaglia@pec.ordineavvocatibologna.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "051 2961847"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "difensore",
+   "values": [
+    "051 2961848"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "ricorrente",
+   "values": [
+    "Via Emilia Ponente 214"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "difensore",
+   "values": [
+    "Via Santo Stefano 38"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "ricorrente",
+   "values": [
+    "12/05/1968"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "ricorrente",
+   "values": [
+    "Lugo"
+   ]
+  }
+ ],
+ "shapes": {
+  "BRACCHETTI OTTAVIO": "caps-surname-first",
+  "Ottavio Bracchetti": "signature",
+  "Bracchetti": "title-surname",
+  "Fulvio Scardamaglia": "full-name",
+  "Scardamaglia": "studio-legale",
+  "SCARDAMAGLIA": "letterhead",
+  "Corrado Lanzillotta": "full-name",
+  "Lanzillotta": "title-surname",
+  "Ilaria Tozzoli": "full-name",
+  "Tozzoli": "title-surname",
+  "Wanda Ceroni": "full-name",
+  "Ceroni": "title-surname",
+  "BRCTTV68E12E730J": "cf",
+  "SCRFLV75S03A944X": "cf",
+  "02187430372": "piva",
+  "IT30X0538702400000004521793": "iban-it",
+  "avv.scardamaglia@pec.ordineavvocatibologna.it": "pec",
+  "051 2961847": "phone",
+  "051 2961848": "phone",
+  "Via Emilia Ponente 214": "address-no-cap",
+  "Via Santo Stefano 38": "address-studio",
+  "12/05/1968": "birth-date",
+  "Lugo": "birthplace"
+ },
+ "must_keep": [
+  "AGENZIA DELLE ENTRATE",
+  "DIREZIONE PROVINCIALE DI BOLOGNA",
+  "Viale Pietro Pietramellara 11",
+  "Corte di giustizia tributaria di primo grado di Bologna",
+  "d.lgs. 31 dicembre 1992, n. 546",
+  "art. 6-bis della legge 27 luglio 2000, n. 212",
+  "d.P.R. 29 settembre 1973, n. 600",
+  "art. 2697 c.c.",
+  "art. 7, comma 5-bis, del d.lgs. n. 546/1992",
+  "T7B01A204512/2025",
+  "Foro di Bologna",
+  "Regolamento (UE) 2016/679",
+  "d.P.R. 30 maggio 2002, n. 115"
+ ]
+}

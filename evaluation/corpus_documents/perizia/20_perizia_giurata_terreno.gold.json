@@ -1,0 +1,149 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "perizia",
+ "note": "Sworn valuation: surveyor with CF, studio and albo number, client born in a town that is a common word (Nove), co-owner son and deceased husband sharing a surname, asseverazione before the court clerk with CIE.",
+ "config": {},
+ "must_remove": [
+  "Walter Crestani",
+  "Giannina Strapazzon",
+  "Strapazzon",
+  "Davide Lollato",
+  "Bruno Lollato",
+  "Lollato",
+  "CRSWTR71M22A703Y",
+  "2817",
+  "CA77120RB",
+  "STRGNN50D47F964E",
+  "Corso Mazzini 44",
+  "Via San Bortolo n. 5",
+  "22/08/1971",
+  "07/04/1950",
+  "Nove"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "perito",
+   "values": [
+    "Walter Crestani"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "committente",
+   "values": [
+    "Giannina Strapazzon",
+    "Strapazzon"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "comproprietario",
+   "values": [
+    "Davide Lollato"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "de cuius",
+   "values": [
+    "Bruno Lollato"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "famiglia",
+   "values": [
+    "Lollato"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "perito",
+   "values": [
+    "CRSWTR71M22A703Y"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "perito",
+   "values": [
+    "2817"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "perito",
+   "values": [
+    "CA77120RB"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "committente",
+   "values": [
+    "STRGNN50D47F964E"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "perito",
+   "values": [
+    "Corso Mazzini 44"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "committente",
+   "values": [
+    "Via San Bortolo n. 5"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "perito",
+   "values": [
+    "22/08/1971"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "committente",
+   "values": [
+    "07/04/1950"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "committente",
+   "values": [
+    "Nove"
+   ]
+  }
+ ],
+ "shapes": {
+  "Walter Crestani": "full-name",
+  "Giannina Strapazzon": "full-name",
+  "Strapazzon": "title-surname",
+  "Davide Lollato": "full-name",
+  "Bruno Lollato": "full-name",
+  "Lollato": "title-surname",
+  "CRSWTR71M22A703Y": "cf",
+  "2817": "albo-number",
+  "CA77120RB": "cie",
+  "STRGNN50D47F964E": "cf",
+  "Corso Mazzini 44": "address-studio",
+  "Via San Bortolo n. 5": "address-no-cap",
+  "22/08/1971": "birth-date",
+  "07/04/1950": "birth-date",
+  "Nove": "birthplace-common-word"
+ },
+ "must_keep": [
+  "legge 28 dicembre 2001, n. 448",
+  "Tribunale di Vicenza",
+  "Comune di Marostica",
+  "Ufficio Territoriale di Bassano del Grappa",
+  "Osservatorio del Mercato Immobiliare",
+  "Collegio dei Geometri e Geometri Laureati della Provincia di Vicenza"
+ ]
+}

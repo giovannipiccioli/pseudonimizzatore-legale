@@ -1,0 +1,124 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "perizia",
+ "note": "Medico-legal report: doctor's letterhead with mobile, 'Periziando:' label, multi-word birthplace before the date, wife, GP and physiotherapist named in passing; health data present but not annotated.",
+ "config": {},
+ "must_remove": [
+  "Ruggero Biasion",
+  "Ermanno Dal Bo",
+  "Giovanna Cescon",
+  "Liliana Fregona",
+  "Pierantonio Zanette",
+  "Kevin Da Ros",
+  "335 7012896",
+  "DLBRNN58C04C735I",
+  "Via Martiri della Libertà 15",
+  "Via Cavour 23",
+  "04/03/1958",
+  "Cison di Valmarino"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "medico legale",
+   "values": [
+    "Ruggero Biasion"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "periziando",
+   "values": [
+    "Ermanno Dal Bo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Giovanna Cescon"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "coniuge",
+   "values": [
+    "Liliana Fregona"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "medico curante",
+   "values": [
+    "Pierantonio Zanette"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "fisioterapista",
+   "values": [
+    "Kevin Da Ros"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "medico legale",
+   "values": [
+    "335 7012896"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "periziando",
+   "values": [
+    "DLBRNN58C04C735I"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "medico legale",
+   "values": [
+    "Via Martiri della Libertà 15"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "periziando",
+   "values": [
+    "Via Cavour 23"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "periziando",
+   "values": [
+    "04/03/1958"
+   ]
+  },
+  {
+   "kind": "birth",
+   "role": "periziando",
+   "values": [
+    "Cison di Valmarino"
+   ]
+  }
+ ],
+ "shapes": {
+  "Ruggero Biasion": "letterhead",
+  "Ermanno Dal Bo": "label-field",
+  "Giovanna Cescon": "full-name",
+  "Liliana Fregona": "full-name",
+  "Pierantonio Zanette": "full-name",
+  "Kevin Da Ros": "full-name",
+  "335 7012896": "phone",
+  "DLBRNN58C04C735I": "cf",
+  "Via Martiri della Libertà 15": "address-studio",
+  "Via Cavour 23": "address-no-cap",
+  "04/03/1958": "birth-date",
+  "Cison di Valmarino": "birthplace-multiword"
+ },
+ "must_keep": [
+  "art. 139 del d.lgs. 7 settembre 2005, n. 209",
+  "Ospedale di Vittorio Veneto"
+ ]
+}

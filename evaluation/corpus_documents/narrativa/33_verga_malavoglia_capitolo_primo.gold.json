@@ -1,0 +1,162 @@
+{
+ "source": "Giovanni Verga, «I Malavoglia» (1881), chapter I (opening); text from it.wikisource.org/wiki/I_Malavoglia/Capitolo_I (CC BY-SA 3.0 transcription of a public-domain work), page markers removed",
+ "family": "narrativa",
+ "note": "Public-domain novel opening: family nickname vs registered surname, nicknames and diminutives with their full names in parentheses ('Mena (Filomena)'), 'padron', 'zio', 'don' + first name, two people sharing the name 'Ntoni; a boat called Concetta and a saint's name used as a nickname.",
+ "config": {},
+ "must_remove": [
+  "Malavoglia",
+  "Toscano",
+  "'Ntoni",
+  "Bastiano",
+  "Bastianazzo",
+  "Longa",
+  "Luca",
+  "Mena",
+  "Filomena",
+  "Sant'Agata",
+  "Alessi",
+  "Alessio",
+  "Lia",
+  "Rosalia",
+  "Cola",
+  "Fortunato Cipolla",
+  "Silvestro",
+  "Giammaria",
+  "Franco"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "famiglia",
+   "values": [
+    "Malavoglia"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "famiglia",
+   "values": [
+    "Toscano"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "padron 'Ntoni e nipote",
+   "values": [
+    "'Ntoni"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "figlio",
+   "values": [
+    "Bastiano",
+    "Bastianazzo"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "nuora",
+   "values": [
+    "Longa"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "nipote",
+   "values": [
+    "Luca"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "nipote",
+   "values": [
+    "Mena",
+    "Filomena",
+    "Sant'Agata"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "nipote",
+   "values": [
+    "Alessi",
+    "Alessio"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "nipote",
+   "values": [
+    "Lia",
+    "Rosalia"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "vicino",
+   "values": [
+    "Cola"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "vicino",
+   "values": [
+    "Fortunato Cipolla"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "segretario",
+   "values": [
+    "Silvestro"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "vicario",
+   "values": [
+    "Giammaria"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "speziale",
+   "values": [
+    "Franco"
+   ]
+  }
+ ],
+ "shapes": {
+  "Malavoglia": "nickname",
+  "Toscano": "common-word-surname",
+  "'Ntoni": "nickname",
+  "Bastiano": "first-name-only",
+  "Bastianazzo": "nickname",
+  "Longa": "nickname",
+  "Luca": "first-name-only",
+  "Mena": "nickname",
+  "Filomena": "first-name-only",
+  "Sant'Agata": "nickname",
+  "Alessi": "nickname",
+  "Alessio": "first-name-only",
+  "Lia": "nickname",
+  "Rosalia": "first-name-only",
+  "Cola": "first-name-only",
+  "Fortunato Cipolla": "common-word-surname",
+  "Silvestro": "first-name-only",
+  "Giammaria": "first-name-only",
+  "Franco": "first-name-only"
+ },
+ "must_keep": [
+  "Aci Castello",
+  "Trezza",
+  "Ognina",
+  "San Cristoforo",
+  "Borboni",
+  "Provvidenza",
+  "Madonna"
+ ]
+}

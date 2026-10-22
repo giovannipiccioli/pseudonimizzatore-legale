@@ -1,0 +1,156 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "email",
+ "note": "Forwarded thread to an accountant: lowercase display name and signature, lowercase CF of mother and minor son, underscore e-mail, IBAN with irregular spacing, firm 'Studio <Surname> Commercialisti', dentist by surname only.",
+ "config": {},
+ "must_remove": [
+  "Giorgia Esposito",
+  "Giorgia",
+  "Gennaro Rinaldi",
+  "Rinaldi",
+  "francesca granfione",
+  "francesca",
+  "Granfione",
+  "Gabriele",
+  "gabriele",
+  "Amodio",
+  "g.esposito@studiorinaldicommercialisti.it",
+  "g.rinaldi@studiorinaldicommercialisti.it",
+  "segreteria@studiorinaldicommercialisti.it",
+  "f_granfione@libero.it",
+  "grnfnc79r62f839q",
+  "czzgrl14e09f839e",
+  "IT 77 A 01030 03400 000063241578",
+  "081 552 9807",
+  "Via Toledo 256"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "segretaria",
+   "values": [
+    "Giorgia Esposito",
+    "Giorgia"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "commercialista",
+   "values": [
+    "Gennaro Rinaldi",
+    "Rinaldi"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "cliente",
+   "values": [
+    "francesca granfione",
+    "francesca",
+    "Granfione"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "figlio minore",
+   "values": [
+    "Gabriele",
+    "gabriele"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "dentista",
+   "values": [
+    "Amodio"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "segretaria",
+   "values": [
+    "g.esposito@studiorinaldicommercialisti.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "commercialista",
+   "values": [
+    "g.rinaldi@studiorinaldicommercialisti.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "studio",
+   "values": [
+    "segreteria@studiorinaldicommercialisti.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "f_granfione@libero.it"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "grnfnc79r62f839q"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "figlio minore",
+   "values": [
+    "czzgrl14e09f839e"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "cliente",
+   "values": [
+    "IT 77 A 01030 03400 000063241578"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "studio",
+   "values": [
+    "081 552 9807"
+   ]
+  },
+  {
+   "kind": "address",
+   "role": "studio",
+   "values": [
+    "Via Toledo 256"
+   ]
+  }
+ ],
+ "shapes": {
+  "Giorgia Esposito": "email-display-name",
+  "Giorgia": "first-name-only",
+  "Gennaro Rinaldi": "email-display-name",
+  "Rinaldi": "person-named-firm",
+  "francesca granfione": "lowercase-name",
+  "francesca": "lowercase-name",
+  "Granfione": "title-surname",
+  "Gabriele": "minor-first-name",
+  "gabriele": "lowercase-name",
+  "Amodio": "title-surname",
+  "g.esposito@studiorinaldicommercialisti.it": "email",
+  "g.rinaldi@studiorinaldicommercialisti.it": "email",
+  "segreteria@studiorinaldicommercialisti.it": "email-office",
+  "f_granfione@libero.it": "email",
+  "grnfnc79r62f839q": "cf-lowercase",
+  "czzgrl14e09f839e": "cf-lowercase",
+  "IT 77 A 01030 03400 000063241578": "iban-it-irregular",
+  "081 552 9807": "phone",
+  "Via Toledo 256": "address-studio"
+ },
+ "must_keep": [
+  "ASL Napoli 1 Centro"
+ ]
+}

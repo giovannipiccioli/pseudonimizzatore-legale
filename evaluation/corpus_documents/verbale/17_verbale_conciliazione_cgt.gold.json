@@ -1,0 +1,72 @@
+{
+ "source": "hand-authored; all identities and identifiers invented (CF/IBAN/P.IVA check digits valid)",
+ "family": "verbale",
+ "note": "CGT hearing/conciliation minutes: real panel (Presidente, relatore, a lay judge titled 'avv.') to keep, taxpayer in caps, counsel with common-word surname (Greco), Agency official. The court clerk is not annotated either way.",
+ "config": {},
+ "must_remove": [
+  "RUGGIANO NICANDRO",
+  "Nicandro Ruggiano",
+  "Ruggiano",
+  "Pantaleo Greco",
+  "Greco",
+  "Cosimo De Pascalis",
+  "De Pascalis",
+  "RGGNND72P18E506J"
+ ],
+ "must_remove_entities": [
+  {
+   "kind": "name",
+   "role": "ricorrente",
+   "values": [
+    "RUGGIANO NICANDRO",
+    "Nicandro Ruggiano",
+    "Ruggiano"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "difensore",
+   "values": [
+    "Pantaleo Greco",
+    "Greco"
+   ]
+  },
+  {
+   "kind": "name",
+   "role": "funzionario",
+   "values": [
+    "Cosimo De Pascalis",
+    "De Pascalis"
+   ]
+  },
+  {
+   "kind": "identifier",
+   "role": "ricorrente",
+   "values": [
+    "RGGNND72P18E506J"
+   ]
+  }
+ ],
+ "shapes": {
+  "RUGGIANO NICANDRO": "caps-surname-first",
+  "Nicandro Ruggiano": "signature",
+  "Ruggiano": "title-surname",
+  "Pantaleo Greco": "full-name",
+  "Greco": "common-word-surname",
+  "Cosimo De Pascalis": "public-official",
+  "De Pascalis": "public-official",
+  "RGGNND72P18E506J": "cf"
+ },
+ "must_keep": [
+  "CORTE DI GIUSTIZIA TRIBUTARIA DI PRIMO GRADO DI LECCE",
+  "R.G.R. n. 2045/2025",
+  "Direzione Provinciale di Lecce",
+  "TLE01A300567/2024",
+  "art. 48-ter del d.lgs. n. 546/1992",
+  "art. 48-bis del d.lgs. n. 546/1992",
+  "Ettore Mangialardo",
+  "Giuseppina Calò",
+  "Biagio Stomeo",
+  "Galatina"
+ ]
+}
