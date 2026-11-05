@@ -70,6 +70,15 @@ class Config:
         case-sensitively, or after a salutation or kinship cue ("Caro Paolo,", "il
         figlio minore Tommaso"). Enabled by default because it materially improves
         recall without adding a model or runtime dependency.
+    initials
+        Replace the initials some sources write in place of a name ("A.G. e S.I. hanno
+        impugnato"). ``False`` (the default) leaves them, as before. ``True`` takes them
+        behind the cues that seed a name (``proposto da``, ``nei confronti di``, ``avv.``,
+        ``nato a``…) and the same letters wherever else they recur. ``"all"`` is for a
+        source known to write its parties that way: any initials that nothing excludes
+        are a person. Sigle (``P.Q.M.``, ``D.L.``) and references (``art. 2697 C.C.``)
+        stay under both; ``"all"`` on text that merely contains sigle, such as tax
+        judgments, turns some of them into parties.
     ner
         Hugging Face model id of a token-classification model, a tuple of model ids to
         union for recall-first use, or ``None`` (default) to run regex-only. When set,
@@ -110,6 +119,7 @@ class Config:
     sanitize: bool = True
     min_token_len: int = 4
     first_names: bool = True
+    initials: bool | Literal["all"] = False
     ner: str | tuple[str, ...] | None = None
     ner_threshold: float = 0.60
     ner_device: str | None = None
@@ -123,5 +133,7 @@ class Config:
             object.__setattr__(self, "profile", _PROFILE_ALIASES[self.profile])
         if not isinstance(self.companies, bool) and self.companies != "person_named":
             raise ValueError("companies must be False, 'person_named', or True")
+        if not isinstance(self.initials, bool) and self.initials != "all":
+            raise ValueError("initials must be False, True, or 'all'")
         if isinstance(self.ner, tuple) and not self.ner:
             raise ValueError("ner model tuple must not be empty")

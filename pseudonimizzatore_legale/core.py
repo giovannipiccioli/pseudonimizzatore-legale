@@ -372,6 +372,30 @@ def _propose_given_names(
             ))
 
 
+def _propose_initials(text: str, cfg: Config, out: list[Candidate]) -> None:
+    """Propose the initials some sources write in place of a name ("A.G.").
+
+    `seeds.initials` decides who is a person; here they become candidates like any other
+    person, so roles, tags, judges and overlaps go through the same policy. The tag is
+    allocated per initials, not per spelling: "A. G." and "A.G." are one person.
+    """
+    for mention in seeds_mod.initials(text, everywhere=cfg.initials == "all"):
+        out.append(_candidate(
+            text,
+            mention.start,
+            mention.end,
+            kind="PERSON",
+            source=mention.source,
+            priority=PRI_PERSON_FULL,
+            role=mention.role,
+            label=mention.role,
+            value=seeds_mod.initials_key(mention.text),
+            reason=("initials behind a person cue, or the same initials again"
+                    if mention.source == "regex:initials"
+                    else "initials, in a source that writes its parties as initials"),
+        ))
+
+
 def _propose_structured(text: str, out: list[Candidate]) -> None:
     for label, pattern, group in P.STRUCTURED:
         for match in pattern.finditer(text):
@@ -834,6 +858,8 @@ def analyze(
     _propose_people(text, people, cfg, candidates)
     if cfg.first_names:
         _propose_given_names(text, people, cfg, candidates)
+    if cfg.initials:
+        _propose_initials(text, cfg, candidates)
     _propose_structured(text, candidates)
     _propose_addresses(text, candidates)
     _propose_places(text, candidates)

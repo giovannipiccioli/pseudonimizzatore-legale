@@ -24,6 +24,11 @@ become a propagation key only if it is long enough and absent from the corpus-de
 common-word set. Ambiguous tokens are handled after all entities are known. Without
 these guards, propagating a name whose surname is "Del" replaces every "del" in the
 document.
+
+**Initials follow the same split.** A source that writes its parties as "A.G." has
+already shortened them, and the shape is also how law writes a sigla ("P.Q.M.", "D.P.R."),
+so `initials` seeds only behind the cues that seed a name, then takes the same letters
+wherever else they recur. A list of sigle and a few exclusions are its rail.
 """
 import unicodedata
 from functools import lru_cache
@@ -33,7 +38,7 @@ import regex as re
 
 from . import patterns as P
 from .labels import RESERVED
-from .model import Entity
+from .model import Entity, Mention
 
 
 @lru_cache(maxsize=1)
@@ -67,6 +72,15 @@ def comuni() -> frozenset[str]:
     data = files(__package__).joinpath("resources/comuni.json").read_text("utf-8")
     return frozenset(place_key(n) for n in json.loads(data)["names"]) | {
         "reggio calabria", "reggio emilia"}
+
+
+@lru_cache(maxsize=1)
+def sigle() -> frozenset[str]:
+    """The sigle (P.Q.M., C.T.U., D.L.) that are not a person's initials, spelt as
+    `initials_key` spells initials."""
+    import json
+    data = files(__package__).joinpath("resources/sigle.json").read_text("utf-8")
+    return frozenset(json.loads(data)["sigle"])
 
 
 #: Roles in priority order — a person seen both as party and as counsel is a party.
@@ -586,6 +600,76 @@ def _names_in_run(run: str) -> list[str]:
     for seg in segments:
         for m in P.ALLCAPS_NAME.finditer(seg):
             out.append(m.group(1))
+    return out
+
+
+#: (pattern, role) for every anchor that introduces initials; group 1 is the list of them.
+#: The role is the one `_SIMPLE_ANCHORS` gives the anchor the pattern copies.
+_INITIALS_ANCHORS = (
+    ("INITIALS_APPLICANT", "Ricorrente"),
+    ("INITIALS_COUNTERPARTY", "Resistente"),
+    ("INITIALS_COUNSEL", "Difensore"),
+    ("INITIALS_PERSON", "Nominativo"),
+    ("INITIALS_BIOGRAFICO", "Nominativo"),
+)
+
+
+def initials_key(surface: str) -> str:
+    """Initials however they are spaced: "A. G." and "A.G." are both "A.G."."""
+    return ".".join(re.findall(r"\p{L}", surface.upper())) + "."
+
+
+def _excluded_initials(text: str, start: int, end: int) -> bool:
+    """Whether the dotted capitals at `start:end` are not a person's initials: a
+    reference ("art. 2697 C.C.", "D.L. n. 78"), a judge's ("Presidente dott. N.A."), part
+    of an organisation's name ("R.B. s.p.a.") or the first letters of a longer name
+    ("G.M. Nonno"), where the initials alone would leave the surname in clear."""
+    before = text[max(0, start - 60):start]
+    if (P.INITIALS_REFERENCE_BEFORE.search(before)
+            or P.INITIALS_REFERENCE_AFTER.match(text, end)):
+        return True
+    if (P.INITIALS_JUDGE_BEFORE.search(before.rsplit("\n", 1)[-1])
+            or _in_organisation(text, start, end)):
+        return True
+    name = re.match(rf"[^\S\n]+({P.NAME_TOKEN})", text[end:end + 60])
+    return bool(name) and name.group(1).casefold() not in common_words()
+
+
+def initials(text: str, everywhere: bool = False) -> list[Mention]:
+    """The initials of private persons in `text`, as mentions with the role of their anchor.
+
+    A person is whoever an anchor names (`_INITIALS_ANCHORS`), and the same letters are
+    the same person wherever else they stand. That is all the prudent reading takes.
+    `everywhere` is for a source known to write its parties as initials: then any initials
+    that nothing excludes are a person, cue or not.
+
+    Neither reading touches a sigla of `sigle()`, even behind a cue: a person whose
+    initials are those of a common sigla ("D.M.") stays in clear, which is the price of
+    never turning "P.Q.M." or "D.L." into a party. Nor does it take initials that
+    `_excluded_initials` recognises, nor those of four letters or more (see INITIALS).
+    """
+    found = []
+    for attr, role in _INITIALS_ANCHORS:
+        for anchor in getattr(P, attr).finditer(text):
+            for token in P.INITIALS_TOKEN.finditer(anchor.group(1)):
+                found.append((anchor.start(1) + token.start(1),
+                              initials_key(token.group(1)), role))
+    roles: dict[str, str] = {}                  # the first anchor to name a person gives the role
+    for _, key, role in sorted(found, key=lambda item: item[0]):    # a tie keeps anchor order
+        roles.setdefault(key, role)
+
+    listed, out = sigle(), []
+    for token in P.INITIALS_TOKEN.finditer(text):
+        start, end = token.span(1)
+        key = initials_key(token.group(1))
+        role = roles.get(key) or ("Nominativo" if everywhere else None)
+        if role is None or key in listed or _excluded_initials(text, start, end):
+            continue
+        if P.INITIALS_SENTENCE_END.match(text, end):
+            end -= 1                            # "di A.G. Il ricorso": not their full stop
+        source = "regex:initials" if key in roles else "regex:initials_everywhere"
+        out.append(Mention(text[start:end], start, end, role=role, kind="PERSON",
+                           source=source))
     return out
 
 

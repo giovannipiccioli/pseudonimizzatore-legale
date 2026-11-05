@@ -596,3 +596,169 @@ class TestLineBreaks:
             "Presidente: VERDI CARLO\nRossi insiste.")
         assert "Anastasia\nBelloccio" in seeds_mod._first_name_candidates(
             "dagli avv. Gervasio Spadaccini ed Anastasia\nBelloccio, ed elettivamente")
+
+
+class TestInitials:
+    """Initials stand where a name stands, and look exactly like a sigla.
+
+    The negative cases are the sigle and references a plain "capital, dot, capital, dot"
+    pattern takes for parties: each one was a false positive on a corpus of civil, penal
+    and tax decisions.
+    """
+
+    @staticmethod
+    def tokens(text):
+        return [m.group(1) for m in P.INITIALS_TOKEN.finditer(text)]
+
+    def test_token_reads_two_and_three_capitals_with_their_dots(self):
+        assert self.tokens("A.G. e S.I. hanno impugnato") == ["A.G.", "S.I."]
+        assert self.tokens("proposto da R.A.S., nato") == ["R.A.S."]
+        assert self.tokens("nei confronti di A. G.") == ["A. G."]
+        assert self.tokens("proposto da À.B.") == ["À.B."]
+
+    def test_token_needs_a_dot_after_every_capital(self):
+        # "C.F. L" is a codice fiscale whose code was reduced to a letter: the sigla, and not
+        # three-letter initials with a dot missing
+        assert self.tokens("rappresentata (C.F. L") == ["C.F."]
+        assert self.tokens("la società I.A.c.p. di Roma") == []
+        assert self.tokens("A.G e S.I") == []
+
+    def test_token_is_upper_case_and_not_longer_than_three_letters(self):
+        assert self.tokens("art. 2697 c.c., a.g., d.lgs.") == []
+        assert self.tokens("l'E.N.E.L. e l'A.N.A.S.") == []
+        assert self.tokens("AG e SI") == []
+
+    def test_token_does_not_start_inside_a_word_or_a_tag(self):
+        assert self.tokens("il d.P.R. 633/72") == []
+        assert self.tokens("Casa.G. Rossi") == []
+        assert self.tokens("Nominativo_A.G. e Ricorrente_1.") == []
+
+    def test_applicant_cues(self):
+        assert P.INITIALS_APPLICANT.search("ricorso proposto da A.G., S.I. e L.S.").group(1) == (
+            "A.G., S.I. e L.S.")
+        assert P.INITIALS_APPLICANT.search("il ricorso di A.G.").group(1) == "A.G."
+        assert P.INITIALS_APPLICANT.search("gli appellanti T.L. e A.P. impugnano").group(1) == (
+            "T.L. e A.P.")
+        assert not P.INITIALS_APPLICANT.search("il ricorrente propone, A.G. insiste")
+        assert not P.INITIALS_APPLICANT.search("proposto da Mario Rossi")
+
+    def test_counterparty_cue(self):
+        assert P.INITIALS_COUNTERPARTY.search("nei confronti di S.T., L.S. e R.A., con").group(1) == (
+            "S.T., L.S. e R.A.")
+        assert P.INITIALS_COUNTERPARTY.search("ricorrenti\nnei confronti\nS.T.\n").group(1) == "S.T."
+        # a "contro" inside a line is prose, as for names (COUNTERPARTY_CUE)
+        assert not P.INITIALS_COUNTERPARTY.search("ricorso contro S.T. e altri")
+
+    def test_counsel_is_read_behind_the_title_only(self):
+        assert P.INITIALS_COUNSEL.search("difeso dall'avv. B.N., con studio").group(1) == "B.N."
+        assert P.INITIALS_COUNSEL.search("gli avvocati C.D. ed E.F.").group(1) == "C.D. ed E.F."
+        # "il difensore di A.G." names the client, not the counsel
+        assert not P.INITIALS_COUNSEL.search("il difensore di A.G. ha depositato")
+
+    def test_person_cues(self):
+        for text, expected in (
+            ("il sig. M.O. ha depositato", "M.O."),
+            ("gli eredi di C.S. e V.R.", "C.S. e V.R."),
+            ("il socio accomandatario T.F.", None),
+            ("l'imputato C.L. ricorre", "C.L."),
+            ("la persona offesa A.G. ha", "A.G."),
+            ("la parte civile N.F., persona offesa", "N.F."),
+            ("il teste T.R. ha riferito", "T.R."),
+        ):
+            match = P.INITIALS_PERSON.search(text)
+            assert (match.group(1) if match else None) == expected, text
+        assert not P.INITIALS_PERSON.search("l'imputazione contesta A.G.")
+
+    def test_biographic_clause_follows_the_initials(self):
+        assert P.INITIALS_BIOGRAFICO.search("M.R., nato a Torino").group(1) == "M.R."
+        assert P.INITIALS_BIOGRAFICO.search("D.F.C. residente in Roma").group(1) == "D.F.C."
+        assert P.INITIALS_BIOGRAFICO.search("A.G. - c.f. RSSMRA80A01H501U").group(1) == "A.G."
+        assert not P.INITIALS_BIOGRAFICO.search("M.R. e il figlio nato a Torino")
+        # BIOGRAFICO itself read the same clause before it was shared
+        assert P.BIOGRAFICO.search("Mario Rossi, nato a Salerno").group(1) == "Mario Rossi"
+
+    def test_penal_roles_are_not_party_roles(self):
+        assert not P.PARTY_ROLE.search("l'imputato Mario Rossi")      # name detection unchanged
+        assert P.INITIALS_PERSON.search("l'imputato M.R.")
+
+    def test_reference_before(self):
+        for text in ("ai sensi dell'art. ", "Cass., ", "Cass. sez. ", "sent. n. ", "commi ",
+                     "art. 2697 ", "ex ", "cfr. ", "Rv. "):
+            assert P.INITIALS_REFERENCE_BEFORE.search(text), text
+        for text in ("proposto da ", "nei confronti di ", "il sig. ", "e ", "avv. "):
+            assert not P.INITIALS_REFERENCE_BEFORE.search(text), text
+
+    def test_reference_after(self):
+        for text in (" n. 78", " 633/72", ": RSSMRA80A01H501U", "\n30 settembre 2003", " n° 4",
+                     " del 1992", " cit."):
+            assert P.INITIALS_REFERENCE_AFTER.match(text), text
+        for text in (", nato a Roma", " ha proposto", " e S.I.", ".", "\n2. Il primo motivo"):
+            assert not P.INITIALS_REFERENCE_AFTER.match(text), text
+
+    def test_judge_before_needs_the_role_right_before(self):
+        for text in ("Il Presidente dott. ", "Relatore: ", "il consigliere avv. ", "giudice - "):
+            assert P.INITIALS_JUDGE_BEFORE.search(text), text
+        # a role earlier in the sentence says nothing about who comes next
+        assert not P.INITIALS_JUDGE_BEFORE.search("il giudice ha condannato in solido con ")
+        assert not P.INITIALS_JUDGE_BEFORE.search("proposto da ")
+
+    def test_sentence_end_after_initials(self):
+        assert P.INITIALS_SENTENCE_END.match(" Il ricorso")
+        assert P.INITIALS_SENTENCE_END.match("\nIl ricorso")
+        assert P.INITIALS_SENTENCE_END.match("")
+        assert not P.INITIALS_SENTENCE_END.match(" ha proposto ricorso")
+        assert not P.INITIALS_SENTENCE_END.match(", nato a")
+
+
+class TestInitialsSeeds:
+    """`seeds.initials`, which decides who among the dotted capitals is a person."""
+
+    @staticmethod
+    def found(text, everywhere=False):
+        return [(m.text, m.role) for m in seeds_mod.initials(text, everywhere)]
+
+    def test_an_anchor_names_a_person_and_the_same_letters_recur(self):
+        text = "ricorso proposto da A.G. e nei confronti di S.T., poi A.G. insiste e S.T. replica."
+        assert self.found(text) == [("A.G.", "Ricorrente"), ("S.T.", "Resistente"),
+                                    ("A.G.", "Ricorrente"), ("S.T.", "Resistente")]
+
+    def test_uncued_initials_need_the_everywhere_reading(self):
+        text = "Il Tribunale dichiarava D.C. colpevole."
+        assert self.found(text) == []
+        assert self.found(text, everywhere=True) == [("D.C.", "Nominativo")]
+
+    def test_the_first_anchor_gives_the_role_of_the_letters(self):
+        text = "i ricorrenti A.G. e S.T.; nei confronti di A.G. si procede"
+        assert {role for _, role in self.found(text)} == {"Ricorrente"}
+
+    def test_spacing_does_not_make_two_people(self):
+        text = "nei confronti di A. G. e poi A.G. e infine A.  G."
+        assert [m.text for m in seeds_mod.initials(text)] == ["A. G.", "A.G."]
+        keys = {seeds_mod.initials_key(m.text) for m in seeds_mod.initials(text)}
+        assert keys == {"A.G."}
+
+    def test_a_sigla_is_never_a_person_even_behind_a_cue(self):
+        assert self.found("nei confronti di D.M. e del P.M.") == []
+        assert self.found("proposto da P.Q.M. e C.T.U.", everywhere=True) == []
+
+    def test_exclusions_beat_evidence(self):
+        for text in (
+            "il sig. A.G. n. 5",                      # a reference after
+            "proposto da A.G. 633/72",                # a number after
+            "ai sensi dell'art. 2697 L.R.",           # a reference before
+            "Il Presidente dott. N.A. firma",          # the bench
+            "proposto da R.B. s.p.a. di Roma",        # an organisation
+            "nei confronti di G.M. Nonno",            # the first letters of a longer name
+        ):
+            assert self.found(text, everywhere=True) == [], text
+
+    def test_the_sentence_end_stays_outside_the_span(self):
+        text = "nei confronti di A.G. Il ricorso è fondato."
+        (mention,) = seeds_mod.initials(text)
+        assert text[mention.start:mention.end] == "A.G"
+
+    def test_mentions_are_person_mentions_from_the_initials_detector(self):
+        (cued,) = seeds_mod.initials("nei confronti di A.G.")
+        (everywhere,) = seeds_mod.initials("Il Tribunale dichiarava D.C. colpevole.", True)
+        assert (cued.kind, cued.source) == ("PERSON", "regex:initials")
+        assert (everywhere.kind, everywhere.source) == ("PERSON", "regex:initials_everywhere")

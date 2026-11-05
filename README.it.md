@@ -103,6 +103,7 @@ configurazione = Config(
     companies="person_named",
     roles=False,
     first_names=True,
+    initials=False,
     keep_judges=True,
     keep_case_numbers=True,
     sanitize=True,
@@ -123,6 +124,21 @@ minore Tommaso`). Impostare `False` per usare soltanto i rilevatori contestuali.
 Questo aiuta anche con brevi stringhe non giuridiche, ma non costituisce una politica
 separata per testi generali. La risorsa viene caricata al primo utilizzo e poi conservata
 in memoria.
+
+`initials=True` sostituisce le iniziali che alcune fonti scrivono al posto del nome
+(`A.G. e S.I. hanno impugnato, nei confronti di S.T.`). Le iniziali sono pseudonime, non
+anonime, e ricevono quindi un'etichetta come ogni altra parte. Le stesse lettere sono
+anche il modo in cui il diritto italiano scrive le sue sigle (`P.Q.M.`, `D.P.R.`, `S.U.`):
+la forma da sola non prova nulla. Le iniziali si prendono dopo gli indizi che fanno
+riconoscere un nome (`proposto da`, `nei confronti di`, `avv.`, `nato a`…) e poi ovunque
+ricorrano le stesse lettere. Restano intatte le sigle (`resources/sigle.json`), i
+riferimenti (`art. 2697 C.C.`, `D.L. n. 78`), le iniziali di un giudice e le
+organizzazioni (`R.B. s.p.a.`). `initials="all"` serve per una fonte che si sa scrivere le
+parti con le iniziali: qualunque iniziale che nulla escluda è allora una persona, con o
+senza indizio. È disattivata per impostazione predefinita perché cambia l'output, e non
+va usata su testi che contengono soltanto sigle (sentenze tributarie, circolari). Restano
+fuori di proposito le iniziali seguite da un cognome in chiaro (`G.M. Nonno`), quelle di
+quattro lettere e le persone le cui iniziali coincidono con una sigla comune (`D.M.`).
 
 `companies="person_named"` privilegia deliberatamente la precisione. Sostituisce le
 società con un richiamo familiare esplicito (`F.lli`, `Fratelli` o `Eredi`) e i nomi

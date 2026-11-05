@@ -49,7 +49,8 @@ The runtime has a small set of complementary detectors:
 - `patterns.py`: structured PII, legal roles, person cues, party blocks, addresses and
   organization/legal-form patterns;
 - `protect.py`: exact judicial-role and procedural-number evidence;
-- `seeds.py`: private-person seeds from legal context and the weak first-name list;
+- `seeds.py`: private-person seeds from legal context and the weak first-name list, and,
+  on request, the initials a source wrote in place of names;
 - `ner.py`: optional transformer person mentions.
 
 None of these modules edits text or decides that an identity is globally safe. Private
@@ -101,6 +102,21 @@ common word unless a listed first name, no heading or role word, no field label 
 it. Otherwise `Giudice: avv. Biagio Stomeo⏎Segretario: …` became one person and the
 rewrite deleted the label and the break. Lists of counsel or parties may wrap but end at
 a blank line, and a phone number stays on its line.
+
+Some sources have already shortened their parties to initials (`A.G. e S.I.`). With
+`initials=True` they are read as names are: only behind a cue (those of `PROPOSTO_DA`,
+`NEI_CONFRONTI`, `PARTY_ROLE`, `COUNSEL`, `TITOLO`, `QUALIFICA` and `BIOGRAFICO`, plus the
+penal parties), then wherever else the same letters recur in the document. The shape is
+two or three capitals with their dots: four letters are a sigla far more often than a
+person, and `C.F. L` or `I.A.c.p.` are no initials at all. Exclusions beat evidence: a
+sigla of `resources/sigle.json` (`P.Q.M.`, `C.T.U.`, `D.L.`), a reference (`art. 2697 C.C.`,
+`D.L. n. 78`, any number before or after), a judicial role right before (`Presidente dott.
+N.A.`), an organisation (the `_in_organisation` test: `R.B. s.p.a.`) and a surname in clear
+after them (`G.M. Nonno`). A person whose initials are those of a listed sigla stays in
+clear: that is the price of never turning `P.Q.M.` into a party. `initials="all"` drops
+the cue for a source known to write its parties that way and keeps every exclusion. The
+candidates are ordinary person candidates, so judges, overlaps and tags go through the
+usual policy; the tag is allocated per initials, so `A. G.` and `A.G.` are one person.
 
 ### 4. Apply policy and resolve overlaps
 

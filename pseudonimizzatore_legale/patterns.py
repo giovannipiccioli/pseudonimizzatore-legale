@@ -38,6 +38,10 @@ SEP_NL1 = r"(?=\s)[^\S\r\n]*\n?[^\S\r\n]*"
 FULL_NAME = rf"{NAME_TOKEN}(?:{SEP}{NAME_TOKEN}){{1,3}}"
 #: Same, tolerating one line break between tokens.
 FULL_NAME_NL = rf"{NAME_TOKEN}(?:{SEP_NL}{NAME_TOKEN}){{1,3}}"
+#: Initials written where a name belongs: "A.G.", "A. G.", "R.A.S." Two or three capitals,
+#: each with its dot, so "C.F. L" and "I.A.c.p." are not initials. Four letters are left
+#: out: they are a sigla (E.N.E.L., A.N.A.S., C.G.I.L.) far more often than a person.
+INITIALS = r"\p{Lu}\.(?:[^\S\n]?\p{Lu}\.){1,2}"
 
 MONTHS = (r"gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|"
           r"ottobre|novembre|dicembre")
@@ -663,12 +667,13 @@ TITOLO_SOLO = re.compile(
 #: A bare name with its own partita IVA is a sole trader, who is a person: "DI BENEDETTO
 #: OSVALDO - P.IVA 02956140374". A company keeps its legal form before the P.IVA and is
 #: refused downstream.
-BIOGRAFICO = re.compile(
-    rf"(?<![\p{{L}}])({FULL_NAME})(?:\s*,\s*|\s*[-–]\s*|\s+)"
-    rf"(?:(?i:ivi|già|quivi|attualmente)\s+)?"
-    rf"(?i:nat[oa]\b|residente\b|domiciliat[oa]\b(?!\s+ex\s+lege)|dimorante\b|c\.?f\.?\b|"
-    rf"codice\s+fiscale\b|p\.?\s?iva\b|partita\s+iva\b|in\s+proprio\b|quale\s+erede\b|"
-    rf"in\s+qualità\s+di\b|rappresentat[oaie]\s+e\s+difes[oaie]\b)")
+#: The clause after the name is `_BIOGRAPHIC_CUE`, which INITIALS_BIOGRAFICO shares.
+_BIOGRAPHIC_CUE = (rf"(?:\s*,\s*|\s*[-–]\s*|\s+)"
+                   rf"(?:(?i:ivi|già|quivi|attualmente)\s+)?"
+                   rf"(?i:nat[oa]\b|residente\b|domiciliat[oa]\b(?!\s+ex\s+lege)|dimorante\b|c\.?f\.?\b|"
+                   rf"codice\s+fiscale\b|p\.?\s?iva\b|partita\s+iva\b|in\s+proprio\b|quale\s+erede\b|"
+                   rf"in\s+qualità\s+di\b|rappresentat[oaie]\s+e\s+difes[oaie]\b)")
+BIOGRAFICO = re.compile(rf"(?<![\p{{L}}])({FULL_NAME}){_BIOGRAPHIC_CUE}")
 
 #: Name adjacent to a codice fiscale — the strongest anchor there is.
 CF_ADIACENTE = re.compile(
@@ -714,6 +719,11 @@ PARTY_ROLE_WORD = (r"(?i:ricorrent[ei]|resistent[ei]|controricorrent[ei]|"
 PARTY_ROLE = re.compile(rf"(?i:il\s+|la\s+|i\s+|le\s+)?{PARTY_ROLE_WORD}[:\s,]+({FULL_NAME})")
 #: …and a surname alone after one: "il ricorrente Malaspina".
 PARTY_ROLE_SOLO = re.compile(rf"(?<![\p{{L}}]){PARTY_ROLE_WORD}[:\s,]+{SURNAME_AFTER}")
+#: The parties and witnesses of a penal decision, whom PARTY_ROLE_WORD (civil and
+#: administrative roles) leaves out. Only INITIALS_PERSON reads them: adding them to
+#: PARTY_ROLE_WORD would change which full names are seeded, which is a decision of its own.
+PENAL_PARTY_WORD = (r"(?i:imputat[oi]|indagat[oi]|condannat[oi]|assolt[oi]|parte\s+civile|"
+                    r"persona\s+offesa|testimon[ei]|teste|denunciat[oi]|querelat[oi])")
 
 #: The commonest way an Italian decision names a party: "proposto da <Name>, …".
 #: Cassazione writes it in the ALL-CAPS party block, but the administrative and civil
@@ -753,12 +763,61 @@ ORG_NAME_BEFORE = re.compile(
 #: "all'altro socio TAGLIAFERRI NICODEMO", "la ditta di PICCININI GUALTIERO". A sole
 #: trader and a law firm named after its lawyer are people too: "ditta individuale HU
 #: XIAOMING", "studio legale Mirandolina Zangheratti".
-QUALIFICA = re.compile(
-    rf"(?<![\p{{L}}])(?i:soci[oa]|amministrator[ei]|titolar[ei]|legale\s+rappresentante|"
-    rf"erede|eredi|coniuge|curator[ei]|liquidator[ei]|tutor[ei]|"
-    rf"(?:s\.?a\.?s\.?|s\.?n\.?c\.?|ditta|impresa|società)\s+di|"
-    rf"(?:ditta|impresa)\s+individuale(?:\s+di)?|studio\s+legale)"
-    rf"[\s:,]+({FULL_NAME})")
+QUALIFICA_CUE = (rf"(?i:soci[oa]|amministrator[ei]|titolar[ei]|legale\s+rappresentante|"
+                 rf"erede|eredi|coniuge|curator[ei]|liquidator[ei]|tutor[ei]|"
+                 rf"(?:s\.?a\.?s\.?|s\.?n\.?c\.?|ditta|impresa|società)\s+di|"
+                 rf"(?:ditta|impresa)\s+individuale(?:\s+di)?|studio\s+legale)")
+QUALIFICA = re.compile(rf"(?<![\p{{L}}]){QUALIFICA_CUE}[\s:,]+({FULL_NAME})")
+
+# ── initials ─────────────────────────────────────────────────────────────────
+
+#: Some sources write every private name as its initials: "A.G. e S.I. hanno impugnato,
+#: nei confronti di S.T." That is pseudonymous, not anonymous (labels.py says why), and the
+#: initials stay next to the birth date and the case. They are not name seeds, because the
+#: same letters are how Italian law writes its sigle (P.Q.M., D.P.R., S.U.): the shape alone
+#: proves nothing. `seeds.initials` takes them behind the anchors below, or everywhere when
+#: the caller says that the whole source is written that way.
+#:
+#: One token. The boundaries keep it out of the tail of "d.P.R." and out of a tag
+#: ("Nominativo_1."); the dot after the last letter belongs to it.
+INITIALS_TOKEN = re.compile(rf"(?<![\p{{L}}\p{{N}}._-])({INITIALS})(?![\p{{L}}\p{{N}}_])")
+
+#: Initials, or a list of them as PARTY_LIST reads names: "proposto da A.G., S.I. e L.S."
+_INITIALS_LIST = (rf"{INITIALS}(?:{SEP_NL}[,;]{SEP_NL}{INITIALS})*"
+                  rf"(?:{SEP_NL}[,;]?{SEP_NL}(?i:ed?){SEP_NL1}{INITIALS})?")
+
+#: The cues of PROPOSTO_DA and PARTY_ROLE, NEI_CONFRONTI, COUNSEL, TITOLO and QUALIFICA, and
+#: the clause of BIOGRAFICO, with initials where the name goes. Group 1 is the list, except
+#: for BIOGRAFICO, which reads one name as it does: a list in front of an unanchored cue
+#: would be tried again from every item. Counsel are read only behind their title: "il
+#: difensore di A.G." names the client. The penal parties come from PENAL_PARTY_WORD
+#: ("l'imputato B.L.").
+INITIALS_APPLICANT = re.compile(
+    rf"(?:{APPLICANT_CUE}\s*:?\s*|{PARTY_ROLE_WORD}[:\s,]+)({_INITIALS_LIST})")
+INITIALS_COUNTERPARTY = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({_INITIALS_LIST})")
+INITIALS_COUNSEL = re.compile(rf"{COUNSEL_CUE}\s+({_INITIALS_LIST})")
+INITIALS_PERSON = re.compile(
+    rf"(?:{TITLE_CUE}\s*|(?<![\p{{L}}])(?:{QUALIFICA_CUE}|{PENAL_PARTY_WORD})"
+    rf"(?:\s+(?i:di|del|della))?[\s:,]+)({_INITIALS_LIST})")
+INITIALS_BIOGRAFICO = re.compile(rf"(?<![\p{{L}}])({INITIALS}){_BIOGRAPHIC_CUE}")
+
+#: What marks dotted capitals as a reference and not a person. Before: "art. 2697 C.C.",
+#: "Cass., S.U.", "sez. U", any number. After: "D.L. n. 78", "D.P.R. 633/72", "D.L.⏎30
+#: settembre 2003", a colon ("C.F.: RSS…").
+INITIALS_REFERENCE_BEFORE = re.compile(
+    r"(?i:(?<![\p{L}.])(?:art\.?|artt\.?|n\.|nn\.|cass\.?|sez\.?|sent\.?|comma|commi|ex|"
+    r"cfr\.?|rv\.?)[^\S\n]*[:,-]?[^\S\n]*|\d[^\S\n]*)$")
+INITIALS_REFERENCE_AFTER = re.compile(
+    rf"(?i:[^\S\n]*(?:n\.|nn\.|n°|\d|/|:|del\s+\d|cit\.)"
+    rf"|\s*(?:\d{{1,4}}[^\S\n]+(?:{MONTHS})|\d+/\d))")
+#: A judicial role right before, with at most titles between: "il Presidente dott. N.A." is
+#: the bench, which stays in clear, and so is "il consigliere avv. N.A." of the older
+#: decisions. A role earlier in the line ("il giudice ha condannato P.L.") says nothing.
+INITIALS_JUDGE_BEFORE = re.compile(
+    rf"(?i:{JUDICIAL_ROLE})(?:[^\S\n]*(?:{TITLE_CUE}|avv\.))*[^\S\n]*[:,-]?[^\S\n]*$")
+#: What follows initials that end a sentence: "…di A.G. Il ricorso". That full stop is
+#: not theirs.
+INITIALS_SENTENCE_END = re.compile(r"[^\S\n]+\p{Lu}|[^\S\n]*(?:\n|$)")
 
 #: The Cassazione party block: everything between "proposto da" / "contro" and the
 #: next structural marker. Names inside it are parties or their counsel.

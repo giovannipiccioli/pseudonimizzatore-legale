@@ -98,6 +98,7 @@ config = Config(
     companies="person_named",
     roles=False,
     first_names=True,
+    initials=False,
     keep_judges=True,
     keep_case_numbers=True,
     sanitize=True,
@@ -116,6 +117,20 @@ name is removed on its own only as the first name of a person already detected, 
 after a salutation or kinship cue (`Caro Paolo,`, `il figlio minore Tommaso`). Set it to
 `False` to use only contextual detectors. This also helps on short, non-legal strings,
 but it is not a separate general-text policy. The resource is loaded lazily and cached.
+
+`initials=True` replaces the initials that some sources write in place of a name
+(`A.G. e S.I. hanno impugnato, nei confronti di S.T.`). Initials are pseudonymous, not
+anonymous, so they get tags like any other party. The same letters are also how Italian
+law writes its sigle (`P.Q.M.`, `D.P.R.`, `S.U.`), so the shape proves nothing: initials
+are taken behind the cues that seed a name (`proposto da`, `nei confronti di`, `avv.`,
+`nato a`…) and then wherever else the same letters recur. Sigle (`resources/sigle.json`),
+references (`art. 2697 C.C.`, `D.L. n. 78`), a judge's initials and organisations
+(`R.B. s.p.a.`) stay. `initials="all"` is for a source known to write its parties as
+initials: any initials that nothing excludes are then a person, cue or not. It is off by
+default because it changes the output, and it does not belong on text that merely
+contains sigle (tax judgments, circulars). Left alone on purpose: initials followed by a
+surname in clear (`G.M. Nonno`), four-letter initials, and persons whose initials are
+those of a common sigla (`D.M.`).
 
 `companies="person_named"` is deliberately precision-first. It replaces companies
 with explicit family wording (`F.lli`, `Fratelli`, or `Eredi`) and simple names made
