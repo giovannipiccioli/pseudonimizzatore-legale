@@ -74,6 +74,22 @@ def comuni() -> frozenset[str]:
         "reggio calabria", "reggio emilia"}
 
 
+_REGIONS = frozenset({
+    "abruzzo", "basilicata", "calabria", "campania", "emilia romagna", "friuli venezia giulia",
+    "lazio", "liguria", "lombardia", "marche", "molise", "piemonte", "puglia", "sardegna",
+    "sicilia", "toscana", "trentino alto adige", "umbria", "valle d'aosta", "veneto"})
+
+
+@lru_cache(maxsize=1)
+def places() -> frozenset[str]:
+    """`comuni()` and the regions, plus every leading part of a name of three words or
+    more: a wrapped or abbreviated mention ("Santa Maria Capua", "Fara Gera") is as
+    much a place as "Santa Maria Capua Vetere" and "Fara Gera d'Adda"."""
+    names = comuni() | _REGIONS
+    return names | {" ".join(words[:n]) for words in map(str.split, names)
+                    for n in range(2, len(words))}
+
+
 @lru_cache(maxsize=1)
 def sigle() -> frozenset[str]:
     """The sigle (P.Q.M., C.T.U., D.L.) that are not a person's initials, spelt as
@@ -174,7 +190,7 @@ class SeedSet:
             return None
         if P.STREET_HEAD.match(name):
             return None                      # an address, not a person
-        if toks[0].lower() in P.FRAGMENT_HEAD:
+        if toks[0].lower() in P.FRAGMENT_HEAD or toks[-1].lower() in P.FRAGMENT_TAIL:
             return None                      # a slice of a longer name, not a name
         if any(t.strip("_0123456789") in RESERVED for t in toks):
             return None                      # our own output, not a person
@@ -312,7 +328,8 @@ _SURNAME_PARTICLES = frozenset({
 def _in_organisation(text: str, start: int, end: int) -> bool:
     """True if the text continues the name at `start:end` into an organisation's name."""
     return bool(P.ORG_SUFFIX_AFTER.match(text, end)
-                or P.ORG_NAME_BEFORE.search(text, max(0, start - 60), start))
+                or P.ORG_NAME_BEFORE.search(text, max(0, start - 60), start)
+                or P.ORG_HEAD_BEFORE.search(text, max(0, start - 60), start))
 
 
 def _continues_name(text: str, start: int, end: int) -> bool:
@@ -401,11 +418,11 @@ def _first_name_candidates(text: str) -> list[str]:
 
     def add(start: int, end: int) -> None:
         span = (tokens[start].start(), tokens[end].end())
-        if P.ORG_SUFFIX_AFTER.match(text, span[1]):
+        if _in_organisation(text, span[0], span[1]):
             return
         if P.NAMED_PLACE_BEFORE.search(text, max(0, span[0] - 40), span[0]):
             return
-        if place_key(text[span[0]:span[1]]) in comuni():
+        if place_key(text[span[0]:span[1]]) in places():
             return
         if span not in seen:
             seen.add(span)
@@ -691,10 +708,10 @@ def variant_patterns(entity: Entity, min_len: int,
     """
     out: list[tuple[int, re.Pattern, bool]] = []
 
-    def add(literal: str, full: bool) -> None:
+    def add(literal: str, full: bool, fold: bool = True) -> None:
         out.append((len(literal),
                     re.compile(rf"(?<![\p{{L}}\p{{N}}]){literal}(?![\p{{L}}\p{{N}}])",
-                               re.I),
+                               re.I if fold else 0),
                     full))
 
     for variant in entity.variants | {entity.display}:
@@ -709,7 +726,9 @@ def variant_patterns(entity: Entity, min_len: int,
     for tok in rare_tokens(entity.display, min_len):
         if tok.casefold() in skip_tokens:
             continue
-        add(re.escape(tok), full=False)
+        # "Zanoni Impianti" must not take every "impianti" of the document with it.
+        forms = {tok, tok.capitalize(), tok.upper()}
+        add("(?:" + "|".join(map(re.escape, sorted(forms))) + ")", full=False, fold=False)
 
     out.sort(key=lambda p: -p[0])
     return [(pattern, full) for _, pattern, full in out]

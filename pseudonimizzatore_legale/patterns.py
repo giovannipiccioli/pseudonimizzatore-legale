@@ -579,6 +579,12 @@ FRAGMENT_HEAD = frozenset(
     "delle degli dei per con su in ed e al alla ai agli nel nella sul sulla tra fra "
     "che non ha".split())
 
+#: …and the same words at the other end: "AGENTE PER LA" is what is left of "AGENTE PER LA
+#: RISCOSSIONE" once the run is cut at the head word.
+FRAGMENT_TAIL = frozenset(
+    "il lo la le gli un una di del dello della dei degli delle da dal dalla de e ed per con "
+    "su in a al alla ai agli nel nella".split())
+
 #: Words that end a name capture. Two kinds, for the same reason — a capture allowed to
 #: run past the person swallows the next word and deletes it from the document:
 #:   * section headings, hit when a name-with-line-break capture runs onto the next line
@@ -755,6 +761,11 @@ PARTY_LIST = re.compile(
 #: preposition right before it ("Comune di Fonte Nuova, rappresentato e difeso",
 #: "Istituto Nazionale della Previdenza Sociale, rappresentato e difeso").
 ORG_SUFFIX_AFTER = re.compile(rf"[^\S\n]*(?:{COMPANY_SUFFIX})(?![\p{{L}}])", re.I)
+#: …or the name of an institute or a bank in front of it, with at most one capitalised word
+#: between: "ISTITUTO NAZIONALE della Previdenza Sociale", "Banca Popolare Antoniana Veneta".
+#: Not every institution head: "l'avvocato dello Stato Paolo Gentili" is a person.
+ORG_HEAD_BEFORE = re.compile(
+    r"\b(?i:istitut[oi]|banc[ao]|cassa|credito)\b[^\S\n]+(?:\p{Lu}[\p{L}'’.]*[^\S\n]+)?$")
 ORG_NAME_BEFORE = re.compile(
     r"[\p{Lu}][\p{L}'’.]*[^\S\n]+(?i:di|del|della|dello|dei|degli|delle|dell['’]|d['’])"
     r"[^\S\n]*$")
