@@ -159,6 +159,22 @@ def test_party_block_accepts_a_name_made_of_common_tokens():
     assert "Giovanni Esposito" not in output
 
 
+def test_vertente_tra_replaces_both_parties_without_giving_them_a_side():
+    text = ("nel procedimento civile vertente tra Mario Rossi e Giovanni Esposito, iscritta "
+            "al n. 12 del registro ordinanze 1970. Giovanni Esposito resiste.")
+    output, report = anonymize(text, Config(roles=True, first_names=False))
+    assert "Rossi" not in output and "Esposito" not in output
+    assert "Ricorrente" not in output and "Resistente" not in output
+    assert len(set(report.mapping.values())) == 2
+
+
+def test_vertente_tra_keeps_an_institution_named_first():
+    text = "nel procedimento civile vertente tra Banca Agricola Mantovana e Luigi Fantinelli."
+    output, _ = anonymize(text, Config(first_names=False))
+    assert "Banca Agricola Mantovana" in output
+    assert "Fantinelli" not in output
+
+
 def test_four_token_name_rotation_keeps_one_tag():
     text = (
         "sul ricorso proposto da\nDE LUCA MARIO ANTONIO\n-ricorrente-\n"

@@ -86,7 +86,8 @@ the scan off.
 
 Party blocks are read as lists. After an applicant cue (`proposto da`, `ricorso di`) or
 a counter-party cue (`nei confronti di`, or `nei confronti` or `contro` ending its line,
-as the administrative and civil headings print them) every name of a list separated by
+as the administrative and civil headings print them), or the civil `vertente tra`, which
+names both sides and so gives no side to its names, every name of a list separated by
 commas, semicolons or `e` is seeded, not only the first: a mass appeal lists dozens of
 applicants after one cue. The list ends at the first item that is not name-shaped, and
 institutions inside it are left to the public-body guards. A name followed by

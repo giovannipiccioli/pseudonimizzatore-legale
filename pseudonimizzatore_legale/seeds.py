@@ -264,8 +264,10 @@ class SeedSet:
 
 
 def _party_role(block_start_text: str) -> str:
-    """Whether a party block introduces the applicant or the respondent."""
+    """Whether a party block introduces the applicant or the respondent, or both sides."""
     head = block_start_text[:40].lower()
+    if head.startswith("vertent"):
+        return "Nominativo"
     if "contro" in head or "confronti" in head:
         return "Resistente"
     return "Ricorrente"

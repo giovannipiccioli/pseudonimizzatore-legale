@@ -773,6 +773,12 @@ APPLICANT_CUE = (r"(?i:proposto\s+da(?:l(?:la)?|i|gli|lle)?|ricorso\s+di|promoss
 #: sentenza") and stays out.
 COUNTERPARTY_CUE = (r"(?i:nei\s+confronti(?:\s+di\b|(?=[^\S\n]*\n))|"
                     r"\bcontro(?=[^\S\n]*:?[^\S\n]*\n))")
+#: …and both sides at one cue, as civil cases are named: "nel procedimento civile vertente
+#: tra Capurso Anselmo e Zaccheri Mirko", or the merito courts' heading "vertente⏎TRA⏎…".
+#: The cue does not say which side a name is on. "vertente su" (a ground of appeal) is not
+#: a cue.
+PARTIES_CUE = (r"(?i:vertent[ei]\s+(?:tra|fra))"
+               r"(?:\s+(?i:i\s+)?(?i:signori|sigg?\.\s?(?:ri|re)))?")
 PROPOSTO_DA = re.compile(rf"{APPLICANT_CUE}\s*:?\s*({FULL_NAME})")
 NEI_CONFRONTI = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({FULL_NAME})")
 
@@ -780,9 +786,10 @@ NEI_CONFRONTI = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({FULL_NAME})")
 #: counter-interested parties of a public competition come in lists as well:
 #:   "proposto da Giulia Balestri, Lucia Surpo, Maurita Perfetti e Anna Vezzi, …"
 #: As with counsel, the single-name anchors above only ever see the first of them.
-#: Party lists are also written with semicolons: "nei confronti di A; B; C;".
+#: Party lists are also written with semicolons: "nei confronti di A; B; C;". PARTIES_CUE
+#: has no single-name anchor: a list of one is still a list.
 PARTY_LIST = re.compile(
-    rf"(?:{APPLICANT_CUE}|{COUNTERPARTY_CUE})\s*:?\s*"
+    rf"(?:{APPLICANT_CUE}|{COUNTERPARTY_CUE}|{PARTIES_CUE})\s*:?\s*"
     rf"({FULL_NAME}(?:{SEP_NL}[,;]{SEP_NL}{FULL_NAME})*"
     rf"(?:{SEP_NL}[,;]?{SEP_NL}(?i:ed?){SEP_NL1}{FULL_NAME})?)")
 

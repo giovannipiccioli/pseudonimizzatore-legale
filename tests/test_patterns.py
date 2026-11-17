@@ -373,6 +373,26 @@ class TestAdministrativeLayouts:
         m = P.PARTY_LIST.search("proposto da Giulia Balestri, rappresentata dall'avv. X")
         assert m.group(1) == "Giulia Balestri"
 
+    def test_vertente_tra_names_both_sides(self):
+        # Civil cases are named by both parties at one cue: in running text, as the
+        # Corte costituzionale cites the case it was referred from, or as the heading
+        # "vertente⏎TRA⏎…" of a merito judgment.
+        for text, names in (
+            ("nel procedimento civile vertente tra Capurso Anselmo e Zaccheri Mirko, iscritta",
+             ["Capurso Anselmo", "Zaccheri Mirko"]),
+            ("e vertente fra i signori Giuseppa Vellani e Calogero Lunardi, veniva sollevata",
+             ["Giuseppa Vellani", "Calogero Lunardi"]),
+            ("iscritta al n. 546/2019 vertente\nTRA\nSeverino Grimaldi, Mirandolina Zangheratti, "
+             "rappresentati e difesi", ["Severino Grimaldi", "Mirandolina Zangheratti"]),
+            ("nei procedimenti riuniti vertenti tra Tedaldi Gherardo ed altri e l'Istituto "
+             "nazionale della previdenza sociale", ["Tedaldi Gherardo"]),
+        ):
+            m = P.PARTY_LIST.search(text)
+            assert P.COUNSEL_LIST_SEP.split(m.group(1)) == names, text
+
+    def test_vertente_on_a_ground_of_appeal_is_not_a_cue(self):
+        assert P.PARTY_LIST.search("Sul primo motivo, vertente su Errore Manifesto") is None
+
     def test_standalone_nei_confronti_label_is_a_cue(self):
         assert P.NEI_CONFRONTI.search(
             "nei confronti\n\nDavide Fiorenzi, non costituito").group(1) == "Davide Fiorenzi"
