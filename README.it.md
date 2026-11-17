@@ -81,7 +81,7 @@ giudiziari italiani:
 | comuni di nascita e di residenza (`nato a Stia`), verificati sull'elenco ISTAT | sostituisci |
 | segmenti esatti relativi a magistrati e pubblici ministeri | conserva |
 | enti pubblici, istituzioni, le loro caselle istituzionali e i loro indirizzi, altri nomi di luogo | conserva |
-| numeri di procedimento ed ECLI | conserva |
+| numeri di procedimento, ECLI e i nomi con cui si citano le cause europee (`Scoppola c. Italia`, `C-348/16, Sacko`) | conserva |
 | società private | conserva; sostituisci le imprese probabilmente basate su nomi di persona con `companies="person_named"`, oppure tutte quelle rilevate con `companies=True` |
 | evidenze contrastanti di ruolo giudiziario e ruolo privato per la stessa identità | sostituisci e segnala per la revisione |
 

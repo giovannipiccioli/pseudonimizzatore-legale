@@ -77,7 +77,7 @@ The default policy is designed for published Italian legal decisions:
 | birthplace and residence towns (`nato a Stia`), checked against ISTAT's comuni | replace |
 | exact judicial and public-prosecution role spans | keep |
 | public bodies, institutions, their office mailboxes and address blocks, and other place names | keep |
-| procedural case numbers and ECLI identifiers | keep |
+| procedural case numbers, ECLI identifiers and the names European cases are cited by (`Scoppola c. Italia`, `C-348/16, Sacko`) | keep |
 | private companies | keep; replace likely person-named firms with `companies="person_named"`, or all detected firms with `companies=True` |
 | conflicting judicial and private-role evidence for one identity | replace and flag for review |
 

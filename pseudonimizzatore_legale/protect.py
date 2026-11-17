@@ -102,11 +102,14 @@ def collect(text: str) -> Protected:
     # spans. Shielding them here looked equivalent but was not: a protected span wins
     # its characters outright, so "avvocatura" occurring inside the domain of
     # `ags.rm@mailcert.avvocaturastato.it` blocked a real e-mail from being replaced.
-    for m in P.CASE_NUMBER.finditer(text):
-        span = m.span()
+    # A European case is cited by a name as well as a number ("C-348/16, Moussa Sacko",
+    # "Scoppola c. Italia"); both stay, under the same switch.
+    case_spans = [m.span() for m in P.CASE_NUMBER.finditer(text)]
+    case_spans += [m.span(1) for pattern in P.CASE_NAMES for m in pattern.finditer(text)]
+    for span in case_spans:
         prot.spans.append(span)
         prot.span_kinds[span] = "case_number"
-        prot.span_names[span] = m.group(0)
+        prot.span_names[span] = text[span[0]:span[1]]
 
     prot.spans = sorted(set(prot.spans))
     return prot

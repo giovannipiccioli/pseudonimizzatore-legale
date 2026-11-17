@@ -611,6 +611,36 @@ CASE_NUMBER = re.compile(
     r"|(?i:r\.?\s?g\.?(?:\s?n\.?)?|ruolo\s+generale)[\s.:n°]*\d{1,6}\s?/\s?\d{2,4}"
     r"|(?i:ecli):[A-Z]{2}:[A-Z]+:\d{4}:\w+")
 
+#: The respondent of a case before the European Court of Human Rights: a member State of
+#: the Council of Europe, as Italian decisions write it.
+_COE_STATE = (r"(?:Albania|Andorra|Armenia|Austria|Azerbaigian|Belgio|Bosnia[-\s]Erzegovina|"
+              r"Bulgaria|Cipro|Croazia|Danimarca|Estonia|Finlandia|Francia|Georgia|Germania|"
+              r"Grecia|Irlanda|Islanda|Italia|Lettonia|Liechtenstein|Lituania|Lussemburgo|"
+              r"Macedonia(?:\s+del\s+Nord)?|Malta|Moldavia|Moldova|Monaco|Montenegro|"
+              r"Norvegia|Paesi\s+Bassi|Polonia|Portogallo|Regno\s+Unito|Repubblica\s+Ceca|"
+              r"Romania|Russia|San\s+Marino|Serbia|Slovacchia|Slovenia|Spagna|Svezia|"
+              r"Svizzera|Turchia|Ucraina|Ungheria)")
+#: A party as a European case is cited by it: capitalised words and initials on one line,
+#: joined by the particles of foreign surnames or by "e" ("Del Río Prada", "S.H.",
+#: "Cusan e Fazzo").
+_CASE_PARTY = (rf"(?:{NAME_TOKEN}|(?:\p{{Lu}}\.)+)(?:{SEP}(?:{NAME_TOKEN}|(?:\p{{Lu}}\.)+|"
+               rf"(?:de|del|della|di|da|van|von|der|den|y|e|ed)(?={SEP}\p{{Lu}})))*")
+#: The name a European case is cited by, kept with the case numbers: it is how the case is
+#: found, and "Nominativo_4 c. Italia" cites nothing. Group 1 is the name.
+#:   * Corte EDU: the applicant before "c." or "contro" and the respondent State
+#:     ("Scoppola c. Italia", "Grande Stevens e altri contro Italia"). A capitalised word
+#:     after the State makes it something else ("contro Italia Trasporti S.r.l.").
+#:   * Corte di giustizia: the parties after the case number ("causa C-348/16, Moussa
+#:     Sacko contro Commissione Territoriale", "cause riunite … e C-360/04, Placanica").
+#: Only these spans are protected: a party detected elsewhere under the same name is still
+#: replaced there.
+CASE_NAMES = [
+    re.compile(rf"(?<![\p{{L}}'’.])({_CASE_PARTY})(?:{SEP}ed?{SEP}altri)?{SEP}(?:c\.|contro)"
+               rf"{SEP}{_COE_STATE}(?!\p{{L}}|{SEP}\p{{Lu}})"),
+    re.compile(rf"(?<![\p{{L}}\p{{N}}])[CT][-–][^\S\n]?\d{{1,4}}/\d{{2}}(?:{SEP}P)?,{SEP}"
+               rf"({_CASE_PARTY}(?:{SEP}(?:c\.|contro){SEP}{_CASE_PARTY})?)"),
+]
+
 # ── person seeds ─────────────────────────────────────────────────────────────
 
 #: Defence counsel. Tolerates a line break inside the name, and the ALL-CAPS form.

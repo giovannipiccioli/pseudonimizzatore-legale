@@ -130,7 +130,7 @@ detected private company. Public-institution guards apply before these choices.
 | Priority | Evidence |
 |---:|---|
 | 120 | structured personal data |
-| 100 | exact judicial-role and procedural-number keeps |
+| 100 | exact judicial-role and procedural-number keeps, and the names European cases are cited by |
 | 40 | cued or letterhead address, birthplace or residence town |
 | 35 | private company |
 | 30 | full person identity |
@@ -152,6 +152,10 @@ Presidente: ROSSI MARIO       -> kept
 ROSSI LUCIA, ricorrente       -> redacted
 La Rossi insiste              -> redacted
 ```
+
+A European case's name is protected the same way, as part of its citation:
+`Scoppola c. Italia` and `C-348/16, Sacko` stay, while a party called Scoppola elsewhere in
+the decision is still replaced.
 
 If one complete identity has both judicial and strong private-role evidence, the
 privacy-first conflict rule removes its occurrences and emits a warning. A broad party

@@ -46,8 +46,9 @@ class Config:
         default. Turning this off does not *remove* judges; it stops defending them, so
         late policy may then accept ordinary person candidates at those spans.
     keep_case_numbers
-        Keep procedural identifiers (``n. 274/2023``, ``R.G. 17382/2023``, ECLI). On by
-        default: pseudonymizing them makes the
+        Keep procedural identifiers (``n. 274/2023``, ``R.G. 17382/2023``, ECLI) and the
+        name a European case is cited by (``C-348/16, Sacko``, ``Scoppola c. Italia``). On
+        by default: pseudonymizing them makes the
         output uncitable and unlinkable to any other database. Switching it off does
         not pseudonymize case numbers; it only removes their explicit keep decision.
     sanitize
