@@ -158,6 +158,10 @@ UNTOUCHED = [
     pytest.param("in a.g., d.lgs. 74/2000, c.p.c. e p.m. minuscoli", id="lower-case"),
     pytest.param("il verbale AG e SI non sono iniziali", id="no-dots"),
     pytest.param("IL DISPOSITIVO È QUESTO. NESSUNA INIZIALE QUI.", id="shouting"),
+    pytest.param("la sentenza della Corte E.D.U. e l'art. 6 della Convenzione E.D.U.; la stima "
+                 "dell'U.T.E., la decisione della C.T.C. e il P.V.C. notificato",
+                 id="ilforo-cassazione-sigle"),
+    pytest.param("approvato il P.I.P. con le N.T.A. del piano", id="planning-sigle"),
 ]
 
 
@@ -172,8 +176,7 @@ def test_sigle_and_references_are_left_alone(text):
 EVERYWHERE_GAPS = [
     pytest.param("indetta dalla O.U.A. per il 10 maggio", id="unlisted-sigla"),
     pytest.param("il piano della R.T.P. e della U.A.P. di Parigi", id="unlisted-organisations"),
-    pytest.param("approvato il P.I.P. con le N.T.A. del piano e il D.D.G. regionale",
-                 id="planning-sigle"),
+    pytest.param("approvato il piano con il D.D.G. regionale", id="planning-decree"),
 ]
 
 
