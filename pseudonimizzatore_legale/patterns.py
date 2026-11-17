@@ -658,8 +658,14 @@ COUNSEL_LIST = re.compile(
     rf"({FULL_NAME}(?:{SEP_NL},{SEP_NL}{FULL_NAME})*"
     rf"(?:{SEP_NL},?{SEP_NL}(?i:ed?){SEP_NL1}{FULL_NAME})?)")
 
+#: The cue's preposition repeated before the last name of a party list: "proposto da A e
+#: da B", "nei confronti di A e di B". Only the preposition: "proposto da A e nei confronti
+#: di B" names the other side. Lower-case only: "e Di Marzio Giuseppe" is a name with its
+#: particle, not "e di" and "Marca Giuseppe".
+_LIST_PREPOSITION = r"(?:da|dal|dalla|dallo|dai|dagli|dalle|di)"
+
 #: Splits a captured list — of counsel, or of parties (PARTY_LIST) — back into names.
-COUNSEL_LIST_SEP = re.compile(r"\s*[,;]\s*|\s+(?i:ed?)\s+")
+COUNSEL_LIST_SEP = re.compile(rf"\s*[,;]\s*|\s+(?i:ed?)(?:\s+{_LIST_PREPOSITION})?\s+")
 
 #: Counsel named by surname alone: "per l'Inps l'avv. Scaramuzza". Very common in
 #: hearing minutes, and counsel must always be pseudonymized. Safe only because the
@@ -786,12 +792,13 @@ NEI_CONFRONTI = re.compile(rf"{COUNTERPARTY_CUE}\s*:?\s*({FULL_NAME})")
 #: counter-interested parties of a public competition come in lists as well:
 #:   "proposto da Giulia Balestri, Lucia Surpo, Maurita Perfetti e Anna Vezzi, …"
 #: As with counsel, the single-name anchors above only ever see the first of them.
-#: Party lists are also written with semicolons: "nei confronti di A; B; C;". PARTIES_CUE
-#: has no single-name anchor: a list of one is still a list.
+#: Party lists are also written with semicolons: "nei confronti di A; B; C;", and with the
+#: cue's preposition before the last name: "proposto da A e da B". PARTIES_CUE has no
+#: single-name anchor: a list of one is still a list.
+_LIST_AND = rf"{SEP_NL}[,;]?{SEP_NL}(?i:ed?)(?:{SEP}{_LIST_PREPOSITION})?{SEP_NL1}"
 PARTY_LIST = re.compile(
     rf"(?:{APPLICANT_CUE}|{COUNTERPARTY_CUE}|{PARTIES_CUE})\s*:?\s*"
-    rf"({FULL_NAME}(?:{SEP_NL}[,;]{SEP_NL}{FULL_NAME})*"
-    rf"(?:{SEP_NL}[,;]?{SEP_NL}(?i:ed?){SEP_NL1}{FULL_NAME})?)")
+    rf"({FULL_NAME}(?:{SEP_NL}[,;]{SEP_NL}{FULL_NAME})*(?:{_LIST_AND}{FULL_NAME})?)")
 
 #: What makes a party cue's capture part of an organisation rather than a person: a legal
 #: form right after it ("Rosalinda Pizzigoni S.r.l."), or a capitalised word and a
@@ -830,9 +837,8 @@ QUALIFICA = re.compile(rf"(?<![\p{{L}}]){QUALIFICA_CUE}[\s:,]+({FULL_NAME})")
 #: ("Nominativo_1."); the dot after the last letter belongs to it.
 INITIALS_TOKEN = re.compile(rf"(?<![\p{{L}}\p{{N}}._-])({INITIALS})(?![\p{{L}}\p{{N}}_])")
 
-#: Initials, or a list of them as PARTY_LIST reads names: "proposto da A.G., S.I. e L.S."
-_INITIALS_LIST = (rf"{INITIALS}(?:{SEP_NL}[,;]{SEP_NL}{INITIALS})*"
-                  rf"(?:{SEP_NL}[,;]?{SEP_NL}(?i:ed?){SEP_NL1}{INITIALS})?")
+#: Initials, or a list of them as PARTY_LIST reads names: "proposto da A.G., S.I. e da L.S."
+_INITIALS_LIST = rf"{INITIALS}(?:{SEP_NL}[,;]{SEP_NL}{INITIALS})*(?:{_LIST_AND}{INITIALS})?"
 
 #: The cues of PROPOSTO_DA and PARTY_ROLE, NEI_CONFRONTI, COUNSEL, TITOLO and QUALIFICA, and
 #: the clause of BIOGRAFICO, with initials where the name goes. Group 1 is the list, except

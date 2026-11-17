@@ -393,6 +393,32 @@ class TestAdministrativeLayouts:
     def test_vertente_on_a_ground_of_appeal_is_not_a_cue(self):
         assert P.PARTY_LIST.search("Sul primo motivo, vertente su Errore Manifesto") is None
 
+    def test_party_list_repeats_the_cue_preposition_before_the_last_name(self):
+        for text, names in (
+            ("proposto da Alessandro Zanetto e da Raffaello Ludovico Zanetto, rappresentati",
+             ["Alessandro Zanetto", "Raffaello Ludovico Zanetto"]),
+            ("nei confronti di Giuseppe Brunì e di Cristoforo Ferrandi, imputati",
+             ["Giuseppe Brunì", "Cristoforo Ferrandi"]),
+            ("nei confronti di Martelli Gabriel, Rovere Daniel e di Vallardi Bonetti",
+             ["Martelli Gabriel", "Rovere Daniel", "Vallardi Bonetti"]),
+        ):
+            m = P.PARTY_LIST.search(text)
+            assert P.COUNSEL_LIST_SEP.split(m.group(1)) == names, text
+
+    def test_a_new_cue_after_e_is_not_the_same_list(self):
+        # The other side, not one more applicant: NEI_CONFRONTI reads it with its own role.
+        m = P.PARTY_LIST.search("proposto da Mario Rossi e nei confronti di Luigi Bianchi")
+        assert m.group(1) == "Mario Rossi"
+
+    def test_a_capitalised_particle_after_e_stays_with_its_name(self):
+        # "Di Marzio" is a surname: only a lower-case "di" repeats the cue.
+        m = P.PARTY_LIST.search("nei confronti di Morandino Vincenzo e Di Marzio Giuseppe")
+        assert P.COUNSEL_LIST_SEP.split(m.group(1)) == ["Morandino Vincenzo", "Di Marzio Giuseppe"]
+
+    def test_initials_lists_repeat_the_preposition_too(self):
+        m = P.INITIALS_COUNTERPARTY.search("nei confronti di A.G. e di S.I., imputati")
+        assert [t.group(1) for t in P.INITIALS_TOKEN.finditer(m.group(1))] == ["A.G.", "S.I."]
+
     def test_standalone_nei_confronti_label_is_a_cue(self):
         assert P.NEI_CONFRONTI.search(
             "nei confronti\n\nDavide Fiorenzi, non costituito").group(1) == "Davide Fiorenzi"
