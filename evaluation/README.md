@@ -4,7 +4,7 @@ The evaluation directory measures privacy recall, collateral removal and review
 behavior on 124 committed Italian legal-decision fixtures. Identities in the fixtures
 are invented; the private source archives are not required to run a score.
 
-Unit tests are the CI gate. Corpus scores are measurements rather than pass/fail tests:
+Unit tests are the gate. Corpus scores are measurements rather than pass/fail tests:
 adding a difficult document can correctly lower a metric.
 
 ## Main score
@@ -19,26 +19,26 @@ Current deterministic default (legal context plus the first-name list):
 
 | Source | Complete entities | Surface recall | Span precision LB | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| BDGT | 170/173 (98.3%) | 179/182 (98.4%) | 250/315 (79.4%) | 197/197 | 20/23 |
-| Cassazione | 48/51 (94.1%) | 78/81 (96.3%) | 88/110 (80.0%) | 137/137 | 24/25 |
+| BDGT | 171/173 (98.8%) | 180/182 (98.9%) | 252/313 (80.5%) | 197/197 | 21/23 |
+| Cassazione | 48/51 (94.1%) | 78/81 (96.3%) | 88/122 (72.1%) | 137/137 | 24/25 |
 | CGUE | 1/2 (50.0%) | 2/3 (66.7%) | 1/1 (100.0%) | 17/17 | 7/8 |
-| Consiglio di Stato | 50/50 (100.0%) | 98/98 (100.0%) | 77/89 (86.5%) | 78/78 | 16/16 |
-| TAR | 102/106 (96.2%) | 197/204 (96.6%) | 205/227 (90.3%) | 81/85 | 18/21 |
-| Corte dei conti | 38/39 (97.4%) | 68/69 (98.6%) | 60/68 (88.2%) | 140/140 | 14/15 |
-| Merito civile | 61/67 (91.0%) | 121/131 (92.4%) | 133/151 (88.1%) | 70/72 | 10/16 |
-| **Total** | **470/488 (96.3%)** | **743/768 (96.7%)** | **814/961 (84.7%)** | **720/726** | **109/124** |
+| Consiglio di Stato | 50/50 (100.0%) | 98/98 (100.0%) | 77/92 (83.7%) | 78/78 | 16/16 |
+| TAR | 103/106 (97.2%) | 199/204 (97.5%) | 206/236 (87.3%) | 81/85 | 19/21 |
+| Corte dei conti | 38/39 (97.4%) | 68/69 (98.6%) | 60/67 (89.6%) | 140/140 | 14/15 |
+| Merito civile | 61/67 (91.0%) | 121/131 (92.4%) | 133/158 (84.2%) | 68/72 | 10/16 |
+| **Total** | **472/488 (96.7%)** | **746/768 (97.1%)** | **817/989 (82.6%)** | **718/726** | **111/124** |
 
 The scorer also reports:
 
-- names: 355/373 complete (95.2%);
+- names: 357/373 complete (95.7%);
 - structured identifiers/other: 115/115 complete (100%);
-- character-overlap precision lower bound: 16,543/19,275 (85.8%);
-- damage-free documents (no protected value lost): 121/124;
-- review heuristic: TP/FN/FP/TN = 15/0/105/4, or 100% recall and 12.5%
+- character-overlap precision lower bound: 16,606/19,876 (83.5%);
+- damage-free documents (no protected value lost): 120/124;
+- review heuristic: TP/FN/FP/TN = 13/0/107/4, or 100% recall and 10.8%
   precision for finding documents with an annotated residual.
 
 Use `python evaluation/score_corpus.py --no-first-names` for the contextual baseline:
-446/488 complete entities, 331/373 complete names and 96/124 complete documents.
+448/488 complete entities, 333/373 complete names and 97/124 complete documents.
 
 ## Metric definitions
 

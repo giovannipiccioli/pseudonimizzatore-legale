@@ -273,7 +273,10 @@ def _party_role(block_start_text: str) -> str:
     return "Ricorrente"
 
 
-#: (pattern, role) for every anchor whose capture group 1 is a plain single name.
+#: (pattern, role) for every anchor whose capture group 1 is a plain single name. Each cue
+#: identifies a private person strongly enough that an all-common name such as ``Antonio
+#: De Luca`` is still a useful exact full-name seed; it adds no unsafe bare-token
+#: propagation because its ``rare_tokens`` stay empty.
 #: Order matters only for the role a person ends up with when two anchors find the same
 #: name — `SeedSet.add` keeps the strongest role, so the listing order here is
 #: readability, not precedence. `CF_ADIACENTE` leads because adjacency to a codice
@@ -297,23 +300,6 @@ _SIMPLE_ANCHORS = (
 #: precedes a codice fiscale, the others the name after their cue.
 _WRAPPING_ANCHORS = {"COUNSEL": False, "DIFESO_DA": False, "PKI_FIRMA": False,
                      "CF_ADIACENTE": True}
-
-# These cues identify a private person strongly enough that an all-common name such as
-# ``Antonio De Luca`` is still useful as an exact full-name seed. It contributes no
-# unsafe bare-token propagation because ``rare_tokens`` remains empty.
-_ALLOW_COMMON_NAME = frozenset({
-    "CF_ADIACENTE",
-    "COUNSEL",
-    "DIFESO_DA",
-    "TITOLO",
-    "BIOGRAFICO",
-    "PKI_FIRMA",
-    "PARTY_ROLE",
-    "QUALIFICA",
-    "PROPOSTO_DA",
-    "NEI_CONFRONTI",
-    "EMAIL_DISPLAY_NAME",
-})
 
 #: Anchors whose cue is followed by organisations as often as by people: the "contro"
 #: heading of NEI_CONFRONTI, and BIOGRAFICO's "rappresentato e difeso", which follows a
@@ -496,12 +482,8 @@ def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
             start, end = m.span(1)
             if attr in _WRAPPING_ANCHORS:
                 start, end = _one_name(text, start, end, before=_WRAPPING_ANCHORS[attr])
-            seeds.add(
-                text[start:end],
-                role,
-                require_distinctive=attr not in _ALLOW_COMMON_NAME,
-                source=f"regex:{attr.lower()}",
-            )
+            seeds.add(text[start:end], role, require_distinctive=False,
+                      source=f"regex:{attr.lower()}")
 
     # Counsel lists must run too: "avvocati A B, C D e E F" introduces several people
     # at a single cue, and the single-name pattern only ever sees the first of them.

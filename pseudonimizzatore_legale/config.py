@@ -105,8 +105,9 @@ class Config:
         not modify output; they set ``Report.status`` to ``"needs_review"`` when a
         structured identifier, strongly cued person or known alias remains.
 
-    Note there is no ``keep_places`` flag: place names are never detected in the first
-    place, so they survive unconditionally. Addresses *are* removed, but they are
+    Note there is no ``keep_places`` flag: a town is replaced only in a biographic slot
+    (``nato a Stia``, ``residente a Pratovecchio``), when ISTAT lists it as a comune or,
+    for a birthplace, its country follows in brackets; every other place name survives. Addresses are removed too, but they are
     anchored on a personal cue (``residente``, ``domiciliato``, ``con studio in``,
     ``sito in``) or on an address line of a private letterhead, signature or addressee
     block, never on the place name.

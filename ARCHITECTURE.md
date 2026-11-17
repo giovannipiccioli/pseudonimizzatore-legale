@@ -81,15 +81,18 @@ Tommaso`), and folds into the one full name it belongs to. A common first name o
 detected person (`Paolo` of `Paolo Gennari`) is then proposed case-sensitively, only when
 one detected person owns it, never after a street word or a saint and never next to
 another name token. Legal common words, public institutions and company suffixes remain
-guards, and the resulting identity follows the normal alias and late-policy path. The JSON resource is loaded once on first use; `Config(first_names=False)` turns
-the scan off.
+guards, and the resulting identity follows the normal alias and late-policy path. The
+JSON resource is loaded once on first use; `Config(first_names=False)` turns the scan
+off.
 
 Party blocks are read as lists. After an applicant cue (`proposto da`, `ricorso di`) or
 a counter-party cue (`nei confronti di`, or `nei confronti` or `contro` ending its line,
 as the administrative and civil headings print them), or the civil `vertente tra`, which
 names both sides and so gives no side to its names, every name of a list separated by
 commas, semicolons or `e` is seeded, not only the first: a mass appeal lists dozens of
-applicants after one cue. The list ends at the first item that is not name-shaped, and
+applicants after one cue. The cue's preposition may come back before the last name
+(`proposto da A e da B`, `nei confronti di A e di B`); a new cue (`e nei confronti di B`)
+starts the other side. The list ends at the first item that is not name-shaped, and
 institutions inside it are left to the public-body guards. A name followed by
 `rappresentato e difeso` is a party as well. Companies and public bodies stand in the
 same places, so a hit from these cues is refused when the text continues it into an
@@ -124,10 +127,6 @@ usual policy; the tag is allocated per initials, so `A. G.` and `A.G.` are one p
 `policy.py` filters candidates using `Config`, then greedily accepts non-overlapping
 spans by evidence priority and length:
 
-For companies, `False` rejects every company candidate, `"person_named"` accepts only
-the conservative family-marker and two-surname subset, and `True` accepts every
-detected private company. Public-institution guards apply before these choices.
-
 | Priority | Evidence |
 |---:|---|
 | 120 | structured personal data |
@@ -142,7 +141,8 @@ Structured PII deliberately outranks kept case identifiers, so a birth date such
 
 For company candidates, `companies=False` keeps every company,
 `companies="person_named"` accepts only candidates with a conservative family-name
-signal, and `companies=True` accepts them all. Accepted company spans outrank person
+signal, and `companies=True` accepts them all; public-institution guards apply before
+this choice. Accepted company spans outrank person
 aliases so a surname shared with a partner or shareholder does not leave part of the
 company name visible.
 
@@ -252,8 +252,7 @@ boundaries. It rejects overlapping source/destination trees and in-place file wr
 decodes UTF-8 strictly, and returns errors per file.
 
 Output and sidecar writes use same-directory temporary files followed by atomic
-replacement. Symbolic links in destination paths are rejected, as are overlapping
-source/output trees and in-place writes.
+replacement. Symbolic links in destination paths are rejected.
 
 Resume is opt-in. Optional mapping sidecars include source and output SHA-256 values,
 the JSON-shaped configuration, engine version and report schema. A sidecar-backed

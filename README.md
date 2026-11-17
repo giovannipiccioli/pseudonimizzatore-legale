@@ -257,12 +257,13 @@ recall is all-or-nothing: one surviving alias fails that identity.
 
 | Configuration | Complete entities | Surface recall | Span precision lower bound | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
-| contextual baseline (`first_names=False`) | 446/488 (91.4%) | 702/768 (91.4%) | 779/896 (86.9%) | 724/726 | 96/124 |
-| default (+ first-name list) | 470/488 (96.3%) | 743/768 (96.7%) | 814/961 (84.7%) | 720/726 | 109/124 |
-| + Italian NER XXL, list disabled | 473/488 (96.9%) | 744/768 (96.9%) | 834/1079 (77.3%) | 698/726 | 109/124 |
+| contextual baseline (`first_names=False`) | 448/488 (91.8%) | 705/768 (91.8%) | 782/942 (83.0%) | 722/726 | 97/124 |
+| default (+ first-name list) | 472/488 (96.7%) | 746/768 (97.1%) | 817/989 (82.6%) | 718/726 | 111/124 |
+| + Italian NER XXL, list disabled | 475/488 (97.3%) | 748/768 (97.4%) | 836/1126 (74.2%) | 698/726 | 111/124 |
+| default + Italian NER XXL | 477/488 (97.7%) | 751/768 (97.8%) | 838/1130 (74.2%) | 696/726 | 113/124 |
 
-All three configurations remove 115/115 annotated structured identifiers. The name
-list raises complete-name recall from 88.7% to 95.2% with no model dependency. The
+All four configurations remove 115/115 annotated structured identifiers. The name
+list raises complete-name recall from 89.3% to 95.7% with no model dependency. The
 review heuristic catches every document with an annotated residual, but remains a
 deliberately noisy review queue rather than a safety certificate.
 
@@ -281,7 +282,8 @@ python evaluation/score_corpus.py
 ```
 
 Optional real-model tests run automatically when the Italian XXL model is already in
-the Hugging Face cache. CI runs Python 3.10 and 3.12 and executes the playground.
+the Hugging Face cache. There is no CI: [`CONTRIBUTING.md`](CONTRIBUTING.md) lists what to
+run before a change, the playground included.
 
 ## Design and project layout
 

@@ -274,12 +274,13 @@ anche un solo alias, l'intera identità è considerata non rimossa.
 
 | Configurazione | Entità complete | Richiamo sulle occorrenze | Limite inferiore di precisione | Valori protetti conservati | Documenti completi |
 |---|---:|---:|---:|---:|---:|
-| base contestuale (`first_names=False`) | 446/488 (91,4%) | 702/768 (91,4%) | 779/896 (86,9%) | 724/726 | 96/124 |
-| predefinita (+ elenco dei nomi) | 470/488 (96,3%) | 743/768 (96,7%) | 814/961 (84,7%) | 720/726 | 109/124 |
-| + NER italiano XXL, elenco disattivato | 473/488 (96,9%) | 744/768 (96,9%) | 834/1079 (77,3%) | 698/726 | 109/124 |
+| base contestuale (`first_names=False`) | 448/488 (91,8%) | 705/768 (91,8%) | 782/942 (83,0%) | 722/726 | 97/124 |
+| predefinita (+ elenco dei nomi) | 472/488 (96,7%) | 746/768 (97,1%) | 817/989 (82,6%) | 718/726 | 111/124 |
+| + NER italiano XXL, elenco disattivato | 475/488 (97,3%) | 748/768 (97,4%) | 836/1126 (74,2%) | 698/726 | 111/124 |
+| predefinita + NER italiano XXL | 477/488 (97,7%) | 751/768 (97,8%) | 838/1130 (74,2%) | 696/726 | 113/124 |
 
-Tutte e tre le configurazioni rimuovono 115/115 identificatori strutturati annotati.
-L'elenco porta il richiamo dei nomi completi dall'88,7% al 95,2% senza dipendenze da
+Tutte e quattro le configurazioni rimuovono 115/115 identificatori strutturati annotati.
+L'elenco porta il richiamo dei nomi completi dall'89,3% al 95,7% senza dipendenze da
 modelli. L'euristica di revisione intercetta ogni documento con residui annotati, ma
 rimane intenzionalmente rumorosa. Non è un certificato di sicurezza.
 
@@ -299,8 +300,8 @@ python evaluation/score_corpus.py
 ```
 
 I test facoltativi con modelli reali vengono eseguiti automaticamente quando il
-modello italiano XXL è già presente nella cache di Hugging Face. La CI usa Python 3.10
-e 3.12 ed esegue anche il playground.
+modello italiano XXL è già presente nella cache di Hugging Face. Non c'è una CI: cosa
+eseguire prima di una modifica, playground compreso, è in [`CONTRIBUTING.md`](CONTRIBUTING.md).
 
 ## Architettura e struttura del progetto
 
