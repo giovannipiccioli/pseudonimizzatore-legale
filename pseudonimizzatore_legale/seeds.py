@@ -39,6 +39,7 @@ import regex as re
 from . import patterns as P
 from .labels import RESERVED
 from .model import Entity, Mention
+from .text import normalize_quotes
 
 
 @lru_cache(maxsize=1)
@@ -152,7 +153,7 @@ class SeedSet:
         self._by_key: dict[tuple[str, ...], Entity] = {}
         self._min_len = min_token_len
 
-    def add(self, raw: str, role: str, allow_single: bool = False,
+    def add(self, raw: str, role: str | None, allow_single: bool = False,
             require_distinctive: bool = True, source: str = "regex",
             trusted: bool = False, given_name: bool = False) -> Entity | None:
         """Register `raw` as a person, unless one of the guards refuses it.
@@ -207,9 +208,9 @@ class SeedSet:
             return None                      # nothing distinctive to key on
         return self._register(name, role, source)
 
-    def _register(self, name: str, role: str, source: str,
+    def _register(self, name: str, role: str | None, source: str,
                   trusted: bool = False) -> Entity:
-        entity = Entity(display=name, role=role)
+        entity = Entity(display=name, role=role or "Nominativo")
         entity.sources.add(source)
         existing = self._by_key.get(entity.key)
         if existing is None:
@@ -218,14 +219,14 @@ class SeedSet:
             return entity
         existing.variants.add(name)
         existing.sources.add(source)
-        if trusted or _ROLE_RANK.get(role, 9) < _ROLE_RANK.get(existing.role, 9):
+        if role is not None and (trusted or _ROLE_RANK.get(role, 9) < _ROLE_RANK.get(existing.role, 9)):
             existing.role = role
-        # Prefer the longer spelling as the canonical display form.
-        if len(name) > len(existing.display):
+        # A supplied identity stays addressable across changes to spelling order.
+        if trusted or len(name) > len(existing.display):
             existing.display = name
         return existing
 
-    def all(self) -> list[Entity]:
+    def all(self, people=()) -> list[Entity]:
         """Every distinct person, with partial-name seeds folded into their full name.
 
         Detectors disagree about how much of a name they see: "dall'avv. Gallusi Sandro"
@@ -247,6 +248,9 @@ class SeedSet:
         Folding happens here rather than in `add` so it cannot depend on which detector
         ran first.
         """
+        # Trusted review names take part in the same identity resolution.
+        for surface, role in people:
+            self.add(normalize_quotes(surface), role, source="user", trusted=True)
         for key in sorted(self._by_key, key=len):
             seed = self._by_key.get(key)
             if seed is None:
@@ -467,12 +471,8 @@ def _first_name_candidates(text: str) -> list[str]:
     return found
 
 
-def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
-    """Find document-local person entities; policy is applied later.
-
-    `mentions` are person `Mention`s from a NER the caller ran on this same text;
-    `people` are ``(surface, role)`` pairs a reviewer added.
-    """
+def collect_seeds(text: str, cfg, *, mentions=()) -> SeedSet:
+    """Collect detector and NER evidence once, before resolving person identities."""
     seeds = SeedSet(cfg.min_token_len)
 
     for attr, role in _SIMPLE_ANCHORS:
@@ -571,12 +571,12 @@ def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
         seeds.add(text[slice(*_one_name(text, mention.start, mention.end))], mention.role,
                   allow_single=True, require_distinctive=False, source=mention.source)
 
-    # People a reviewer added skip every guard, but still fold into the names found
-    # above and propagate like them.
-    for surface, role in people:
-        seeds.add(surface, role, source="user", trusted=True)
+    return seeds
 
-    return seeds.all()
+
+def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
+    """Find local identities, including optional (name, role) pairs from a reviewer."""
+    return collect_seeds(text, cfg, mentions=mentions).all(people)
 
 
 def _names_in_run(run: str) -> list[str]:

@@ -59,7 +59,7 @@ def main():
             continue
         gold = json.loads(gold_path.read_text(encoding="utf-8"))
         raw = doc.read_text(encoding="utf-8")
-        config_options = dict(gold.get("config", {}))
+        config_options = {"keep_roles": ("giudice",), **gold.get("config", {})}
         if no_first_names:
             config_options["first_names"] = False
         cfg = Config(**config_options)

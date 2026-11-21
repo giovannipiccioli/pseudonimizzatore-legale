@@ -183,7 +183,7 @@ CASES = [
 
 @pytest.mark.parametrize("text, keep, remove", CASES)
 def test_judges_stay_and_private_people_go(text, keep, remove):
-    out, _ = anonymize(text)
+    out, _ = anonymize(text, keep_roles=("giudice",))
     assert [v for v in keep if not present(v, out)] == [], "judge removed"
     assert [v for v in remove if present(v, out)] == [], "private person left in clear"
 
@@ -279,6 +279,6 @@ DOCUMENTS = [
 @pytest.mark.parametrize("text, gold", DOCUMENTS)
 def test_annotated_document(text, gold):
     assert all(present(v, text) for v in gold["must_remove"] + gold["must_keep"])
-    out, _ = anonymize(text)
+    out, _ = anonymize(text, keep_roles=("giudice",))
     assert [v for v in gold["must_remove"] if present(v, out)] == [], "left in clear"
     assert [v for v in gold["must_keep"] if not present(v, out)] == [], "wrongly removed"

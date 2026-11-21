@@ -7,31 +7,33 @@ The stages exchange candidates and decisions rather than editing text in sequenc
 Judicial roles are detected alongside private people. They become exact keep decisions
 only in late policy, so a judge's surname cannot veto an unrelated party globally.
 
-`anonymize` is `render(analyze(...))`. A review tool calls the two halves itself and
-feeds a reviewer's corrections back in as `Edits`, which enter the same pipeline as
-one more detector: a person the reviewer adds is folded, propagated and tagged exactly
-like one found automatically.
+`anonymize` is `render(analyze(...))`. Case metadata and review decisions enter
+the same pipeline through `state=`. Supplied people use the same
+name propagation as people detected automatically.
 
 >>> doc = "Il sig. Mario Rossi ricorre. Sentito Zappacosta."
 >>> analysis = analyze(doc)
->>> [(row.entity_id, row.aliases, row.spans) for row in analysis.entities]
+>>> [(row.placeholder, row.aliases, row.spans) for row in analysis.entities]
 [('Nominativo_1', ('Mario Rossi',), ((8, 19),))]
->>> edits = Edits(people=(("Zappacosta", "Nominativo"),),
-...               prior_tags=tuple(analysis.mapping.items()))
->>> render(analyze(doc, edits=edits))[0]
+>>> state = analysis.state
+>>> state["people"].append({"name": "Zappacosta"})
+>>> render(analyze(doc, state=state))[0]
 'Il sig. Nominativo_1 ricorre. Sentito Nominativo_2.'
 """
 from __future__ import annotations
 
 from collections import defaultdict
+from copy import deepcopy
 from dataclasses import dataclass, field, replace
+from hashlib import sha256
 
 import regex as re
 
 from . import patterns as P
 from . import protect, seeds as seeds_mod, text as text_mod
 from .config import Config
-from .labels import Registry
+from .constraints import ReviewState
+from .labels import role_key
 from .model import (
     Candidate,
     Decision,
@@ -40,6 +42,7 @@ from .model import (
     Mention,
     ResidualFinding,
     Verification,
+    person_key,
 )
 from .policy import (
     PRI_ADDRESS,
@@ -48,12 +51,12 @@ from .policy import (
     PRI_PERSON_TOKEN,
     PRI_PROTECTED,
     PRI_STRUCTURED,
-    PRI_USER,
+    apply_person_policy,
     resolve,
 )
 from .verification import verify
 
-REPORT_SCHEMA_VERSION = 1
+REPORT_SCHEMA_VERSION = 4
 
 
 @dataclass
@@ -62,6 +65,7 @@ class Report:
 
     Replacement/decision offsets refer to normalized input; residual offsets refer to
     returned output. When ``sanitize`` is true, normalized input differs from raw text.
+    ``unresolved`` lists occurrence decisions that could not be located uniquely.
     """
 
     mapping: dict[str, str] = field(default_factory=dict)
@@ -77,52 +81,13 @@ class Report:
     entity_records: list[EntityRecord] = field(default_factory=list)
     offset_space: str = "normalized_input"
     residual_offset_space: str = "output"
+    unresolved: list[dict] = field(default_factory=list)
+    state: dict = field(default_factory=dict)
 
     @property
     def entities(self) -> int:
         """Number of distinct replacement tags emitted."""
-        return len(set(self.mapping.values()))
-
-
-@dataclass(frozen=True)
-class Edits:
-    """A reviewer's corrections, replayed on every analysis of the same document.
-
-    Every field names text, never an internal id, so the edits still apply after the
-    document is analysed again. An *alias* is any spelling of an entity in the text,
-    or its value in `Analysis.mapping`. Spans are offsets into `normalize(raw)`.
-
-    people
-        ``(surface, role)``: a person detection missed. No seed guard refuses it, and
-        it folds, propagates and shares surnames like any detected person. A judge
-        added here is redacted. The role shows in the tag only with ``roles=True``.
-    terms
-        ``(surface, label)``: other data to redact wherever it occurs, any case.
-    exclude
-        ``alias``: stop redacting that entity. A surname it shares with another person
-        stays redacted under its neutral tag.
-    keep_spans
-        ``(start, end)``: leave this occurrence in clear. Unlike a judge, verification
-        still reports it.
-    include_spans
-        ``(start, end, alias)``: redact this occurrence as that entity.
-    merge
-        ``(alias_from, alias_to)``: the first entity takes the second one's tag.
-    placeholders
-        ``(alias, tag)``: a custom tag for that entity.
-    prior_tags
-        The items of a previous `Analysis.mapping`, so tags do not renumber between
-        edits.
-    """
-
-    people: tuple[tuple[str, str], ...] = ()
-    terms: tuple[tuple[str, str], ...] = ()
-    exclude: tuple[str, ...] = ()
-    keep_spans: tuple[tuple[int, int], ...] = ()
-    include_spans: tuple[tuple[int, int, str], ...] = ()
-    merge: tuple[tuple[str, str], ...] = ()
-    placeholders: tuple[tuple[str, str], ...] = ()
-    prior_tags: tuple[tuple[str, str], ...] = ()
+        return len({d.replacement for d in self.decisions if d.replacement is not None})
 
 
 @dataclass(frozen=True)
@@ -130,7 +95,7 @@ class Analysis:
     """Everything decided about one document, before it is rewritten.
 
     ``text`` is the normalized input, and every offset refers to it. ``entities`` are
-    the review-panel rows: one per tag, or per kept spelling, with all their spans.
+    the review-panel rows, one per matched document identity with all its spans.
     """
 
     text: str
@@ -140,6 +105,9 @@ class Analysis:
     mapping: dict[str, str]
     expected_aliases: frozenset[str]
     warnings: tuple[str, ...]
+    unresolved: tuple[dict, ...] = ()
+    dismissed_spans: tuple[tuple[int, int], ...] = ()
+    state: dict = field(default_factory=dict)
 
 
 def _first_group(match: re.Match) -> int:
@@ -184,34 +152,28 @@ def _candidate(
     )
 
 
-def _propose_protections(
-    text: str,
-    evidence,
-    out: list[Candidate],
-    conflicting_judges: set[tuple[str, ...]],
-) -> None:
+def _propose_case_numbers(text: str, evidence, out: list[Candidate]) -> None:
     for start, end in evidence.spans:
-        protection = evidence.span_kinds[(start, end)]
-        if protection == "judge":
-            name = evidence.span_names[(start, end)]
-            key = tuple(sorted(token.casefold() for token in name.split() if token))
-            if key in conflicting_judges:
-                continue
-        kind = "JUDGE" if protection == "judge" else "CASE_NUMBER"
         out.append(_candidate(
-            text,
-            start,
-            end,
-            kind=kind,
-            source=f"legal_role:{protection}",
+            text, start, end,
+            kind="CASE_NUMBER",
+            source="legal_role:case_number",
             priority=PRI_PROTECTED,
-            role="Giudice" if protection == "judge" else "Numero",
-            protection=protection,
-            reason=("explicit judicial-role evidence" if protection == "judge"
-                    else "procedural identifier kept by policy"),
+            role="Numero",
+            protection="case_number",
+            reason="procedural identifier kept by policy",
         ))
 
 
+def _supplied_role(person: dict) -> str | None:
+    role = person.get("role")
+    if role is None:
+        return None
+    return {"persona": "Nominativo", "avvocato": "Difensore"}.get(role, role.title())
+
+
+# Broad party blocks can include a bench list. Require a stronger private-role cue
+# before letting a detected private identity override the judicial evidence.
 _PRIVATE_ROLE_SOURCES = {
     "regex:cf_adiacente",
     "regex:counsel",
@@ -224,16 +186,34 @@ _PRIVATE_ROLE_SOURCES = {
     "regex:party_list",
     "regex:counsel_list",
     "regex:counsel_surname",
-    "regex:legal_party_block",
 }
 
-# A broad ALL-CAPS party window can contain a prosecutor or judge mentioned before its
-# terminator. It is useful detection evidence but not strong enough by itself to revoke
-# an exact judicial-role keep decision. A person the reviewer adds is, on their word.
-_STRICT_PRIVATE_ROLE_SOURCES = _PRIVATE_ROLE_SOURCES - {"regex:legal_party_block"} | {"user"}
-# A courtesy title names a person without saying which side they are on, and judges
-# carry one as often as anybody: "Relatore … il dott. Andrea De Col" is the judge.
-_NEUTRAL_SOURCES = frozenset({"regex:titolo", "regex:titolo_solo", "lexicon:first_name"})
+def _classify_judges(people: list[Entity], judicial_names: set[str],
+                     submitted: dict[tuple, dict], warnings: list[str]) -> list[Entity]:
+    """Add judicial evidence to the same identity list used by all person matchers."""
+    by_key = {person.key: person for person in people}
+    for name in sorted(judicial_names):
+        key = person_key(name)
+        explicit = submitted.get(key)
+        entity = by_key.get(key)
+        if explicit and explicit.get("role") not in (None, "giudice"):
+            continue
+        if entity and entity.sources & _PRIVATE_ROLE_SOURCES:
+            warning = f"conflicting judicial/private-role evidence for {entity.display!r}"
+            if warning not in warnings:
+                warnings.append(warning)
+            if not explicit or explicit.get("role") != "giudice":
+                continue
+            # A keep action or policy must not win over strong private evidence.
+            entity.sources.add("conflict:judicial_role")
+        if entity is None:
+            entity = by_key[key] = Entity(name, "Giudice")
+        entity.role = "Giudice"
+        entity.variants.add(name)
+        entity.sources.add("legal_role:judge")
+    return list(by_key.values())
+
+
 _COMPANY_INTRO = re.compile(
     r"(?i:(?:(?:di|del|della|dei|degli|delle|il|lo|la|le|gli|e)\s+)+)"
 )
@@ -255,17 +235,21 @@ def _propose_people(
 ) -> None:
     """Propose full names, unique aliases, and conservative ambiguous aliases."""
     owners = _token_owners(entities, cfg.min_token_len)
-    ambiguous = frozenset(token for token, values in owners.items() if len(values) > 1)
-
+    ambiguous = {token for token, values in owners.items() if len(values) > 1}
     for entity in entities:
         source = "+".join(sorted(entity.sources)) or "person"
+        judicial = role_key(entity.role) == "giudice"
         for pattern, is_full_name in seeds_mod.variant_patterns(
             entity,
             cfg.min_token_len,
             skip_tokens=ambiguous,
         ):
+            if judicial and not is_full_name:
+                continue
             priority = PRI_PERSON_FULL if is_full_name else PRI_PERSON_TOKEN
             for match in pattern.finditer(text):
+                if judicial and len(match.group().split()) != len(entity.display.split()):
+                    continue
                 out.append(_candidate(
                     text,
                     match.start(),
@@ -332,6 +316,8 @@ def _propose_given_names(
     listed = seeds_mod.first_names()
     owners: dict[str, list[Entity]] = defaultdict(list)
     for entity in entities:
+        if role_key(entity.role) == "giudice":
+            continue
         distinctive = {token.casefold()
                        for token in seeds_mod.rare_tokens(entity.display, cfg.min_token_len)}
         for token in {token.casefold() for token in entity.display.split()}:
@@ -584,117 +570,6 @@ def _propose_companies(text: str, out: list[Candidate]) -> None:
         ))
 
 
-def _fold(value: str) -> str:
-    return " ".join(value.split()).casefold()
-
-
-def _key(candidate: Candidate) -> tuple[str | None, str]:
-    """The entity a candidate redacts, as tag allocation keys it."""
-    return candidate.label, (candidate.value or "").casefold()
-
-
-def _owner(candidates: list[Candidate], alias: str) -> Candidate | None:
-    """A redaction candidate of the entity that `alias` names."""
-    alias = _fold(alias)
-    return next((
-        candidate for candidate in candidates
-        if candidate.protection is None
-        and candidate.mention.source != "alias:ambiguous"
-        and alias in (_fold(candidate.mention.text), _fold(candidate.value or ""))
-    ), None)
-
-
-def _apply_edits(text: str, candidates: list[Candidate], edits: Edits):
-    """Turn reviewer edits into candidates, plus what tag allocation needs.
-
-    Returns the candidates, the merged entity keys ``{from: to}`` and the custom tags.
-    Edits outrank every detector (`PRI_USER`); at equal priority and length the earlier
-    candidate wins, so a keep is listed before a term or an include on the same span.
-    """
-    keeps = [
-        _candidate(text, start, end, kind="USER", source="user:keep", priority=PRI_USER,
-                   role="Utente", protection="user", reason="kept by the reviewer")
-        for start, end in edits.keep_spans
-    ]
-    pool = list(candidates)
-    for surface, label in edits.terms:
-        if not surface.split():
-            continue
-        literal = r"\s+".join(re.escape(token) for token in surface.split())
-        pattern = re.compile(rf"(?<![\p{{L}}\p{{N}}]){literal}(?![\p{{L}}\p{{N}}])", re.I)
-        pool.extend(
-            _candidate(text, match.start(), match.end(), kind=label.upper(),
-                       source="user:term", priority=PRI_USER, role=label, label=label,
-                       value=surface, reason="term added by the reviewer")
-            for match in pattern.finditer(text)
-        )
-
-    merges: dict[tuple, tuple] = {}
-    for alias_from, alias_to in edits.merge:
-        source, target = _owner(pool, alias_from), _owner(pool, alias_to)
-        if source is None or target is None or _key(source) == _key(target):
-            continue
-        pool = [
-            replace(candidate, label=target.label, value=target.value,
-                    mention=replace(candidate.mention, role=target.mention.role))
-            if _key(candidate) == _key(source) else candidate
-            for candidate in pool
-        ]
-        merges = {old: _key(target) if new == _key(source) else new
-                  for old, new in merges.items()}
-        merges[_key(source)] = _key(target)
-
-    includes = []
-    for start, end, alias in edits.include_spans:
-        owner = _owner(pool, alias)
-        includes.append(_candidate(
-            text, start, end,
-            kind=owner.mention.kind if owner else "PERSON",
-            source="user:include",
-            priority=PRI_USER,
-            role=owner.mention.role if owner else "Nominativo",
-            label=owner.label if owner else "Nominativo",
-            value=owner.value if owner else alias,
-            reason="occurrence added by the reviewer",
-        ))
-    custom = {_key(owner): tag for alias, tag in edits.placeholders
-              if (owner := _owner(pool, alias))}
-
-    # A surname shared with another person is not this entity's to give back.
-    excluded = {_key(owner) for alias in edits.exclude if (owner := _owner(pool, alias))}
-    pool = [candidate for candidate in pool
-            if _key(candidate) not in excluded
-            or candidate.mention.source == "alias:ambiguous"]
-    return keeps + pool + includes, merges, custom
-
-
-def _allocate_replacements(
-    decisions: list[Decision],
-    custom: dict[tuple, str] | None = None,
-    prior: dict[str, str] | None = None,
-    roles: bool = True,
-) -> tuple[list[Decision], Registry]:
-    """Allocate tags only for accepted redactions, in document order.
-
-    Without `roles` every person is tagged ``Nominativo``; the decision keeps its role.
-    """
-    registry = Registry(prior)
-    custom = custom or {}
-    allocated: list[Decision] = []
-    for decision in decisions:
-        if decision.action == "keep":
-            allocated.append(decision)
-            continue
-        label = decision.label or decision.role or "Nominativo"
-        value = decision.value or decision.text
-        fixed = custom.get((label, value.casefold()))
-        if not roles and decision.kind == "PERSON":
-            label = "Nominativo"
-        tag = registry.tag(label, value, fixed)
-        allocated.append(replace(decision, replacement=tag, entity_id=tag))
-    return allocated, registry
-
-
 def _render(
     text: str,
     decisions: list[Decision],
@@ -714,7 +589,7 @@ def _render(
             parts.append(decision.text)
             # A reviewer's keep is a choice, not evidence that the text is public:
             # verification must still see it.
-            if decision.kind != "USER":
+            if decision.source != "user:occurrence":
                 protected_output.append(
                     (output_length, output_length + len(decision.text)))
             output_length += len(decision.text)
@@ -733,11 +608,8 @@ def _render(
 def _entity_records(decisions: list[Decision]) -> list[EntityRecord]:
     grouped: dict[str, list[Decision]] = defaultdict(list)
     for decision in decisions:
-        if decision.action == "redact" and decision.entity_id:
-            key = decision.entity_id
-        else:
-            key = f"kept:{decision.kind}:{decision.text.casefold()}"
-        grouped[key].append(decision)
+        if decision.entity_id:
+            grouped[decision.entity_id].append(decision)
 
     records = []
     for entity_id, items in grouped.items():
@@ -746,56 +618,39 @@ def _entity_records(decisions: list[Decision]) -> list[EntityRecord]:
             entity_id=entity_id,
             kind=first.kind,
             role=first.role,
-            action=first.action,
+            action=_resolved_action(items),
             aliases=tuple(sorted({item.text for item in items},
                                  key=lambda alias: (alias.casefold(), alias))),
             sources=tuple(sorted({item.source for item in items})),
             spans=tuple((item.start, item.end) for item in items),
+            placeholder=next((item.replacement for item in items if item.replacement), None),
         ))
     return records
+
+
+def _resolved_action(decisions: list[Decision]) -> str:
+    actions = {decision.action for decision in decisions}
+    return "mixed" if len(actions) > 1 else decisions[0].action
 
 
 def _expected_aliases(
     entities: list[Entity],
     decisions: list[Decision],
     cfg: Config,
-    merges: dict[tuple, tuple] | None = None,
 ) -> set[str]:
     redacted = {
-        (decision.label, (decision.value or "").casefold())
+        person_key(decision.value or decision.text)
         for decision in decisions
-        if decision.action == "redact"
+        if decision.action == "redact" and decision.kind == "PERSON"
     }
-    merges = merges or {}
     aliases: set[str] = set()
     for entity in entities:
-        key = (entity.role, entity.display.casefold())
-        if merges.get(key, key) not in redacted:
+        if entity.key not in redacted:
             continue
         for value in entity.variants | {entity.display}:
             aliases.update(seeds_mod.name_orders(value))
         aliases.update(seeds_mod.rare_tokens(entity.display, cfg.min_token_len))
     return aliases
-
-
-def _role_conflicts(entities: list[Entity], evidence) -> list[str]:
-    warnings = []
-    for entity in entities:
-        if evidence.matches_identity(entity.display) and entity.sources & _PRIVATE_ROLE_SOURCES:
-            warnings.append(
-                f"conflicting judicial/private-role evidence for {entity.display!r}"
-            )
-    return warnings
-
-
-def _conflicting_judges(entities: list[Entity], evidence) -> set[tuple[str, ...]]:
-    """Judicial identities also supported by an explicit private-role detector."""
-    return {
-        entity.key
-        for entity in entities
-        if evidence.matches_identity(entity.display)
-        and entity.sources & _STRICT_PRIVATE_ROLE_SOURCES
-    }
 
 
 def residual_risk(anonymized: str, report: Report) -> float:
@@ -824,37 +679,16 @@ def normalize(raw: str, config: Config | None = None) -> str:
     return text_mod.normalize_quotes(text)
 
 
-def analyze(
-    raw: str,
-    config: Config | None = None,
-    *,
-    edits: Edits = Edits(),
-    mentions: tuple[Mention, ...] = (),
-) -> Analysis:
-    """Detect, resolve and tag one document without rewriting it.
-
-    ``mentions`` are person mentions from a NER run on ``normalize(raw, config)``, one
-    more seed source. ``edits`` are a reviewer's corrections (see `Edits`).
-    """
-    cfg = config if config is not None else Config()
-    text = normalize(raw, cfg)
-
-    protection_evidence = protect.collect(text)
-    people = seeds_mod.collect(text, cfg, mentions=mentions, people=edits.people)
-    if cfg.keep_judges:
-        # An identity found only through a title, which also carries judicial evidence,
-        # is that judge. Seeding it would replace every mention, the bench list included.
-        people = [person for person in people
-                  if not (person.sources <= _NEUTRAL_SOURCES
-                          and protection_evidence.matches_identity(person.display))]
+def _detect(text, cfg, seeds, evidence, submitted):
+    """Collect native candidates, optionally seeding additional person identities."""
+    people = seeds.all((person["name"], _supplied_role(person)) for person in submitted.values())
+    warnings = []
+    judicial_names = evidence.names | {person["name"] for person in submitted.values()
+                                      if person.get("role") == "giudice"}
+    people = _classify_judges(people, judicial_names, submitted, warnings)
 
     candidates: list[Candidate] = []
-    _propose_protections(
-        text,
-        protection_evidence,
-        candidates,
-        _conflicting_judges(people, protection_evidence),
-    )
+    _propose_case_numbers(text, evidence, candidates)
     _propose_people(text, people, cfg, candidates)
     if cfg.first_names:
         _propose_given_names(text, people, cfg, candidates)
@@ -864,32 +698,106 @@ def analyze(
     _propose_addresses(text, candidates)
     _propose_places(text, candidates)
     _propose_companies(text, candidates)
-    candidates, merges, custom = _apply_edits(text, candidates, edits)
+    return people, candidates, warnings
 
-    accepted = resolve(candidates, len(text), cfg)
-    accepted, registry = _allocate_replacements(
-        accepted, custom, dict(edits.prior_tags), cfg.roles)
+
+def analyze(
+    raw: str,
+    config: Config | None = None,
+    *,
+    state: dict | None = None,
+    mentions: tuple[Mention, ...] = (),
+) -> Analysis:
+    """Detect, resolve and tag one document without rewriting it.
+
+    ``mentions`` are person mentions from a NER run on ``normalize(raw, config)``, one
+    more seed source. Supply metadata or a previous report's ``state`` to carry decisions forward.
+    """
+    cfg = config if config is not None else Config()
+    text = normalize(raw, cfg)
+    review = ReviewState(state)
+    revision = sha256(text.encode("utf-8", errors="surrogatepass")).hexdigest()
+    rules = list(review.by_id.values())
+    seeds = seeds_mod.collect_seeds(text, cfg, mentions=mentions)
+    evidence = protect.collect(text)
+    native = None
+    if not rules and not review.content["occurrences"]:
+        review.content["discovery_revision"] = revision
+    elif rules and review.content.get("discovery_revision") == revision:
+        # Reconstruct the native matches from the source. This also lets a reviewer
+        # change a tag without turning a contextual match into a literal rule.
+        native = _detect(text, cfg, deepcopy(seeds), evidence, {})
+        _, candidates, _ = native
+        native_candidates = apply_person_policy(candidates, {}, cfg)
+        baseline = ReviewState(None)
+        for decision in resolve(native_candidates, len(text), cfg):
+            baseline.assign(decision, cfg)
+        rules = review.changed_rules(baseline)
+
+    submitted = {person_key(row["name"]): row for row in rules if "name" in row}
+    if native is None or submitted:
+        native = _detect(text, cfg, seeds, evidence, submitted)
+    people, candidates, warnings = native
+    if rules:
+        review.complete_metadata(people, candidates, cfg)
+        candidates = review.bind_person_aliases(candidates, submitted)
+    candidates = apply_person_policy(candidates, submitted, cfg)
+    if rules:
+        candidates += list(review.literal_candidates(text, candidates, people, rules))
+    accepted = resolve(candidates, len(text), cfg, warnings=warnings)
+    decisions = [review.assign(d, cfg) for d in accepted]
+    decisions, dismissed, unresolved = review.apply_occurrences(text, decisions, cfg)
+    if unresolved:
+        warnings.append("some occurrence decisions could not be applied uniquely")
+    if any(d.source == "alias:ambiguous" for d in decisions):
+        warnings.append("an ambiguous alias could not be attributed to one identity")
+    tags_by_value = defaultdict(set)
+    for decision in decisions:
+        if decision.replacement is not None:
+            tags_by_value[decision.value or decision.text].add(decision.replacement)
+    mapping = {value: next(iter(tags)) for value, tags in tags_by_value.items() if len(tags) == 1}
     return Analysis(
         text=text,
         config=cfg,
-        decisions=tuple(accepted),
-        entities=tuple(_entity_records(accepted)),
-        mapping=registry.mapping(),
-        expected_aliases=frozenset(_expected_aliases(people, accepted, cfg, merges)),
-        warnings=tuple(_role_conflicts(people, protection_evidence)),
+        decisions=tuple(decisions),
+        entities=tuple(_entity_records(decisions)),
+        mapping=mapping,
+        expected_aliases=frozenset(_expected_aliases(people, decisions, cfg)),
+        warnings=tuple(warnings),
+        unresolved=tuple(unresolved),
+        dismissed_spans=tuple(dismissed),
+        state=review.content,
     )
+
+
+def _output_span(start: int, end: int, decisions: tuple[Decision, ...]) -> tuple[int, int] | None:
+    """Translate an intact input span past earlier substitutions."""
+    shift = 0
+    for decision in decisions:
+        if decision.start >= end:
+            break
+        if decision.replacement is not None:
+            if decision.end > start:
+                return None
+            shift += len(decision.replacement) - (decision.end - decision.start)
+    return start + shift, end + shift
 
 
 def render(analysis: Analysis) -> tuple[str, Report]:
     """Apply an analysis's decisions once and verify the result."""
     output, replacement_spans, protected_output = _render(analysis.text, analysis.decisions)
     if analysis.config.verify:
+        acknowledged = set(analysis.dismissed_spans)
+        acknowledged.update((d.start, d.end) for d in analysis.decisions
+                            if d.action == "keep" and d.source == "user:literal")
         verification = verify(
             output,
             protected_spans=protected_output,
             expected_aliases=analysis.expected_aliases,
             replacements=len(replacement_spans),
             warnings=analysis.warnings,
+            dismissed_spans={span for start, end in acknowledged
+                             if (span := _output_span(start, end, analysis.decisions)) is not None},
         )
     else:
         verification = Verification(status="not_run", warnings=analysis.warnings)
@@ -897,7 +805,7 @@ def render(analysis: Analysis) -> tuple[str, Report]:
     protected_names = sorted({
         decision.text
         for decision in analysis.decisions
-        if decision.action == "keep" and decision.kind == "JUDGE"
+        if decision.action == "keep" and decision.kind == "PERSON"
     })
     report = Report(
         mapping=dict(analysis.mapping),
@@ -909,12 +817,15 @@ def render(analysis: Analysis) -> tuple[str, Report]:
         warnings=list(verification.warnings),
         decisions=list(analysis.decisions),
         entity_records=list(analysis.entities),
+        unresolved=list(analysis.unresolved),
+        state=deepcopy(analysis.state),
     )
     report.risk = residual_risk(output, report)
     return output, report
 
 
-def anonymize(raw: str, config: Config | None = None, **overrides) -> tuple[str, Report]:
+def anonymize(raw: str, config: Config | None = None, *,
+              state: dict | None = None, **overrides) -> tuple[str, Report]:
     """Pseudonymize one Italian legal document.
 
     Returns ``(text, report)``. Policy comes from either a ``Config`` or keyword
@@ -929,4 +840,4 @@ def anonymize(raw: str, config: Config | None = None, **overrides) -> tuple[str,
     if config is not None and overrides:
         raise TypeError("pass either `config` or keyword overrides, not both")
     cfg = config if config is not None else Config(**overrides)
-    return render(analyze(raw, cfg))
+    return render(analyze(raw, cfg, state=state))

@@ -153,12 +153,16 @@ def verify(
     expected_aliases: Iterable[str] = (),
     replacements: int = 0,
     warnings: Iterable[str] = (),
+    dismissed_spans: Iterable[tuple[int, int]] = (),
 ) -> Verification:
     """Return residual findings in output coordinates without modifying ``output``."""
     protected = tuple(protected_spans)
+    dismissed = set(dismissed_spans)
     findings: dict[tuple[int, int, str], ResidualFinding] = {}
 
     def add(start: int, end: int, kind: str, source: str, reason: str) -> None:
+        if (start, end) in dismissed:
+            return
         # Only a person finding wholly inside an accepted public-role span is exempt.
         # Structured PII must never be hidden by partial overlap with a kept case id.
         if kind == "PERSON" and _contained((start, end), protected):

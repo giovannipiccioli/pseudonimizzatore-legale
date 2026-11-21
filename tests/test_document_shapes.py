@@ -298,7 +298,7 @@ CASES = [
 @pytest.mark.parametrize("text, keep, remove", CASES)
 def test_probe(text, keep, remove):
     assert all(present(v, text) for v in keep + remove)
-    out, _ = anonymize(text)
+    out, _ = anonymize(text, keep_roles=("giudice",))
     assert [v for v in remove if present(v, out)] == [], "left in clear"
     assert [v for v in keep if not present(v, out)] == [], "wrongly removed"
 
@@ -318,4 +318,4 @@ def test_probe(text, keep, remove):
     ("Tel. 0422 541 337\n12 marzo 2026", "Tel. Telefono_1\n12 marzo 2026"),
 ])
 def test_line_breaks_are_not_eaten(text, expected):
-    assert anonymize(text)[0] == expected
+    assert anonymize(text, keep_roles=("giudice",))[0] == expected

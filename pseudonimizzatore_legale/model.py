@@ -8,6 +8,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
+from .text import normalize_quotes
+
+
+def person_key(name: str) -> tuple[str, ...]:
+    """Match the same full spelling across case, spacing and name order changes."""
+    return tuple(sorted(normalize_quotes(name).casefold().split()))
+
 
 @dataclass(frozen=True)
 class Mention:
@@ -37,7 +44,7 @@ class Entity:
     @property
     def key(self) -> tuple[str, ...]:
         """Order-insensitive identity: ``ROSSI MARIO`` equals ``Mario Rossi``."""
-        return tuple(sorted(token.casefold() for token in self.display.split() if token))
+        return person_key(self.display)
 
 
 @dataclass(frozen=True)
@@ -48,8 +55,9 @@ class Candidate:
     priority: int
     label: str | None = None
     value: str | None = None
-    protection: str | None = None       # ``judge``, ``case_number`` or ``user``
+    protection: str | None = None       # person, case_number or user
     reason: str = ""
+    entity_id: str | None = None
 
 
 @dataclass(frozen=True)
@@ -74,7 +82,7 @@ class Decision:
 class EntityRecord:
     """Compact audit record for one accepted document-local entity.
 
-    One review-panel row: the tag (``entity_id``), every spelling, and every span in
+    One review-panel row: the document identity (``entity_id``), every spelling, and every span in
     normalized-input coordinates.
     """
 
@@ -85,6 +93,7 @@ class EntityRecord:
     aliases: tuple[str, ...]
     sources: tuple[str, ...]
     spans: tuple[tuple[int, int], ...] = ()
+    placeholder: str | None = None
 
 
 @dataclass(frozen=True)

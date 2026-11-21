@@ -21,7 +21,7 @@ import time
 
 import pytest
 
-from pseudonimizzatore_legale import Config, Edits, analyze, anonymize, anonymize_batch, render
+from pseudonimizzatore_legale import Config, TextAnchor, analyze, anonymize, anonymize_batch, render
 from pseudonimizzatore_legale import seeds
 
 PRUDENT = Config(initials=True, roles=True)
@@ -215,10 +215,10 @@ def test_four_letter_initials():
     assert "L.B.E.F." not in out("Il fondo di proprietà di L.B.E.F. fu ceduto.", EVERYWHERE)
 
 
-@gap("a judge's initials are never replaced, whatever keep_judges says")
-def test_judge_initials_follow_keep_judges():
+@gap("the judicial detector cannot infer a judge from initials alone")
+def test_judge_initials_follow_keep_roles():
     result = out("Presidente: R.M.\nRelatore: A.B.\nproposto da C.S.",
-                 Config(initials=True, keep_judges=False))
+                 Config(initials=True, keep_roles=()))
     assert "R.M." not in result
 
 
@@ -302,7 +302,7 @@ def test_config_can_be_replaced_per_source():
 def test_judges_stay_in_clear_and_parties_go():
     text = ("Presidente: Mario Verdi\nRelatore: Lucia Neri\n"
             "ricorso proposto da A.G. nei confronti di S.T.")
-    result = out(text)
+    result = out(text, Config(initials=True, roles=True, keep_roles=("giudice",)))
     assert "Mario Verdi" in result and "Lucia Neri" in result
     assert "A.G." not in result and "S.T." not in result
 
@@ -360,7 +360,7 @@ def test_decisions_report_the_detector_and_the_reason():
     initials = [d for d in analysis.decisions if d.source == "regex:initials"]
     assert [d.text for d in initials] == ["A.G.", "S.T.", "A.G."]
     assert {d.kind for d in initials} == {"PERSON"}
-    assert [d.role for d in initials] == ["Ricorrente", "Resistente", "Ricorrente"]
+    assert [d.role for d in initials] == ["ricorrente", "resistente", "ricorrente"]
     assert all(d.action == "redact" and d.replacement for d in initials)
     assert initials[0].replacement == initials[2].replacement
     assert "initials" in initials[0].reason
@@ -375,7 +375,7 @@ def test_the_everywhere_reading_says_so():
 
 def test_entity_records_group_the_spellings_of_one_person():
     analysis = analyze("proposto da A.G. e da A. G., poi A.G. insiste", PRUDENT)
-    (record,) = [r for r in analysis.entities if r.role == "Ricorrente"]
+    (record,) = [r for r in analysis.entities if r.role == "ricorrente"]
     assert set(record.aliases) == {"A.G.", "A. G."}
     assert len(record.spans) == 3 and record.action == "redact"
 
@@ -393,10 +393,10 @@ def test_analyze_then_render_is_anonymize():
     assert render(analyze(text, PRUDENT))[0] == anonymize(text, PRUDENT)[0]
 
 
-def test_prior_tags_keep_the_numbers_when_the_text_changes():
+def test_replaying_state_keeps_the_numbers_when_the_text_changes():
     first = analyze("ricorso proposto da A.G. e S.T.", Config(initials=True))
     edited = analyze("proposto da C.D.F., A.G. e S.T.", Config(initials=True),
-                     edits=Edits(prior_tags=tuple(first.mapping.items())))
+                     state=first.state)
     assert edited.mapping["A.G."] == first.mapping["A.G."]
     assert edited.mapping["S.T."] == first.mapping["S.T."]
     assert edited.mapping["C.D.F."] not in first.mapping.values()
@@ -406,7 +406,10 @@ def test_a_reviewer_can_keep_one_occurrence():
     text = "ricorso proposto da A.G. e da S.T."
     analysis = analyze(text, PRUDENT)
     start = analysis.text.index("S.T.")
-    edited = analyze(text, PRUDENT, edits=Edits(keep_spans=((start, start + 4),)))
+    anchor = TextAnchor.capture(analysis.text, start, start + 4)
+    edited = analyze(text, PRUDENT, state={"occurrences": [
+        {"action": "keep", "anchor": {"quote": anchor.quote, "prefix": anchor.prefix,
+                                      "suffix": anchor.suffix}}]})
     assert "S.T." in render(edited)[0] and "A.G." not in render(edited)[0]
 
 

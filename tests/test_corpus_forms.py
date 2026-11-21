@@ -15,10 +15,10 @@ import pytest
 from pseudonimizzatore_legale import Config, anonymize
 
 #: src/cleaning/corte_costituzionale: only what a cue marks as private.
-CORTE_COST = Config(companies=False, initials=False, first_names=False, keep_judges=True,
+CORTE_COST = Config(companies=False, initials=False, first_names=False, keep_roles=("giudice",),
                     keep_case_numbers=True, sanitize=False)
 #: The Cassazione consolidation: first-name list on, initials behind a cue, role tags.
-CASSAZIONE = Config(profile="legal", companies="person_named", keep_judges=True,
+CASSAZIONE = Config(profile="legal", companies="person_named", keep_roles=("giudice",),
                     keep_case_numbers=True, sanitize=True, verify=True, roles=True,
                     initials=True)
 #: ilforo, which writes every private name as initials.

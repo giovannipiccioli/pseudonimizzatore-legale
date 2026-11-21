@@ -5,7 +5,9 @@
     text, report = anonymize(open("sentenza.txt").read())
 
 Parties, counsel and personal identifiers become tags (`Nominativo_1`, `CF_1`;
-`roles=True` names a person's role: `Ricorrente_1`, `Difensore_1`). Judges, public bodies, places and case numbers stay in clear.
+`roles=True` uses role-specific tags such as `Ricorrente_1` and `Difensore_1`).
+Use `keep_roles=("giudice",)` to retain identified judges in a published decision.
+Public bodies, places and case numbers have separate rules.
 Companies are opt-in. Every surface form of the same person gets the same tag, so a
 party pseudonymized in the header is not still readable in the body.
 
@@ -18,8 +20,8 @@ and one for short free-form input, with a limit worth reading about first:
 
     anonymize(query, profile="query")
 
-A review tool calls the two halves of `anonymize` itself — `analyze` to detect and tag,
-`render` to rewrite and verify — and passes a reviewer's corrections back as `Edits`.
+A review tool can call `analyze` to detect and tag, then `render` to rewrite and
+verify. Pass `report.state` back as `state=` to reuse metadata and review decisions.
 
 The substitution is **one-way by design** — there is no de-pseudonymization path, and
 nothing is persisted that would allow one unless you explicitly request a sidecar.
@@ -28,7 +30,9 @@ This is pseudonymization, not anonymization: the output is still personal data.
 See README.md to get started, ARCHITECTURE.md for how and why it works.
 """
 from .config import Config
-from .core import Analysis, Edits, Report, analyze, anonymize, normalize, render
+from .constraints import TextAnchor
+from .core import Analysis, Report, analyze, anonymize, normalize, render
+from .labels import DATA_PREFIXES, ROLE_PREFIXES
 from .model import Decision, EntityRecord, Mention, ResidualFinding
 from ._version import __version__
 
@@ -40,7 +44,9 @@ __all__ = [
     "render",
     "normalize",
     "Analysis",
-    "Edits",
+    "DATA_PREFIXES",
+    "ROLE_PREFIXES",
+    "TextAnchor",
     "Config",
     "Report",
     "Mention",

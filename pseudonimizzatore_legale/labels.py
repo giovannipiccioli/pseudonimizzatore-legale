@@ -21,66 +21,36 @@ consequences follow, and both are deliberate: the batch path needs no shared sta
 parallelises trivially, and two documents about the same person cannot be linked back
 together through their tags.
 """
-from collections import defaultdict
 
-#: Every role word this module can emit. Detection must refuse to treat these as names,
-#: otherwise a second pass over an already-processed file re-detects its own output and
-#: rewrites `Nominativo_1` to `Difensore_1_1`. Running the tool twice has to be a no-op:
-#: batches get resumed, re-run after a rule change, and fed from mixed directories.
-RESERVED = frozenset({
-    "Ricorrente", "Resistente", "Difensore", "Rappresentante", "Nominativo",
-    "Terzo", "Società", "Associazione", "Consorzio", "Banca", "Ditta",
-    "CF", "Email", "Pec", "IVA", "Iban", "Telefono", "Targa",
-    "Indirizzo", "Documento", "Data_nascita", "Luogo", "Numero", "Conto", "Numero_carta", "Albo",
-})
+# Canonical person roles and the prefixes used with Config(roles=True).
+ROLE_PREFIXES = {
+    "persona": "Nominativo",
+    "ricorrente": "Ricorrente",
+    "resistente": "Resistente",
+    "avvocato": "Difensore",
+    "rappresentante": "Rappresentante",
+    "giudice": "Giudice",
+    "notaio": "Notaio",
+    "testimone": "Testimone",
+    "terzo": "Terzo",
+    "locatore": "Nominativo",
+    "locatrice": "Nominativo",
+    "conduttore": "Nominativo",
+    "conduttrice": "Nominativo",
+}
 
 
-class Registry:
-    """Allocates one stable tag per distinct entity, per document.
+def role_key(role: str) -> str:
+    """Map the engine's role names and public role identifiers to the same key."""
+    key = role.strip().casefold()
+    return {"nominativo": "persona", "difensore": "avvocato"}.get(key, key)
 
-    `prior` is an earlier `mapping()` of the same document. Its entities keep their
-    tags and new ones are numbered after them, so a review edit never renumbers the
-    rest:
 
-    >>> registry = Registry({"Mario Rossi": "Nominativo_2"})
-    >>> registry.tag("Nominativo", "Anna Verdi"), registry.tag("Nominativo", "MARIO ROSSI")
-    ('Nominativo_3', 'Nominativo_2')
-    """
+# Data categories are independent of a reviewer's chosen placeholder.
+DATA_PREFIXES = {prefix.casefold(): prefix for prefix in (
+    "Dato", "CF", "IVA", "Iban", "Pec", "Email", "Telefono", "Documento",
+    "Conto", "Numero_carta", "Albo", "Targa", "Data_nascita", "Indirizzo", "Luogo", "Numero",
+    "Società", "Associazione", "Consorzio", "Banca", "Ditta",
+)}
 
-    def __init__(self, prior: dict[str, str] | None = None) -> None:
-        self._counters: dict[str, int] = defaultdict(int)
-        self._tags: dict[tuple[str, str], str] = {}      # (role, key) -> tag
-        self._display: dict[tuple[str, str], str] = {}   # (role, key) -> readable text
-        self._prior: dict[tuple[str, str], str] = {}
-        for value, tag in (prior or {}).items():
-            role, _, number = tag.rpartition("_")
-            if number.isdigit():
-                self._prior[(role, value.casefold())] = tag
-                self._counters[role] = max(self._counters[role], int(number))
-
-    def tag(self, role: str, value: str, fixed: str | None = None) -> str:
-        """Return the tag for `value`, allocating a new one on first sight.
-
-        Entities are deduplicated case-insensitively — the same e-mail address written
-        two ways is one entity and gets one tag — while the report keeps the first
-        spelling actually seen, so it stays readable. `fixed` is a tag chosen by the
-        reviewer; it consumes no number.
-        """
-        key = (role, value.casefold())
-        existing = self._tags.get(key)
-        if existing is not None:
-            return existing
-        tag = fixed or self._prior.get(key)
-        if tag is None:
-            self._counters[role] += 1
-            tag = f"{role}_{self._counters[role]}"
-        self._tags[key] = tag
-        self._display[key] = value
-        return tag
-
-    def mapping(self) -> dict[str, str]:
-        """Every allocation made, as ``{original text: tag}``, for the run report."""
-        return {self._display[k]: v for k, v in self._tags.items()}
-
-    def __len__(self) -> int:
-        return len(self._tags)
+RESERVED = frozenset(ROLE_PREFIXES.values()) | frozenset(DATA_PREFIXES.values())

@@ -3,7 +3,8 @@ import json
 
 import pytest
 
-from pseudonimizzatore_legale import Config, anonymize_batch, anonymize_file
+from pseudonimizzatore_legale import Config, __version__, anonymize_batch, anonymize_file
+from pseudonimizzatore_legale.core import REPORT_SCHEMA_VERSION
 
 
 def test_file_sidecar_is_json_and_contains_verdict(tmp_path):
@@ -17,12 +18,12 @@ def test_file_sidecar_is_json_and_contains_verdict(tmp_path):
     sidecar = destination.with_suffix(".txt.map.json")
     data = json.loads(sidecar.read_text(encoding="utf-8"))
     assert record["status"] == "needs_review"
-    assert data["schema_version"] == 1
+    assert data["schema_version"] == REPORT_SCHEMA_VERSION
     assert data["status"] == "needs_review"
     assert data["residuals"][0]["text"] == "Antonio De Luca"
     assert data["source_sha256"]
     assert data["output_sha256"]
-    assert data["engine_version"] == "0.4.0"
+    assert data["engine_version"] == __version__
     assert data["config"]["verify"] is True
 
 

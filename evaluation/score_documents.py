@@ -90,7 +90,7 @@ def run(label, overrides, docs, verbose, quiet):
         doc = gold_path.with_suffix("").with_suffix(".txt")
         gold = json.loads(gold_path.read_text(encoding="utf-8"))
         raw = doc.read_text(encoding="utf-8")
-        cfg = Config(**{**gold.get("config", {}), **overrides})
+        cfg = Config(**{"keep_roles": ("giudice",), **gold.get("config", {}), **overrides})
         original = text_mod.sanitize(raw) if cfg.sanitize else raw
         original = text_mod.normalize_quotes(original)
         t0 = time.perf_counter()

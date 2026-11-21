@@ -121,6 +121,23 @@ class TestConfig:
         assert "Giulia Bianchi" not in out
 
 
+    def test_reviewing_a_person_reuses_model_evidence_within_each_call(self, monkeypatch):
+        text = "Antonio De Luca firma."
+        calls = []
+
+        class Backend:
+            def find_people(self, source):
+                calls.append(source)
+                return [ner.Mention("Antonio De Luca", 0, 15)]
+
+        monkeypatch.setattr(ner, "get_backend", lambda *_: Backend())
+        output, report = anonymize(text, ner=MODEL)
+        assert anonymize(text, ner=MODEL, state=report.state)[0] == output
+        report.state["people"][0]["action"] = "keep"
+        assert anonymize(text, ner=MODEL, state=report.state)[0] == text
+        assert calls == [text] * 3
+
+
 @needs_model
 class TestEndToEnd:
     """What NER is for, and what it must not break."""

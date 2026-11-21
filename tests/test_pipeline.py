@@ -4,7 +4,7 @@ import json
 
 from pseudonimizzatore_legale import Config, anonymize
 from pseudonimizzatore_legale.model import Candidate, Mention
-from pseudonimizzatore_legale.policy import PRI_PERSON_FULL, PRI_PROTECTED, resolve
+from pseudonimizzatore_legale.policy import PRI_PERSON_FULL, apply_person_policy, resolve
 
 
 def test_party_sharing_a_judge_surname_is_not_vetoed():
@@ -15,13 +15,15 @@ def test_party_sharing_a_judge_surname_is_not_vetoed():
         "-ricorrente-\n"
         "Lucia Rossi insiste. La Rossi ricorre."
     )
-    output, report = anonymize(text)
+    output, report = anonymize(text, keep_roles=("giudice",))
     assert "ROSSI MARIO" in output
     assert "ROSSI LUCIA" not in output
     assert "Lucia Rossi" not in output
     assert "La Rossi" not in output
-    assert len(set(report.mapping.values())) == 1
-    assert report.status == "passed_checks"
+    assert len(set(report.mapping.values())) == 2
+    assert any(decision.source == "alias:ambiguous" for decision in report.decisions)
+    assert report.status == "needs_review"
+    assert any("ambiguous" in warning for warning in report.warnings)
 
 
 def test_unhandled_private_person_forces_review():
@@ -39,7 +41,7 @@ def test_verified_judicial_roles_do_not_force_review():
         "Relatore: BIANCHI LUCA\n"
         "AGENZIA DELLE ENTRATE ricorre."
     )
-    output, report = anonymize(text)
+    output, report = anonymize(text, keep_roles=("giudice",))
     assert output == text
     assert report.status == "passed_checks"
     assert report.residuals == []
@@ -70,13 +72,15 @@ def test_policy_is_applied_after_detection():
         value=text,
     )
     judge = Candidate(
-        mention=Mention(text, 0, len(text), role="Giudice", kind="JUDGE",
-                        source="legal_role:judge"),
-        priority=PRI_PROTECTED,
-        protection="judge",
+        mention=Mention(text, 0, len(text), role="Giudice", source="legal_role:judge"),
+        priority=PRI_PERSON_FULL,
+        label="Giudice",
+        value=text,
     )
-    assert resolve([person, judge], len(text), Config())[0].action == "keep"
-    assert resolve([person, judge], len(text), Config(keep_judges=False))[0].action == "redact"
+    for keep_roles, action in [(("giudice",), "keep"), ((), "redact")]:
+        config = Config(keep_roles=keep_roles)
+        proposed = apply_person_policy([judge, person], {}, config)
+        assert resolve(proposed, len(text), config)[0].action == action
 
 
 def test_legacy_document_profiles_are_source_agnostic_aliases():

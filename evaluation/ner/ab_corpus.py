@@ -114,7 +114,7 @@ def main():
           f"threshold {args.threshold}\n")
 
     def config(gold, **overrides):
-        options = {**gold, **overrides}
+        options = {"keep_roles": ("giudice",), **gold, **overrides}
         if args.no_first_names:
             options["first_names"] = False
         return Config(**options)

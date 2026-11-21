@@ -66,7 +66,7 @@ def test_lexicon_only_judge_identity_is_neutral():
         "Presidente: MALASPINA FERRUCCIO\n"
         "Ferruccio Malaspina firmò la decisione."
     )
-    output, report = anonymize(text)
+    output, report = anonymize(text, keep_roles=("giudice",))
 
     assert output == text
     assert "MALASPINA FERRUCCIO" in report.protected
@@ -77,7 +77,7 @@ def test_lexicon_only_multi_given_name_judge_is_neutral():
         "Presidente: SBARAGLIA FEDERICO MARIA\n"
         "Federico Maria Sbaraglia firmò la decisione."
     )
-    output, _ = anonymize(text)
+    output, _ = anonymize(text, keep_roles=("giudice",))
 
     assert output == text
 

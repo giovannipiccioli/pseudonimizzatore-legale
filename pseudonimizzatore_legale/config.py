@@ -3,12 +3,14 @@
 Output policy and the few detector/runtime switches live here. Legal decisions all use
 the same detector pipeline; there are no court- or document-type routers.
 
-The defaults follow Italian published-case-law conventions: parties and counsel are
-removed, explicit judicial roles and public bodies are kept, companies are opt-in, and
+The default person policy redacts detected identities across document types.
+Public bodies and procedural references are kept, companies are opt-in, and tag
 consistency is scoped to one document.
 """
 from dataclasses import dataclass
 from typing import Literal
+
+from .labels import ROLE_PREFIXES, role_key
 
 
 CompanyPolicy = bool | Literal["person_named"]
@@ -40,11 +42,10 @@ class Config:
         ``False`` (the default) tags every person ``Nominativo_N``. ``True`` names the
         detected role instead: ``Ricorrente_N``, ``Resistente_N``, ``Difensore_N``.
         Detection is identical either way, and the report keeps the role.
-    keep_judges
-        Keep exact names that appear in a judicial role — Presidente, Relatore, Consigliere,
-        Giudice, Sostituto Procuratore, and the bench lists of collegiate panels. On by
-        default. Turning this off does not *remove* judges; it stops defending them, so
-        late policy may then accept ordinary person candidates at those spans.
+    keep_roles
+        Person roles whose full names may stay visible. Empty by default. Use
+        ``("giudice",)`` for published judgments. Explicit per-person decisions
+        can override this setting.
     keep_case_numbers
         Keep procedural identifiers (``n. 274/2023``, ``R.G. 17382/2023``, ECLI) and the
         name a European case is cited by (``C-348/16, Sacko``, ``Scoppola c. Italia``). On
@@ -116,7 +117,7 @@ class Config:
     profile: str = "legal"
     companies: CompanyPolicy = False
     roles: bool = False
-    keep_judges: bool = True
+    keep_roles: tuple[str, ...] = ()
     keep_case_numbers: bool = True
     sanitize: bool = True
     min_token_len: int = 4
@@ -128,6 +129,12 @@ class Config:
     verify: bool = True
 
     def __post_init__(self) -> None:
+        roles = (self.keep_roles,) if isinstance(self.keep_roles, str) else self.keep_roles
+        roles = tuple(dict.fromkeys(role_key(role) for role in roles))
+        for role in roles:
+            if role not in ROLE_PREFIXES:
+                raise ValueError(f"unknown person role in keep_roles: {role!r}")
+        object.__setattr__(self, "keep_roles", roles)
         if self.profile not in PROFILES:
             raise ValueError(
                 f"unknown profile {self.profile!r}; expected one of {PROFILES}")

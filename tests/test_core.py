@@ -57,12 +57,12 @@ class TestLocalConsistency:
         out, report = anonymize(DECISION)
         assert "Gallusi" not in out
         assert not re.search(r"\b(?:Ricorrente|Resistente|Difensore)_\d", out)
-        assert any(d.role == "Difensore" for d in report.decisions)    # kept for review
+        assert any(d.role == "avvocato" for d in report.decisions)
 
 
 class TestLateKeepPolicy:
     def test_judges_stay_in_clear(self):
-        out, rep = anonymize(DECISION)
+        out, rep = anonymize(DECISION, keep_roles=("giudice",))
         assert "CATALDI MICHELE" in out
         assert "CHIECA DANILO" in out
         assert "CATALDI MICHELE" in rep.protected
@@ -321,7 +321,7 @@ class TestSharedFirstNames:
                 "udito il Sostituto Procuratore LUCA TAMPIERI\n"
                 "RITENUTO IN FATTO\n"
                 "la pena inflitta ad Apolloni Gian Luca è rideterminata.\n")
-        out, _ = anonymize(text)
+        out, _ = anonymize(text, keep_roles=("giudice",))
         assert "LUCA TAMPIERI" in out, "the prosecutor must stay in clear"
         assert "APOLLONI" not in out and "Apolloni" not in out
 
@@ -393,12 +393,12 @@ class TestJudicialRanks:
                 "Anna Bianchi e uditi per le parti i difensori.\n\n"
                 "Così deciso in Roma con l'intervento dei magistrati:\n\n"
                 "Mario Rossi, Presidente\n\nAnna Bianchi, Referendario, Estensore")
-        out, report = anonymize(text)
+        out, report = anonymize(text, keep_roles=("giudice",))
         assert out.count("Anna Bianchi") == 2 and "Anna Bianchi" not in report.mapping
 
     def test_a_title_alone_does_not_turn_a_judge_into_a_party(self):
         text = "Presidente: ROSSI MARIO\n\nIl dott. Mario Rossi dà lettura del dispositivo."
-        out, report = anonymize(text)
+        out, report = anonymize(text, keep_roles=("giudice",))
         assert "Mario Rossi" in out and not report.mapping
 
     def test_a_title_still_marks_a_private_person(self):
@@ -408,5 +408,5 @@ class TestJudicialRanks:
     def test_consigliere_avv_is_the_judge(self):
         text = ("Relatore alla camera di consiglio del 20 giugno 2006 il consigliere avv. "
                 "Liana Tacchi; udito l'avv. Carla Fenzi per il ricorrente.")
-        out, _ = anonymize(text)
+        out, _ = anonymize(text, keep_roles=("giudice",))
         assert "Liana Tacchi" in out and "Carla Fenzi" not in out

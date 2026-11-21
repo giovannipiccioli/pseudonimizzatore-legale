@@ -14,7 +14,7 @@ import pytest
 
 from pseudonimizzatore_legale import Config, anonymize
 
-NOTEBOOK = Config(profile="legal", companies="person_named", keep_judges=True,
+NOTEBOOK = Config(profile="legal", companies="person_named", keep_roles=("giudice",),
                   keep_case_numbers=True, sanitize=True, verify=True, ner=None, roles=True)
 OFF = NOTEBOOK
 PRUDENT = dataclasses.replace(NOTEBOOK, initials=True)

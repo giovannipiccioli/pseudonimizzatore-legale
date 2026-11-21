@@ -3,9 +3,9 @@
 **Italiano** · [English](README.md)
 
 `pseudonimizzatore_legale` è una libreria Python locale per la pseudonimizzazione di
-provvedimenti giudiziari italiani. Sostituisce le persone fisiche e i dati personali
-strutturati con etichette leggibili e valide all'interno del singolo documento,
-preservando magistrati, enti pubblici, luoghi e numeri di procedimento.
+documenti legali italiani. Sostituisce le persone rilevate e i dati personali
+strutturati con etichette leggibili e valide all’interno del singolo documento.
+Si può scegliere quali ruoli lasciare in chiaro.
 
 Il pacchetto si installa con il nome `pseudonimizzatore-legale`; negli import Python si
 usa invece la forma con trattino basso `pseudonimizzatore_legale`.
@@ -70,8 +70,7 @@ python -m pip install -e ".[ner]"
 
 ## Cosa viene rimosso
 
-La configurazione predefinita è pensata per la pubblicazione di provvedimenti
-giudiziari italiani:
+La configurazione predefinita sostituisce le persone rilevate nei documenti legali.
 
 | Evidenza | Comportamento predefinito |
 |---|---|
@@ -79,7 +78,7 @@ giudiziari italiani:
 | codici fiscali, email/PEC, IBAN e numeri di conto, telefoni, numeri di carte di pagamento, targhe, documenti di identità e passaporti, numeri di iscrizione ad albi e registri, date di nascita | sostituisci |
 | indirizzi di residenza, di domicilio eletto, di studio e di immobili introdotti dal loro contesto, e le righe di indirizzo di intestazioni, firme e destinatari | sostituisci |
 | comuni di nascita e di residenza (`nato a Stia`), verificati sull'elenco ISTAT | sostituisci |
-| segmenti esatti relativi a magistrati e pubblici ministeri | conserva |
+| magistrati e pubblici ministeri | sostituisci. Per la pubblicazione di sentenze, usa `keep_roles=("giudice",)` |
 | enti pubblici, istituzioni, le loro caselle istituzionali e i loro indirizzi, altri nomi di luogo | conserva |
 | numeri di procedimento, ECLI e i nomi con cui si citano le cause europee (`Scoppola c. Italia`, `C-348/16, Sacko`) | conserva |
 | società private | conserva; sostituisci le imprese probabilmente basate su nomi di persona con `companies="person_named"`, oppure tutte quelle rilevate con `companies=True` |
@@ -104,7 +103,7 @@ configurazione = Config(
     roles=False,
     first_names=True,
     initials=False,
-    keep_judges=True,
+    keep_roles=("giudice",),  # Conserva i magistrati identificati.
     keep_case_numbers=True,
     sanitize=True,
     verify=True,
@@ -267,6 +266,8 @@ repository sono inventate.
 
 ## Prestazioni misurate
 
+I benchmark usano `keep_roles=("giudice",)`.
+
 Il repository comprende 124 esempi annotati, relativi a materiale tributario, civile,
 amministrativo (Consiglio di Stato e TAR), contabile, di Cassazione e dell'Unione
 europea. Il richiamo per entità completa è una misura tutto-o-niente: se sopravvive
@@ -275,7 +276,7 @@ anche un solo alias, l'intera identità è considerata non rimossa.
 | Configurazione | Entità complete | Richiamo sulle occorrenze | Limite inferiore di precisione | Valori protetti conservati | Documenti completi |
 |---|---:|---:|---:|---:|---:|
 | base contestuale (`first_names=False`) | 448/488 (91,8%) | 705/768 (91,8%) | 782/942 (83,0%) | 722/726 | 97/124 |
-| predefinita (+ elenco dei nomi) | 472/488 (96,7%) | 746/768 (97,1%) | 817/989 (82,6%) | 718/726 | 111/124 |
+| per sentenze (+ elenco dei nomi) | 472/488 (96,7%) | 746/768 (97,1%) | 817/989 (82,6%) | 718/726 | 111/124 |
 | + NER italiano XXL, elenco disattivato | 475/488 (97,3%) | 748/768 (97,4%) | 836/1126 (74,2%) | 698/726 | 111/124 |
 | predefinita + NER italiano XXL | 477/488 (97,7%) | 751/768 (97,8%) | 838/1130 (74,2%) | 696/726 | 113/124 |
 
@@ -286,6 +287,23 @@ rimane intenzionalmente rumorosa. Non è un certificato di sicurezza.
 
 Per definizioni, risultati per fonte, compromessi e comandi di riproduzione, vedere
 [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md).
+
+## Quando si conosce già un nome
+
+Se i metadati del fascicolo indicano le parti o i giudici, si possono fornire i
+loro nomi fin dalla prima analisi. In questo esempio la decisione cita la
+ricorrente solo per cognome.
+
+```python
+from pseudonimizzatore_legale import anonymize
+
+fascicolo = {"people": [{"name": "Marta Zappacosta", "role": "ricorrente"}]}
+testo, rapporto = anonymize("Zappacosta firma.", roles=True, state=fascicolo)
+assert testo == "Ricorrente_1 firma."
+```
+
+Lo stato restituito in `rapporto.state` può essere modificato e ripassato come
+`state=` per recuperare le scelte e i segnaposto dopo una modifica al testo. La [guida alle API](API_SPEC.md) illustra il flusso con un verbale e un atto giudiziario.
 
 ## Test
 

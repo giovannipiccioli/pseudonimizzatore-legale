@@ -3,8 +3,8 @@
 [Italiano](README.it.md) · **English**
 
 `pseudonimizzatore_legale` is a local Python library for pseudonymizing Italian legal
-decisions. It replaces private individuals and structured personal data with readable,
-document-local tags while preserving judges, public bodies, places, and case numbers.
+documents. It replaces detected people and structured personal data with readable,
+document-local tags. You can choose which roles to keep visible.
 
 The distribution is named `pseudonimizzatore-legale`; Python imports use the
 underscore form `pseudonimizzatore_legale`.
@@ -67,7 +67,7 @@ python -m pip install -e ".[ner]"
 
 ## What it removes
 
-The default policy is designed for published Italian legal decisions:
+The default policy redacts detected people across legal document types.
 
 | Evidence | Default action |
 |---|---|
@@ -75,7 +75,7 @@ The default policy is designed for published Italian legal decisions:
 | tax IDs, email/PEC, IBAN and account numbers, phone, payment-card numbers, plates, identity documents and passports, professional register numbers, birth dates | replace |
 | residential, elective-domicile, studio and property addresses after their cue, and the address lines of letterheads, signatures and addressee blocks | replace |
 | birthplace and residence towns (`nato a Stia`), checked against ISTAT's comuni | replace |
-| exact judicial and public-prosecution role spans | keep |
+| judges and public prosecutors | replace. For published judgments, set `keep_roles=("giudice",)` |
 | public bodies, institutions, their office mailboxes and address blocks, and other place names | keep |
 | procedural case numbers, ECLI identifiers and the names European cases are cited by (`Scoppola c. Italia`, `C-348/16, Sacko`) | keep |
 | private companies | keep; replace likely person-named firms with `companies="person_named"`, or all detected firms with `companies=True` |
@@ -99,7 +99,7 @@ config = Config(
     roles=False,
     first_names=True,
     initials=False,
-    keep_judges=True,
+    keep_roles=("giudice",),  # Preserve identified judges in a published decision.
     keep_case_numbers=True,
     sanitize=True,
     verify=True,
@@ -251,14 +251,14 @@ Every identity in the notebook and committed evaluation corpus is invented.
 
 ## Measured performance
 
-The repository includes 124 annotated fixtures spanning tax, civil, administrative
+These benchmarks use `keep_roles=("giudice",)`. The repository includes 124 annotated fixtures spanning tax, civil, administrative
 (Consiglio di Stato and TAR), accounting, Cassazione, and EU material. Complete-entity
 recall is all-or-nothing: one surviving alias fails that identity.
 
 | Configuration | Complete entities | Surface recall | Span precision lower bound | Protected kept | Complete documents |
 |---|---:|---:|---:|---:|---:|
 | contextual baseline (`first_names=False`) | 448/488 (91.8%) | 705/768 (91.8%) | 782/942 (83.0%) | 722/726 | 97/124 |
-| default (+ first-name list) | 472/488 (96.7%) | 746/768 (97.1%) | 817/989 (82.6%) | 718/726 | 111/124 |
+| judgment policy (+ first-name list) | 472/488 (96.7%) | 746/768 (97.1%) | 817/989 (82.6%) | 718/726 | 111/124 |
 | + Italian NER XXL, list disabled | 475/488 (97.3%) | 748/768 (97.4%) | 836/1126 (74.2%) | 698/726 | 111/124 |
 | default + Italian NER XXL | 477/488 (97.7%) | 751/768 (97.8%) | 838/1130 (74.2%) | 696/726 | 113/124 |
 
@@ -269,6 +269,23 @@ deliberately noisy review queue rather than a safety certificate.
 
 See [`evaluation/RECALL_BENCHMARK.md`](evaluation/RECALL_BENCHMARK.md) for definitions,
 source-level results, trade-offs, and reproduction commands.
+
+## When you already know a name
+
+If your case metadata names a party or a judge, you can supply those names on the
+first pass. Here the decision mentions the claimant only by surname.
+
+```python
+from pseudonimizzatore_legale import anonymize
+
+case = {"people": [{"name": "Marta Zappacosta", "role": "ricorrente"}]}
+text, report = anonymize("Zappacosta firma.", roles=True, state=case)
+assert text == "Ricorrente_1 firma."
+```
+
+Use `report.state` as the starting point for review. Pass the edited state back
+as `state=` to replay custom placeholders and individual choices after
+changing the source text. The [API guide](API_SPEC.md) walks through a meeting note and a legal document.
 
 ## Tests
 
