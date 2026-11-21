@@ -12,14 +12,14 @@ feeds a reviewer's corrections back in as `Edits`, which enter the same pipeline
 one more detector: a person the reviewer adds is folded, propagated and tagged exactly
 like one found automatically.
 
->>> doc = "Il sig. Mario Rossi ricorre. Sentito il teste Zappacosta."
+>>> doc = "Il sig. Mario Rossi ricorre. Sentito Zappacosta."
 >>> analysis = analyze(doc)
 >>> [(row.entity_id, row.aliases, row.spans) for row in analysis.entities]
 [('Nominativo_1', ('Mario Rossi',), ((8, 19),))]
 >>> edits = Edits(people=(("Zappacosta", "Nominativo"),),
 ...               prior_tags=tuple(analysis.mapping.items()))
 >>> render(analyze(doc, edits=edits))[0]
-'Il sig. Nominativo_1 ricorre. Sentito il teste Nominativo_2.'
+'Il sig. Nominativo_1 ricorre. Sentito Nominativo_2.'
 """
 from __future__ import annotations
 

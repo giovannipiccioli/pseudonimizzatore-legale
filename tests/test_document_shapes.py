@@ -232,16 +232,31 @@ CASES = [
         "dell'ordine del giorno; pubblicato all'albo pretorio al n. 345",
         ["12", "1234/2023", "3", "345"], [], id="act-and-case-numbers-stay"),
 
-    # ── still open ───────────────────────────────────────────────────────────────
+    # ── recall 6: phones and cards, with no cue ──────────────────────────────────
     pytest.param(
         "Resto in attesa di un tuo riscontro, anche telefonico (348 9102774), o al "
         "numero 347 1189023.",
-        [], ["348 9102774", "347 1189023"], id="13-14-phone-without-a-cue",
-        marks=gap("a phone needs its cue; a bare mobile number is not read")),
+        [], ["348 9102774", "347 1189023"], id="13-14-phone-without-a-cue"),
     pytest.param(
         "Tel. +49 89 2180 4471 – Per ogni comunicazione: +33 6 12 47 88 03.",
-        [], ["+49 89 2180 4471", "+33 6 12 47 88 03"], id="25-31-foreign-phone",
-        marks=gap("only the +39 prefix is read, with or without a cue")),
+        [], ["+49 89 2180 4471", "+33 6 12 47 88 03"], id="25-31-foreign-phone"),
+    pytest.param(
+        "Contatti: 0114478230 (ufficio), 333 123 4567 e 06 1234 5678.",
+        [], ["0114478230", "333 123 4567", "06 1234 5678"], id="ten-digit-phones"),
+    pytest.param(
+        "Il pagamento è stato eseguito con la carta 4539 1488 0343 6467, poi con "
+        "5500000000000004.",
+        [], ["4539 1488 0343 6467", "5500000000000004"], id="payment-card-numbers"),
+    pytest.param(
+        "Avviso di intimazione n. 5530453081 e cartella di pagamento n. 0572021001808368; "
+        "voce doganale 7604299090; NC 2403110000; marchio italiano n. 0001540327; "
+        "anni 2006-2007-2008-2009; somma di 560.000-1200 euro; artt. 26-27-28-29-36 del "
+        "TUF; entro il 03-11.07.2017; importo di 1.000.000.000 euro.",
+        ["5530453081", "0572021001808368", "7604299090", "2403110000", "0001540327",
+         "2006-2007-2008-2009", "560.000-1200", "26-27-28-29-36", "1.000.000.000"], [],
+        id="ten-and-sixteen-digit-identifiers-stay"),
+
+    # ── still open ───────────────────────────────────────────────────────────────
     pytest.param(
         "ditta individuale \"EMPORIO ORIENTE di Chen Jialin\", con sede in Prato, Via "
         "Pistoiese 288, e il titolare esercente l'attività di bar-tabacchi in Legnago "

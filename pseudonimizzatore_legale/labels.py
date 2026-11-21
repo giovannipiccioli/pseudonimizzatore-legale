@@ -31,7 +31,7 @@ RESERVED = frozenset({
     "Ricorrente", "Resistente", "Difensore", "Rappresentante", "Nominativo",
     "Terzo", "Società", "Associazione", "Consorzio", "Banca", "Ditta",
     "CF", "Email", "Pec", "IVA", "Iban", "Telefono", "Targa",
-    "Indirizzo", "Documento", "Data_nascita", "Luogo", "Numero", "Conto", "Albo",
+    "Indirizzo", "Documento", "Data_nascita", "Luogo", "Numero", "Conto", "Numero_carta", "Albo",
 })
 
 

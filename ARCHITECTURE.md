@@ -53,6 +53,14 @@ The runtime has a small set of complementary detectors:
   on request, the initials a source wrote in place of names;
 - `ner.py`: optional transformer person mentions.
 
+Phones and payment cards are the structured identifiers read without a cue word. A phone
+is ten digits written as phones are (run together, 3+7, 3-3-4, 2-4-4…) or any number with
+a `+` country prefix; a card is sixteen digits, run together or in groups of four. Both
+stay when an identifier word comes first (`n.`, `cartella`, `voce doganale`, `EUR`…), and a
+phone also when it starts with `00`, because tax decisions are full of ten- and
+sixteen-digit act, tariff and register numbers and none is a phone or a card. A year list
+(`2006-2007-2008-2009`) is no card either.
+
 None of these modules edits text or decides that an identity is globally safe. Private
 companies are detected even when the default policy later declines to redact them.
 
@@ -106,6 +114,15 @@ common word unless a listed first name, no heading or role word, no field label 
 it. Otherwise `Giudice: avv. Biagio Stomeo⏎Segretario: …` became one person and the
 rewrite deleted the label and the break. Lists of counsel or parties may wrap but end at
 a blank line, and a phone number stays on its line.
+
+A person named by surname alone is read after a title or a role: `il sig. Malaspina`, `il
+geometra Brambillasca` (`TITOLO_SOLO`), `il ricorrente Malaspina` (`PARTY_ROLE_SOLO`), and
+`il notaio`, `il perito`, `il teste`, `la socia`, `gli eredi` and the other capacities of a
+case (`ROLE_SOLO`). The word after a role is an adjective of it as often as a name
+(`l'Amministratore Unico`, `il Curatore Speciale`), so those are refused, and the common-word
+guard still refuses `Casa` or `Rigetto`. Two or more capitalised words after a title or role
+are a full name, which the patterns above already read. `dott.` and `prof.` are left out of
+the surname rule, since judges carry them; the review step reports them instead (step 6).
 
 Some sources have already shortened their parties to initials (`A.G. e S.I.`). With
 `initials=True` they are read as names are: only behind a cue (those of `PROPOSTO_DA`,
@@ -203,14 +220,35 @@ an output tag; overlap-suppressed proposals never allocate one.
 - strong private-role cues;
 - known aliases selected for redaction;
 - broad 2–4-token capitalized name candidates;
+- a capitalised word after a title or trade (`sig.`, `avv.`, `geometra`, `notaio`, `dott.`,
+  `prof.`);
 - role conflicts;
 - long documents with no detections.
 
 Only a person finding wholly contained in an accepted public-role span is exempt.
 Structured PII is never suppressed merely because it overlaps a kept span.
 
-The scan is deliberately broad: on the current evaluation it finds every annotated
-leaking document but produces many false review alarms. `passed_checks` consequently
+The name-shape scan cannot tell a name from a heading, so it drops a phrase only when the
+phrase *as a whole* cannot be a person, never because of the words around it: it is made
+only of articles, prepositions, titles, roles and heading words (`Il Presidente`, `Sezione
+Terza`, `IN NOME DEL POPOLO`); a legal form follows it, so it is a company, which stays by
+default; or it is a comune that does not open with a first name (`Reggio Calabria`, but
+not `Alice Castello`). A phrase that opens with a surname particle and ends in a plain
+word (`Del Giudice`) is kept, and so are the words `giudice` and any first name. On the 159
+evaluation documents these rules remove 42% of the name-shape findings (683 to 393) and none that sits
+on an annotated leak.
+
+A word after a title is a name nine times out of ten, and the patterns that replace it may
+have refused it: a common word used as a surname (`avv. Casa`), a first name alone. The
+review step reports it, unless it is an adjective of a role (`l'Avvocato Generale`) or
+something says that a judge is meant, whom a published decision keeps in clear: a judicial role right
+before the title, right after the name, or alone on the line above or below; and, for
+`dott.`, `dr.` and `prof.`, a word of the name that a kept judge also has. On the 159
+evaluation documents it adds four findings, three of them on annotated leaks.
+
+The scan is deliberately broad: on the current evaluation it flags almost every annotated
+leaking document, and produces many false review alarms. A document whose only leak is a
+bare surname can end with no finding at all. `passed_checks` consequently
 means “no bundled heuristic fired,” not “anonymous” or “safe to publish.” Running a
 second transformer pass would add cost without independent evidence, so verification
 does not do that.

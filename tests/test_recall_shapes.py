@@ -87,13 +87,23 @@ CASES = [
         "Il sig. Malaspina ha presentato istanza. Il ricorrente Malaspina insiste.",
         [], ["Malaspina"], id="surname-after-title-and-role"),
     pytest.param(
+        "le date tornano con la perizia del geometra Brambillasca e con la relazione "
+        "dell'ingegnere Brambillasca.",
+        [], ["Brambillasca"], id="surname-after-a-trade-spelled-out"),
+    pytest.param(
+        "Il testimone riferì al notaio Brambillasca. Sentito il teste Venturelli, la socia "
+        "Corradini e gli eredi Lunardi concordarono.",
+        [], ["Brambillasca", "Venturelli", "Corradini", "Lunardi"],
+        id="surname-after-a-role"),
+    pytest.param(
         "Si costituisce il sig. Ferruccio Malaspina. Il sig. Malaspina insiste.",
         [], ["Ferruccio Malaspina", "Malaspina"], id="surname-folds-into-full-name"),
     pytest.param(
         "La contribuente ha delegato il dott. Malaspina, suo consulente.",
         [], ["Malaspina"], id="surname-after-dott",
         marks=gap("dott. is left out of TITOLO_SOLO: judges carry it, and a judge named "
-                  "by surname alone has no anchor to protect them")),
+                  "by surname alone has no anchor to protect them; the review step flags it "
+                  "(tests/test_verification.py)")),
     pytest.param(
         "la ricorrente Telecom ha impugnato l'avviso", ["Telecom"], [],
         id="brand-after-party-role",

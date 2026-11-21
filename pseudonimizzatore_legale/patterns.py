@@ -10,10 +10,12 @@ a sentence. Wrap only the *cue* words in a scoped `(?i:…)` and leave the name 
 alone — that is why patterns here look like ``(?i:avv\\.)\\s+({FULL_NAME})`` rather
 than carrying a global flag.
 
-**Identifiers need their cue word.** A bare 11-digit run is a protocol number as often
-as a P.IVA; a bare phone-shaped run is a case number. Anchoring on the cue costs a
-little recall and buys a lot of precision, which is the right trade when a false
-positive deletes real text.
+**Identifiers need their cue word**, unless their shape is unmistakable. A bare 11-digit
+run is a protocol number as often as a P.IVA. Anchoring on the cue costs a little recall
+and buys a lot of precision, which is the right trade when a false positive deletes real
+text. Phones and payment cards are the exceptions, by choice: a bare run of ten digits
+(or a "+" country prefix) is read as a phone, and sixteen digits as a card, because a
+number missed there is a person's contact or payment detail left in the document.
 
 Every pattern has at least one positive and one negative case in tests/test_patterns.py.
 The negative cases are the important half.
@@ -179,14 +181,48 @@ def public_mailbox(value: str) -> bool:
                    for token in re.findall(r"\p{L}+", local))
 
 
-#: Phone — a cue is required, otherwise every case number reads as a number to remove.
-#: The one exception is an explicit +39 country prefix, which nothing else in a decision
-#: carries, so a bare "+39 011 4478230" in a contact block is still caught. The digits
-#: stay on one line: a number may not run on into the next line's date or case number.
+#: A number that stands alone: it neither starts nor ends inside a longer one. A digit,
+#: letter, "/" or decimal mark next to it, or another digit group one separator away
+#: ("1234 5678 90 12"), makes it a piece of something else: a case number, an amount, a
+#: longer identifier.
+_NUMBER_START = r"(?=\d)(?<![\p{L}\p{N}_/,.+\-])(?<!\d[ .\-])"
+_NUMBER_END = r"(?![\p{L}\p{N}_/])(?![ .\-,]\d)"
+
+#: A number introduced by one of these words is an identifier of an act, a tariff line or a
+#: register, or an amount, not a phone or a card: "n. 5530453081", "voce doganale
+#: 7604299090", "NC 2403110000", "cartella n. 0572021001808368", "prot. 1025082019", "nn.
+#: 0001540327", "EUR 1386475000". The number may start on the next line.
+_ID_CUE = (r"(?i:\b(?:nn?|nr|prot|cod|rif|rg|r\.g|nc|n\.c|v\.d|id|pos|euro?|importo)\b\.?|€|n°|"
+           r"protocoll\w*|"
+           r"codice|voce(?:\s+doganale)?|cartella|avviso|intimazione|ingiunzione|accertamento|"
+           r"liquidazione|fattura|ruolo|utenza|ndg)")
+_NOT_AN_ID = rf"(?<!{_ID_CUE}[\s:.\-]*)"
+
+#: Phone. With a cue ("tel.", "cell.") the digits are read as they stand. Without one,
+#: two shapes are read: an explicit country prefix ("+39", "+49", "+33"), which nothing
+#: else in a decision carries, and ten digits written the way a phone number is: run
+#: together, or 2-4 digits and the rest ("348 9102774", "089.9358801"), or in 3-3-4, 2-4-4
+#: or 2-2-2-2-2. Only these shapes: lists of articles ("26-27-28-29-36"), amounts and dates
+#: have ten digits too, and do not look like that. A number introduced by an identifier
+#: word, or starting with "00" (an identifier with leading zeros: no phone number does),
+#: is not a phone. The digits stay on one line: a number may not run on into the next
+#: line's date or case number.
+_COUNTRY = r"\+\d{1,3}[\t .\-]?"
+_PHONE_SHAPES = (r"\d{10}|\d{2}[ .\-]\d{8}|\d{3}[ .\-]\d{7}|\d{4}[ .\-]\d{6}|"
+                 r"\d{3}[ \-]\d{3}[ \-]\d{4}|\d{2}[ \-]\d{4}[ \-]\d{4}|\d{2}(?: \d{2}){4}")
 TELEFONO = re.compile(
     r"(?i:tel\.?|telefono|cell\.?|cellulare|fax|mobile)[\s:.n°]*"
-    r"((?:\+39[\t .\-]?)?\d[\d\t .\-/]{6,13}\d)"
-    r"|(\+39[\t .\-]?\d[\d\t .\-/]{6,13}\d)")
+    rf"((?:{_COUNTRY})?\d[\d\t .\-/]{{6,13}}\d)"
+    rf"|(?<![\p{{L}}\p{{N}}_])({_COUNTRY}\d[\d\t .\-/]{{6,13}}\d)"
+    rf"|(?!00|(?:19|20)\d{{2}}-){_NUMBER_START}{_NOT_AN_ID}({_PHONE_SHAPES}){_NUMBER_END}")
+
+#: Payment card: sixteen digits, run together or in groups of four, with spaces or
+#: dashes. It is read without a cue, since a run of sixteen digits is no case number.
+#: Not when an identifier word comes before it ("avviso n. 1101013190036351", "cartella
+#: n. 0572021001808368") nor when it is four years in a row ("2006-2007-2008-2009").
+CARTA_PAGAMENTO = re.compile(
+    rf"{_NUMBER_START}{_NOT_AN_ID}(?!(?:(?:19|20)\d{{2}}[ \-]?){{4}}(?!\d))"
+    rf"(\d{{4}}(?:[ \-]?\d{{4}}){{3}}){_NUMBER_END}")
 
 TARGA = re.compile(r"\b[A-Z]{2}\s?\d{3}\s?[A-Z]{2}\b")
 
@@ -255,6 +291,7 @@ STRUCTURED = [
     ("Pec", PEC, 0),
     ("Email", EMAIL, 0),
     ("Telefono", TELEFONO, 1),
+    ("Numero_carta", CARTA_PAGAMENTO, 1),
     ("Documento", NUMERO_DOCUMENTO, 1),
     ("Conto", CONTO_CORRENTE, 1),
     ("Albo", NUMERO_ALBO, 1),
@@ -678,9 +715,11 @@ DIFESO_DA = re.compile(
     rf"(?i:e\s+(?:dife[sn]|rappresentat|assistit)[oa]\s+)?"
     rf"(?i:dall?[i'’]?|da)\s*(?:{COUNSEL_CUE}|(?i:procuratore))?\s*({FULL_NAME_NL})")
 
-#: Professional or courtesy title + name.
+#: Professional or courtesy title + name. The trades of "ing.", "geom.", "arch." and "rag."
+#: also come spelled out: "il geometra Brambillasca" is as much a name as "il geom. Brambillasca".
+_TRADE_WORD = r"(?<![\p{L}])(?:geometra|ingegnere|architett[oa]|ragionier[ea])(?![\p{L}])"
 TITLE_CUE = (r"(?i:dott\.(?:ssa)?|dr\.(?:ssa)?|sig\.(?:ra)?|signor(?:a)?|ing\.|"
-             r"prof\.(?:ssa)?|geom\.|arch\.|rag\.|not(?:aio|\.))")
+             r"prof\.(?:ssa)?|geom\.|arch\.|rag\.|not(?:aio|\.)|" + _TRADE_WORD + ")")
 TITOLO = re.compile(rf"{TITLE_CUE}\s*({FULL_NAME})")
 
 #: A surname alone after a courtesy title, for documents that never give the full name:
@@ -693,8 +732,36 @@ TITOLO = re.compile(rf"{TITLE_CUE}\s*({FULL_NAME})")
 SURNAME_AFTER = (rf"(?!{TITLE_CUE}|{COUNSEL_CUE})({NAME_TOKEN})"
                  rf"(?![\p{{L}}'’]|{SEP}\p{{Lu}}|\.\s*[\p{{Ll}}\d])")
 TITOLO_SOLO = re.compile(
-    rf"(?<![\p{{L}}])(?i:sig\.(?:ra)?|signor(?:a)?|ing\.|geom\.|arch\.|rag\.)\s*"
+    rf"(?<![\p{{L}}])(?i:(?:sig\.(?:ra)?|signor(?:a)?|ing\.|geom\.|arch\.|rag\.)\s*|"
+    rf"(?:geometra|ingegnere|architett[oa]|ragionier[ea])\s+)"
     rf"{SURNAME_AFTER}")
+
+#: The words that follow a role as an adjective of it, not as a name: "l'Amministratore
+#: Unico", "il Curatore Speciale", "l'Avvocato Generale".
+ROLE_ADJECTIVE = (r"(?i:unic[aoie]|special[ei]|general[ei]|giudizial[ei]|straordinari[aoie]|"
+                  r"provvisori[aoie]|commercial[ei])(?![\p{L}])")
+ROLE_ADJECTIVE_AT = re.compile(ROLE_ADJECTIVE)
+
+#: A surname alone after a role that names a person, for the notary and the experts ("il
+#: notaio Rossi", "il perito Rossi") and for the capacities of a civil case ("il teste
+#: Rossi", "la socia Rossi", "gli eredi Rossi"). The party roles have PARTY_ROLE_SOLO and
+#: the courtesy titles TITOLO_SOLO. A role is rarely followed by anything but a name, and
+#: the exceptions are an adjective of the role or another role ("perito commercialista"),
+#: both refused here. The common-word guard downstream refuses the rest, as for TITOLO_SOLO.
+_NAMED_ROLE = (r"notaio|perito|consulente|commercialista|testimon[ei]|test[ei]|soci[oa]|"
+               r"amministrator[ei]|titolar[ei]|erede|eredi|coniuge|curator[ei]|liquidator[ei]|"
+               r"tutor[ei]")
+ROLE_SOLO = re.compile(
+    rf"(?<![\p{{L}}])(?i:{_NAMED_ROLE})(?![\p{{L}}.])[:,]?[^\S\n]+"
+    rf"(?!{ROLE_ADJECTIVE}|(?i:{_NAMED_ROLE})(?![\p{{L}}]))"
+    rf"{SURNAME_AFTER}")
+
+#: Every title and trade that introduces a person, for the review step: the ones above, and
+#: "dott." and "prof.", which the patterns above leave to the judges who carry them.
+PERSONAL_TITLE = (r"(?i:sig\.(?:ra)?|signor[aei]?|avv\.|avvocat[oi]|avvocatessa|geom\.|geometra|"
+                  r"ing\.|ingegnere|arch\.|architett[oa]|rag\.|ragionier[ea]|notaio|perito|"
+                  r"consulente|commercialista|dott\.(?:ssa)?|dottor(?:e|essa)?|dr\.(?:ssa)?|"
+                  r"prof\.(?:ssa)?|professor(?:e|essa)?)")
 
 #: Name immediately followed by biographic or fiscal detail, or by the "rappresentato e
 #: difeso" that follows a party named in a heading. The separator tolerates a

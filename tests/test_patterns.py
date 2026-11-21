@@ -4,6 +4,7 @@ The negative cases are not decoration: every one corresponds to a defect that ac
 occurred on real documents, and a pattern that loses its negative test silently
 re-opens that defect.
 """
+import pytest
 import regex as re
 
 from pseudonimizzatore_legale import patterns as P
@@ -55,6 +56,60 @@ class TestStructured:
         assert P.TELEFONO.search("tel. 06 1234567")
         # a case number must not read as a phone number
         assert not P.TELEFONO.search("n. 24009-2019 R.G.")
+
+    @staticmethod
+    def _phones(text):
+        return [next(group for group in match.groups() if group)
+                for match in P.TELEFONO.finditer(text)]
+
+    @pytest.mark.parametrize("text, expected", [
+        # a cue, any country prefix
+        ("Tel. +49 89 2180 4471", ["+49 89 2180 4471"]),
+        ("cell. +44 20 7946 0958", ["+44 20 7946 0958"]),
+        # a country prefix alone
+        ("Per ogni comunicazione: +33 6 12 47 88 03.", ["+33 6 12 47 88 03"]),
+        # ten digits, written as phones are
+        ("chiamare 0114478230 oggi", ["0114478230"]),
+        ("(348 9102774) o al numero 347 1189023.", ["348 9102774", "347 1189023"]),
+        ("333 123 4567; 06-1234-5678; 06 12 34 56 78", ["333 123 4567", "06-1234-5678", "06 12 34 56 78"]),
+        ("al numero 089.9358801 e", ["089.9358801"]),
+    ])
+    def test_telefono_without_a_cue_is_read_by_its_shape(self, text, expected):
+        assert self._phones(text) == expected
+
+    @pytest.mark.parametrize("text", [
+        # inside a longer number
+        "prot. 12345678901", "1234567890123", "IT60X0542811101000000123456",
+        "n. 1234567890/2024", "importo 1234567890,50", "1234 5678 90 12",
+        # not written as a phone: dates, amounts, lists of articles
+        "il 15.03.2024 10:30", "2024-03-15 10", "1.000.000.000 euro", "+5.000.000,00",
+        "euro 11000-12.000 mensili", "(560.000-1200) a titolo", "artt. 26-27-28-29-36 del TUF",
+        "1.5 1.6 1.7 2.4 2.5", "ruoli nn. 2019-250126 e 2019-550058",
+        # an identifier: its word comes first, or it starts with 00
+        "avviso di liquidazione n.\n1600227073", "voce doganale 7604299090", "NC 2403110000",
+        "cartella di pagamento n. 5530453081", "marchio italiano 0001540327",
+        # an amount
+        "prelievo supplementare di EUR 1386475000", "€ 3331234567",
+    ])
+    def test_telefono_leaves_identifiers_and_amounts_alone(self, text):
+        assert self._phones(text) == []
+
+    @pytest.mark.parametrize("text, expected", [
+        ("carta 4539 1488 0343 6467 intestata", ["4539 1488 0343 6467"]),
+        ("5500000000000004, scadenza", ["5500000000000004"]),
+        ("4539-1488-0343-6467.", ["4539-1488-0343-6467"]),
+    ])
+    def test_carta_pagamento_is_sixteen_digits(self, text, expected):
+        assert [m.group(1) for m in P.CARTA_PAGAMENTO.finditer(text)] == expected
+
+    @pytest.mark.parametrize("text", [
+        "12345678901234567", "123456789012345", "x4539 1488 0343 6467",
+        "IT60 X054 2811 1010 0000 0123 456", "n. 1234567890123456/2024",
+        "cartella di pagamento n. 0572021001808368", "avviso di intimazione 1342014900415878",
+        "anni 2006-2007-2008-2009", "1.234.567.890.123.456",
+    ])
+    def test_carta_pagamento_leaves_longer_numbers_and_identifiers_alone(self, text):
+        assert not P.CARTA_PAGAMENTO.search(text)
 
     def test_codice_fiscale_loose_forms(self):
         def found(text):
@@ -280,6 +335,27 @@ class TestSeeds:
         # a full name is TITOLO's; "dott." is a judge's title too and stays out
         assert not P.TITOLO_SOLO.search("il sig. Ferruccio Malaspina")
         assert not P.TITOLO_SOLO.search("il dott. Malaspina")
+
+    def test_trades_spelled_out_are_titles_like_their_abbreviations(self):
+        for text in ("la perizia del geometra Brambillasca.", "l'Ingegnere Brambillasca firma",
+                     "l'architetto Brambillasca", "la ragioniera Brambillasca,"):
+            assert P.TITOLO_SOLO.search(text).group(1) == "Brambillasca", text
+        assert P.TITOLO.search("l'ingegnere Mario Brambillasca").group(1) == "Mario Brambillasca"
+        # the trade is a word of its own, and a title needs a name after it
+        for text in ("il geometra comunale", "il progetto architettonico Brambillasca",
+                     "la facoltà di Ingegneria Brambillasca"):
+            assert not P.TITOLO_SOLO.search(text) and not P.TITOLO.search(text), text
+
+    def test_surname_alone_after_a_role_that_names_a_person(self):
+        for text in ("il notaio Brambillasca ha rogato", "l'esperto è il perito Brambillasca.",
+                     "sentito il teste Brambillasca", "la socia Brambillasca chiede",
+                     "gli eredi Brambillasca", "il curatore: Brambillasca", "l'amministratore Brambillasca"):
+            assert P.ROLE_SOLO.search(text).group(1) == "Brambillasca", text
+        for text in ("l'Amministratore Unico", "il Curatore Speciale", "il perito commercialista",
+                     "il teste. Brambillasca",       # a full stop ends the sentence
+                     "il consulente Mario Brambillasca",   # a full name is read elsewhere
+                     "i testi Unici", "il perito Commercialista"):
+            assert not P.ROLE_SOLO.search(text), text
 
     def test_surname_alone_after_a_party_role(self):
         assert P.PARTY_ROLE_SOLO.search("Il ricorrente Malaspina insiste").group(1) == (

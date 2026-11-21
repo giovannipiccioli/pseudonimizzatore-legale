@@ -76,7 +76,7 @@ giudiziari italiani:
 | Evidenza | Comportamento predefinito |
 |---|---|
 | parti, difensori e persone fisiche private | sostituisci |
-| codici fiscali, email/PEC, IBAN e numeri di conto, telefoni, targhe, documenti di identità e passaporti, numeri di iscrizione ad albi e registri, date di nascita | sostituisci |
+| codici fiscali, email/PEC, IBAN e numeri di conto, telefoni, numeri di carte di pagamento, targhe, documenti di identità e passaporti, numeri di iscrizione ad albi e registri, date di nascita | sostituisci |
 | indirizzi di residenza, di domicilio eletto, di studio e di immobili introdotti dal loro contesto, e le righe di indirizzo di intestazioni, firme e destinatari | sostituisci |
 | comuni di nascita e di residenza (`nato a Stia`), verificati sull'elenco ISTAT | sostituisci |
 | segmenti esatti relativi a magistrati e pubblici ministeri | conserva |

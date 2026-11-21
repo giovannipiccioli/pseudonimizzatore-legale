@@ -506,8 +506,10 @@ def collect(text: str, cfg, *, mentions=(), people=()) -> list[Entity]:
         seeds.add(m.group(1), "Difensore", allow_single=True,
                   source="regex:counsel_surname")
     # The same for a party known only by surname: "il sig. Malaspina", "il ricorrente
-    # Malaspina". When the full name is also given, the surname folds into it.
-    for attr, role in (("TITOLO_SOLO", "Nominativo"), ("PARTY_ROLE_SOLO", "Ricorrente")):
+    # Malaspina", "il teste Malaspina". When the full name is also given, the surname folds
+    # into it.
+    for attr, role in (("TITOLO_SOLO", "Nominativo"), ("ROLE_SOLO", "Nominativo"),
+                       ("PARTY_ROLE_SOLO", "Ricorrente")):
         for m in getattr(P, attr).finditer(text):
             if not _in_organisation(text, m.start(1), m.end(1)):
                 seeds.add(m.group(1), role, allow_single=True,

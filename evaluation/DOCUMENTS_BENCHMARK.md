@@ -66,7 +66,7 @@ Status against the 2026-10-16 known-gap list: **closed** means no leak on this c
 | foreign address | 2/3 | new | `Sendlinger Straße 15` (09), `14 rue des Martyrs` (31) |
 | first name alone, minor, lowercase | 10/15 | new | `Caro Paolo,`, signature `Luca` (13), `suo marito Jacopo` (22), `il figlio minore Tommaso` (06), `mio figlio gabriele` (23) |
 | professional register number | 5/5 | new | `iscritto … al n. 412/A` (03), `Registro dei Revisori Legali al n. 158243` (16) |
-| phone without a `tel.` cue | 4/24 | new | `anche telefonico (348 9102774)` (13), `+49 89 2180 4471` (25) |
+| phone without a `tel.` cue | 0/24 | closed | `anche telefonico (348 9102774)` (13), `+49 89 2180 4471` (25) |
 | passport, driving licence, paper ID card | 5/5 | new (sibling of CIE) | `passaporto tedesco n. C7HN4R2T9` (09), `patente di guida n. RM5123456K` (18), `C.I. n. AY 4571203` (29) |
 | CIE, also spaced | 0/4 | closed | |
 | CF omocodic, spaced, lowercase | 0/4 | closed | `P V N L C N 5 5 E 5 5 L 4 0 7 Z` (28) and `grnfnc79r62f839q` (23) removed |
@@ -151,9 +151,9 @@ level) and 21/31 complete documents.
 | 4 | **ID documents and accounts**: number after `passaporto n.`, `patente (di guida) n.`, `C.I. n.` / `carta d'identità n.` (paper format `AY 4571203`), `conto corrente n.`; Italian IBAN with irregular spacing | +7 | 17 | passport, patente, id-card-paper, bank-account, iban-it-irregular |
 | 5 | **Register numbers**: `iscritto all'Albo/Ordine/Collegio/Registro … al n. X`, `REA … n.` | +5 | 21 | albo-number |
 
-Next in line: phones in prose and international formats (+4 identities, 24 complete
-documents cumulatively; `+33 6 …`, `(348 …)`); the residual name shapes in §2 (+8
-together, but no single fix).
+Phones in prose and international formats (`+33 6 …`, `(348 …)`) came next and are closed:
+ten digits written as phones are, or any `+` country prefix, with or without a cue. Next in
+line: the residual name shapes in §2 (+8 together, but no single fix).
 
 Correctness fixes to do regardless of rank, because they damage output:
 
@@ -219,8 +219,7 @@ decisions (`Via Giovanni Bosco`, `CESARE BECCARIA`, `Ada Negri`…), keep a vert
 the lexicon used to split across lines, and stop `nato 2 ottobre 2019` being read inside
 the judge's surname `Trevisanato`.
 
-Still open, each a strict xfail in `tests/test_document_shapes.py`: phones without a cue
-or with a foreign prefix (4), a sole trader's seat after `con sede` or an activity
+Still open, each a strict xfail in `tests/test_document_shapes.py`: a sole trader's seat after `con sede` or an activity
 (3), an uncued sole trader, a second partner after `studio legale` and a website, names
 in a table, a surname-first bullet, a common-word part of a double surname, and a first
 name two detected people share. With NER the only lost value on legal documents is

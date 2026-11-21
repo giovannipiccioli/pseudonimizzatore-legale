@@ -72,7 +72,7 @@ The default policy is designed for published Italian legal decisions:
 | Evidence | Default action |
 |---|---|
 | parties, counsel, and private natural persons | replace |
-| tax IDs, email/PEC, IBAN and account numbers, phone, plates, identity documents and passports, professional register numbers, birth dates | replace |
+| tax IDs, email/PEC, IBAN and account numbers, phone, payment-card numbers, plates, identity documents and passports, professional register numbers, birth dates | replace |
 | residential, elective-domicile, studio and property addresses after their cue, and the address lines of letterheads, signatures and addressee blocks | replace |
 | birthplace and residence towns (`nato a Stia`), checked against ISTAT's comuni | replace |
 | exact judicial and public-prosecution role spans | keep |
