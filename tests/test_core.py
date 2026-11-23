@@ -188,6 +188,24 @@ class TestCompanies:
             text = f"Il ricorso della {name} S.p.A. è respinto."
             assert anonymize(text, Config(companies=True))[0] == text
 
+    def test_sentence_opening_noun_is_not_part_of_the_company(self):
+        for text, expected in (
+            ("Socio della Alfa Costruzioni S.r.l. ricorre.", "Socio della Società_1 ricorre."),
+            ("Il Socio della Alfa Costruzioni S.r.l. ricorre.", "Il Socio della Società_1 ricorre."),
+            ("Cessione della Alfa Costruzioni S.r.l. avvenuta.", "Cessione della Società_1 avvenuta."),
+        ):
+            assert anonymize(text, Config(companies=True))[0] == expected
+
+    def test_sentence_opening_noun_does_not_leak_into_the_next_document(self):
+        out, rep = anonymize("Socio della Alfa Costruzioni S.r.l. ricorre.", Config(companies=True))
+        later, _ = anonymize("Il ricorrente era socio della Alfa Costruzioni S.r.l.",
+                             Config(companies=True), state=rep.state)
+        assert later == "Il ricorrente era socio della Società_1"
+
+    def test_company_name_starting_with_a_common_word_is_still_replaced(self):
+        text = "Ricorre Casa Alfa Costruzioni S.r.l. oggi."
+        assert "Alfa Costruzioni" not in anonymize(text, Config(companies=True))[0]
+
     def test_article_and_legal_form_alone_are_not_a_company_name(self):
         text = "La S.p.A. ricorre."
         assert anonymize(text, Config(companies=True))[0] == text

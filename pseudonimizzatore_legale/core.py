@@ -218,6 +218,19 @@ _COMPANY_INTRO = re.compile(
     r"(?i:(?:(?:di|del|della|dei|degli|delle|il|lo|la|le|gli|e)\s+)+)"
 )
 
+#: A capitalised common noun opening a sentence ("Socio della Alfa S.r.l.") is prose,
+#: not part of the company name; the name pattern takes any capitalised word.
+_COMPANY_LEAD_NOUN = re.compile(
+    r"(?P<noun>\p{L}+)\s+(?i:(?:di|del|della|dei|degli|delle)\s+)")
+
+
+def _company_lead_length(value: str) -> int:
+    """Length of a leading common noun plus its preposition, else 0."""
+    lead = _COMPANY_LEAD_NOUN.match(value)
+    if lead and lead.group("noun").casefold() in seeds_mod.common_words():
+        return lead.end()
+    return 0
+
 
 def _token_owners(entities: list[Entity], min_len: int) -> dict[str, list[Entity]]:
     owners: dict[str, list[Entity]] = defaultdict(list)
@@ -550,6 +563,9 @@ def _propose_companies(text: str, out: list[Candidate]) -> None:
         institution_name = re.sub(r"(?i:^societ[àa]\s+)", "", value)
         if P.INSTITUTION_HEAD.match(institution_name) or P.COMPANY_SUFFIX_RE.fullmatch(value):
             continue
+        # After the institution guard, which needs the head words ("Agenzia delle …").
+        start += _company_lead_length(text[start:match.end(1)])
+        value = re.sub(r"\s+", " ", text[start:match.end(1)]).strip()
         person_named_start = _person_named_company_start(text, start, value)
         if person_named_start is not None:
             start = person_named_start
