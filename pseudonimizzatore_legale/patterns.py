@@ -40,6 +40,9 @@ SEP_NL1 = r"(?=\s)[^\S\r\n]*\n?[^\S\r\n]*"
 FULL_NAME = rf"{NAME_TOKEN}(?:{SEP}{NAME_TOKEN}){{1,3}}"
 #: Same, tolerating one line break between tokens.
 FULL_NAME_NL = rf"{NAME_TOKEN}(?:{SEP_NL}{NAME_TOKEN}){{1,3}}"
+#: Between the words of a name already known: spaces, or one line break (court text wraps
+#: names), never a blank line, where the next paragraph begins.
+NAME_GAP = r"(?:[^\S\n]+|[^\S\n]*\n[^\S\n]*)"
 #: Initials written where a name belongs: "A.G.", "A. G.", "R.A.S." Two or three capitals,
 #: each with its dot, so "C.F. L" and "I.A.c.p." are not initials. Four letters are left
 #: out: they are a sigla (E.N.E.L., A.N.A.S., C.G.I.L.) far more often than a person.
@@ -116,9 +119,14 @@ def codice_fiscale_ok(value: str) -> bool:
 
     The usual form, upper case, unbroken and with digits, is accepted without the check
     character, as it always was: a typo in the last letter leaves it just as
-    identifying. Lower case and spaced forms must carry a valid check character.
+    identifying. Lower case and spaced forms must carry a valid check character. Every
+    form must hold a digit: a code without one would have all seven digit places swapped
+    by omocodia, while sixteen letters in the shape of a code are an ordinary phrase
+    ("siano intervenute") that passes the check one time in twenty-six.
     """
     cf = value.replace(" ", "").upper()
+    if not re.search(r"\d", cf):
+        return False
     if int(cf[9:11].translate(_OMOCODIA)) > 71:      # day, +40 for women
         return False
     if value == cf and re.search(r"\d", cf):
@@ -249,16 +257,19 @@ CONTO_CORRENTE = re.compile(
 #: dei Revisori Legali al n. 158243", "REA … al n. FO-312456". The cue is the register's
 #: name; the clause between it and the number may not mention an act ("Ordine degli
 #: Avvocati, delibera n. 12") nor end a sentence (only an initial's stop, as in
-#: "C.C.I.A.A.", is crossed), and a number followed by a year is a case number.
+#: "C.C.I.A.A.", is crossed), and a number followed by a year, or by a register of the
+#: court ("n. 770 del registro ordinanze"), is a case number.
 _REGISTER = (r"(?i:albo|ordine|collegio)[^\S\n]+(?i:degli|dei|delle|nazionale|speciale|"
              r"unico|professionale)\b|(?i:registro[^\S\n]+(?:dei|degli)[^\S\n]+revisori)|"
              r"\bREA\b|(?i:r\.e\.a\.)")
 NUMERO_ALBO = re.compile(
     rf"(?<![\p{{L}}])(?:{_REGISTER})"
     r"(?:(?!(?i:delibera|provvediment|decret|sentenz|ordinanz|protocoll|prot\.|"
-    r"circolar|verbale|nota\b))[^.;\n\d]|(?<=(?<![\p{L}])\p{L})\.){0,140}?"
+    r"circolar|verbale|nota\b|legge|d\.p\.r|d\.lgs|d\.l\.))[^.;\n\d]|"
+    r"(?<=(?<![\p{L}])\p{L})\.){0,140}?"
     r"(?i:n\.|n°|nr\.?|numero|matricola)[^\S\n]*"
-    r"([A-Z]{0,3}-?\d{1,7}(?:/[A-Z0-9]{1,3})?)(?![\d/]|[.,]\d)")
+    r"([A-Z]{0,3}-?\d{1,7}(?:/[A-Z0-9]{1,3})?)(?![\d/]|[.,]\d)"
+    r"(?![^\S\n]+(?i:del|dell['’]|di)[^\S\n]+(?:\d{4}\b|registro))")
 
 #: Day and year written out, as notarial deeds do: "quindici marzo
 #: millenovecentoquaranta".
@@ -441,12 +452,13 @@ JUDGE_ANCHORS = [
     # "dal Consigliere CHIECA Danilo" / "dal consigliere dott. Alberto Crivelli"
     re.compile(rf"(?i:d(?:al|a|el)\s+(?:{JUDICIAL_ROLE})\s+"
                rf"(?:dott\.?(?:ssa)?\s+|avv\.?\s+)?)({FULL_NAME})"),
-    # "il consigliere\nrelatore Arcangelo Monteleone" — this narrow form covers a
-    # wrapped secondary role without treating every role word in running text as a
-    # new bench declaration.
-    re.compile(rf"(?i:(?:il|la)\s+)?(?i:consiglier[ea])\s+"
-               rf"(?i:relatore|estensore)\s+"
-               rf"(?:(?i:dott\.?(?:ssa)?|dr\.?(?:ssa)?|avv\.)\s*)?({FULL_NAME})"),
+    # "il consigliere\nrelatore Arcangelo Monteleone", "il Giudice relatore prof. Piero
+    # Albino Fontanari", "giudice relatore: Carla Neri" — this narrow form covers a wrapped
+    # secondary role, a professor on the bench and a colon or dash after the role, without
+    # treating every role word in running text as a new bench declaration.
+    re.compile(rf"(?i:(?:il|la)\s+)?(?i:consiglier[ea]|giudice)\s+"
+               rf"(?i:relatore|estensore|redattore)(?:\s*[:,–-])?\s+"
+               rf"(?:(?i:dott\.?(?:ssa)?|dr\.?(?:ssa)?|avv\.|prof\.(?:ssa)?)\s*)?({FULL_NAME})"),
     # "Sostituto procuratore generale Tommaso Basile"
     re.compile(rf"(?i:sostituto\s+procuratore(?:\s+generale)?\s+"
                rf"(?:dott\.?(?:ssa)?\s+)?)({FULL_NAME})"),
@@ -560,7 +572,8 @@ JUDGE_LISTS = [
 INSTITUTION_HEAD = re.compile(
     r"\b(?i:agenzi[ae]|ag\.?\s+entrat|minister[oi]|ministro|i\.?n\.?p\.?s\.?|"
     r"inail|inpgi|inpdap|istitut[oi]|"
-    r"avvocatura|generale\s+dello\b|roma\s+capitale\b|comune|regione|provincia|città\s+metropolitana|universit|"
+    r"avvocatura|generale\s+dello\b|roma\s+capitale\b|comune|comuni\b|comunit[àa]\b|regione|regioni\b|"
+    r"provincia|province\b|commissar(?:io|i|iato)\b|città\s+metropolitana|universit|"
     r"azienda\s+(?:ospedaliera|sanitaria|unit[àa])|a\.?s\.?l\.?|equitalia|riscossione|ader|"
     # health authorities by acronym ("Asur Marche Area Vasta n. 1", "ASP di Catania");
     # word-bounded, so the surname Aspesi is not one

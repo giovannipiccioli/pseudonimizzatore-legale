@@ -9,6 +9,7 @@ import regex as re
 
 from .labels import DATA_PREFIXES, ROLE_PREFIXES, role_key
 from .model import Candidate, Decision, Mention, person_key
+from .patterns import NAME_GAP
 from .policy import PRI_USER
 from .text import normalize_quotes
 
@@ -233,7 +234,7 @@ class ReviewState:
         for spelling, rows in owners.items():
             if active_ids.isdisjoint(rows):
                 continue
-            literal = r"\s+".join(re.escape(t) for t in spelling.split())
+            literal = NAME_GAP.join(re.escape(t) for t in spelling.split())
             pattern = re.compile(r"(?<!\w)" + literal + r"(?!\w)", re.I)
             row = next(iter(rows.values()))
             ambiguous = len(rows) > 1

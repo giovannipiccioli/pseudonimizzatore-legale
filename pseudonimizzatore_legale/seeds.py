@@ -75,10 +75,18 @@ def comuni() -> frozenset[str]:
         "reggio calabria", "reggio emilia"}
 
 
+#: The regions, and the parts of their names that a text writes alone ("Alto Adige",
+#: "Venezia Giulia", "Friuli", "Emilia").
 _REGIONS = frozenset({
     "abruzzo", "basilicata", "calabria", "campania", "emilia romagna", "friuli venezia giulia",
     "lazio", "liguria", "lombardia", "marche", "molise", "piemonte", "puglia", "sardegna",
-    "sicilia", "toscana", "trentino alto adige", "umbria", "valle d'aosta", "veneto"})
+    "sicilia", "toscana", "trentino alto adige", "umbria", "valle d'aosta", "veneto",
+    "trentino", "alto adige", "sudtirol", "friuli", "venezia giulia", "romagna", "emilia"})
+
+
+def is_region(name: str) -> bool:
+    """Whether `name` is a region or a part of one, hyphenated or not ("Emilia-Romagna")."""
+    return place_key(name.replace("-", " ").replace("/", " ")) in _REGIONS
 
 
 @lru_cache(maxsize=1)
@@ -191,6 +199,8 @@ class SeedSet:
             return None
         if P.STREET_HEAD.match(name):
             return None                      # an address, not a person
+        if is_region(name) and not given_name:
+            return None                      # a region, not a person ("figlia Emilia" is one)
         if toks[0].lower() in P.FRAGMENT_HEAD or toks[-1].lower() in P.FRAGMENT_TAIL:
             return None                      # a slice of a longer name, not a name
         if any(t.strip("_0123456789") in RESERVED for t in toks):
@@ -306,9 +316,10 @@ _WRAPPING_ANCHORS = {"COUNSEL": False, "DIFESO_DA": False, "PKI_FIRMA": False,
                      "CF_ADIACENTE": True}
 
 #: Anchors whose cue is followed by organisations as often as by people: the "contro"
-#: heading of NEI_CONFRONTI, and BIOGRAFICO's "rappresentato e difeso", which follows a
-#: company or a public body just as it follows a party.
-_ORGANISATION_PRONE = frozenset({"BIOGRAFICO", "NEI_CONFRONTI"})
+#: heading of NEI_CONFRONTI, BIOGRAFICO's "rappresentato e difeso", which follows a
+#: company or a public body just as it follows a party, and a party word ("le società
+#: Gamma Italia srl").
+_ORGANISATION_PRONE = frozenset({"BIOGRAFICO", "NEI_CONFRONTI", "PARTY_ROLE"})
 
 # Italian surname particles accepted between a listed first name and a distinctive
 # surname. Keeping this deliberately small avoids turning ordinary phrases into names.
@@ -676,6 +687,14 @@ def initials(text: str, everywhere: bool = False) -> list[Mention]:
     return out
 
 
+#: The detectors that read a surname and nothing else, from a title, a role or a party word.
+_SURNAME_ALONE = frozenset({"regex:titolo_solo", "regex:role_solo", "regex:party_role_solo",
+                            "regex:counsel_surname"})
+#: At least one capital in the word, case-insensitive match or not (`\p{Lu}` would match a
+#: lower-case letter under `re.I`).
+_NOT_LOWERCASE = r"(?-i:(?=[\p{L}'’]*\p{Lu}))"
+
+
 def variant_patterns(entity: Entity, min_len: int,
                      skip_tokens: frozenset[str] = frozenset()
                      ) -> list[tuple[re.Pattern, bool]]:
@@ -700,14 +719,21 @@ def variant_patterns(entity: Entity, min_len: int,
                                re.I if fold else 0),
                     full))
 
+    surname_alone = bool(entity.sources) and entity.sources <= _SURNAME_ALONE
     for variant in entity.variants | {entity.display}:
         # A lone common first name ("Luca", "Rosa") is no spelling to hunt without
         # regard to case and context; `core` proposes it case-sensitively instead.
         if len(variant.split()) == 1 and not rare_tokens(variant, min_len):
             continue
+        if surname_alone and len(variant.split()) == 1:
+            # "il socio Sanitari" names a surname, and "servizi sanitari" is not it. Any
+            # case but lower: capitals are what a surname has, OCR damage included
+            # ("bRAMBILLASCA").
+            add(_NOT_LOWERCASE + re.escape(variant), full=True)
+            continue
         for order in name_orders(variant):
             toks = [re.escape(token) for token in order.split()]
-            add(r"\s+".join(toks), full=True)
+            add(P.NAME_GAP.join(toks), full=True)
 
     for tok in rare_tokens(entity.display, min_len):
         if tok.casefold() in skip_tokens:

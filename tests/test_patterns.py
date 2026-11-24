@@ -126,6 +126,8 @@ class TestStructured:
         # the usual upper-case form keeps working with a mistyped check letter, as before
         assert found("C.F. RSSMRA80A01H501X") == ["RSSMRA80A01H501X"]
         assert found("RSSMRA80A99H501U") == []          # day 99 does not exist
+        # sixteen letters in the shape of a code that pass the check are a phrase
+        assert found("che siano intervenute modifiche") == []
 
     def test_iban(self):
         assert P.IBAN.search("IT60X0542811101000000123456")
@@ -213,6 +215,17 @@ class TestJudicialEvidence:
         text = "del 18/01/2024 dal Consigliere relatore dott. Lucio Luciotti;"
         assert any(p.search(text) for p in P.JUDGE_ANCHORS)
 
+    def test_giudice_relatore_anchor_takes_a_title_and_a_colon(self):
+        # the Constitutional Court's bench: judges are professors, and the role may
+        # be followed by a colon or a dash
+        for text, name in (
+                ("il Giudice relatore prof. Aldo Mario Sartorelli;", "Aldo Mario Sartorelli"),
+                ("nella camera di consiglio il giudice relatore: Carla Neri.", "Carla Neri"),
+                ("udienza del 3 marzo 1999 il Giudice relatore - Piero Gialli", "Piero Gialli"),
+                ("il giudice estensore dott. Mario Bruni", "Mario Bruni")):
+            found = {m.group(1) for pattern in P.JUDGE_ANCHORS for m in pattern.finditer(text)}
+            assert name in found, text
+
     def test_corte_conti_ref_judge_across_line_break(self):
         text = ("nella persona del Giudice unico\n"
                 "Ref. Mastrogiacomo\n"
@@ -232,6 +245,15 @@ class TestJudicialEvidence:
         assert P.INSTITUTION_HEAD.search("AZIENDA OSPEDALIERA UNIVERSITARIA")
         assert P.INSTITUTION_HEAD.search("DIREZIONE PROVINCIALE")
         assert not P.INSTITUTION_HEAD.search("Ferruccio Malaspina")
+
+    def test_institution_head_knows_the_plural_bodies_and_stops_at_the_word(self):
+        # a decision names "le Regioni" and "le Province" as parties as often as one Regione
+        for text in ("Regioni Calabria", "Province autonome", "COMUNITA' EBRAICA", "Comuni",
+                     "Commissario dello Stato", "Commissari"):
+            assert P.INSTITUTION_HEAD.search(text), text
+        # a trailing \b on the new heads: a word that merely starts like one is no body
+        for text in ("comunione ereditaria", "comunicazione", "regionale"):
+            assert not P.INSTITUTION_HEAD.search(text), text
 
     def test_case_number(self):
         assert P.CASE_NUMBER.search("n. 274/2023")
@@ -580,7 +602,11 @@ class TestDocumentLayouts:
         for text in ("Consiglio dell'Ordine degli Avvocati di Roma, delibera n. 12",
                      "iscritto all'Ordine degli Avvocati, ricorso n. 1234/2023",
                      "punto n. 3 dell'ordine del giorno", "albo pretorio al n. 345",
-                     "Ordine dei Medici di Roma. Con nota n. 7"):
+                     "Ordine dei Medici di Roma. Con nota n. 7",
+                     # a law, or the court's own register, is no professional register
+                     "iscritto all'albo degli avvocati dalla legge n. 60 del 2001",
+                     "Ordine degli Avvocati di Belluno, iscritta al n. 770 del registro ordinanze",
+                     "Collegio dei periti, d.P.R. n. 616"):
             assert not P.NUMERO_ALBO.search(text), text
 
     def test_birth_date_after_province_country_form_and_words(self):

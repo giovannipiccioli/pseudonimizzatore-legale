@@ -69,7 +69,9 @@ companies are detected even when the default policy later declines to redact the
 `SeedSet` merges order-insensitive full identities and their observed variants. Once a
 person is established, `variant_patterns` proposes:
 
-- exact and case-insensitive full spellings;
+- exact and case-insensitive full spellings, whose words are separated by spaces or one line
+  break, never a blank line (the end of one paragraph and the start of the next are not a
+  name);
 - common surname-first/given-name-first rotations;
 - bare tokens only when they are long and absent from the legal common-word list.
 
@@ -123,6 +125,8 @@ case (`ROLE_SOLO`). The word after a role is an adjective of it as often as a na
 guard still refuses `Casa` or `Rigetto`. Two or more capitalised words after a title or role
 are a full name, which the patterns above already read. `dott.` and `prof.` are left out of
 the surname rule, since judges carry them; the review step reports them instead (step 6).
+A surname known only from these cues is hunted in every case but lower case: `il socio
+Sanitari` does not take `servizi sanitari` with it, and OCR damage (`bRAMBILLASCA`) is still found.
 
 Some sources have already shortened their parties to initials (`A.G. e S.I.`). With
 `initials=True` they are read as names are: only behind a cue (those of `PROPOSTO_DA`,
@@ -194,8 +198,9 @@ title alone does not give a person a judicial or private role. Automatic role
 recognition depends on the detector cues. Contract roles in the registry can also
 be supplied as metadata.
 
-`keep_case_numbers=False` removes the citation keep decision. Public institutions
-are rejected as person/company candidates. A place is proposed only in a biographic
+`keep_case_numbers=False` removes the citation keep decision. Public institutions,
+in the plural as well (`le Regioni`, `le Province`), and regions or the parts of their names
+(`Alto Adige`, `Friuli`) are rejected as person/company candidates. A place is proposed only in a biographic
 slot ("nato a Stia", "residente a Pratovecchio") and only if ISTAT lists it as a comune, current or suppressed, or, for a
 birthplace, when its country follows in brackets (`nato a Wenzhou (Repubblica Popolare
 Cinese)`); a court seat or any other mention of a town is never a candidate.
