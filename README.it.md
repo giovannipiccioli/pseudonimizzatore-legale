@@ -26,19 +26,27 @@ print(risultato)
 Il ricorrente Nominativo_1, C.F. CF_1, è rappresentato dall'avv. Nominativo_2.
 ```
 
-Il `rapporto` restituito spiega le operazioni effettuate:
+Il `rapporto` restituito registra le operazioni effettuate. Il suo `state` elenca ogni
+persona e ogni dato trovati, con la decisione presa e l'etichetta assegnata:
 
 ```python
-print(rapporto.mapping)
-# {
-#   'Mario Rossi': 'Nominativo_1',
-#   'RSSMRA80A01H501U': 'CF_1',
-#   'Laura Bianchi': 'Nominativo_2'
-# }
+print(rapporto.state["people"])
+# [{'name': 'Mario Rossi', 'role': 'ricorrente', 'action': 'redact', 'id': 'p1',
+#   'placeholder': 'Nominativo_1'},
+#  {'name': 'Laura Bianchi', 'role': 'avvocato', 'action': 'redact', 'id': 'p2',
+#   'placeholder': 'Nominativo_2'}]
+
+print(rapporto.state["data"])
+# [{'value': 'RSSMRA80A01H501U', 'type': 'cf', 'action': 'redact', 'id': 'd1',
+#   'placeholder': 'CF_1'}]
 
 print(rapporto.status)
 # passed_checks
 ```
+
+Lo stato è il registro da conservare. Si modifica per correggere il risultato, si
+ripassa con una nuova versione del testo, o serve a [ripristinare gli
+originali](#ripristinare-gli-originali) in un testo scritto con le etichette.
 
 > [!IMPORTANT]
 > Questa è una pseudonimizzazione, non una garanzia di anonimato. `passed_checks`
@@ -168,7 +176,9 @@ Rossella Benatti insiste. La Benatti ricorre.
 
 risultato, rapporto = anonymize(provvedimento)
 print(risultato)
-print(rapporto.mapping)
+print(rapporto.state["people"])
+# [{'name': 'BENATTI ROSSELLA', 'role': 'ricorrente', 'action': 'redact', 'id': 'p1',
+#   'placeholder': 'Nominativo_1', 'aliases': ['Rossella Benatti']}]
 ```
 
 La protezione dei ruoli giudiziari è locale al segmento. Un giudice chiamato
@@ -179,17 +189,23 @@ La protezione dei ruoli giudiziari è locale al segmento. Un giudice chiamato
 I campi principali sono:
 
 - `status`: `passed_checks`, `needs_review` oppure `not_run`;
-- `mapping`: corrispondenza tra i valori sensibili originali e le etichette emesse;
-- `decisions`: decisioni accettate di conservazione o sostituzione e relative evidenze;
+- `state`: il registro dell'elaborazione, una riga per persona o dato con decisione ed
+  etichetta, più le decisioni sui singoli passaggi. Si conserva per rivedere,
+  rielaborare o ripristinare;
 - `residuals`: possibili dati personali ancora presenti nel risultato;
 - `warnings`: evidenze contrastanti che richiedono una revisione;
+- `decisions`: ogni decisione accettata di conservazione o sostituzione, con posizioni
+  ed evidenze;
 - `replacement_spans`: posizioni, nel testo normalizzato, delle sostituzioni effettive;
+- `mapping`: un riepilogo da leggere, un valore originale per ogni etichetta sostituita
+  in questo testo. Un valore che ha ricevuto due etichette non compare; da conservare
+  è `state`, non questo;
 - `risk`: punteggio di compatibilità per il triage; è preferibile usare `status` e i
   risultati concreti dei controlli.
 
-`mapping` e i file laterali `*.map.json` prodotti dall'elaborazione in serie contengono
-i valori sensibili originali. Devono essere trattati come dati sensibili. I file
-laterali sono esclusi da `.gitignore`.
+`state`, `mapping` e i file laterali `*.map.json` prodotti dall'elaborazione in serie
+contengono i valori sensibili originali. Devono essere trattati come dati sensibili. I
+file laterali sono esclusi da `.gitignore`.
 
 ## Aggiungere il NER opzionale
 
@@ -304,6 +320,23 @@ assert testo == "Ricorrente_1 firma."
 
 Lo stato restituito in `rapporto.state` può essere modificato e ripassato come
 `state=` per recuperare le scelte e i segnaposto dopo una modifica al testo. La [guida alle API](API_SPEC.md) illustra il flusso con un verbale e un atto giudiziario.
+
+## Ripristinare gli originali
+
+Un testo scritto con le etichette, per esempio la risposta di un modello linguistico
+sul documento pseudonimizzato, riceve gli originali dallo stesso stato:
+
+```python
+from pseudonimizzatore_legale import anonymize, restore
+
+testo, rapporto = anonymize("Il ricorrente Mario Rossi, C.F. RSSMRA80A01H501U, ricorre.")
+ripristinato, esito = restore("Nominativo_1 (CF_1) può impugnare l'avviso.", rapporto.state)
+assert ripristinato == "Mario Rossi (RSSMRA80A01H501U) può impugnare l'avviso."
+```
+
+`esito.unknown` elenca le parole con la forma di un'etichetta che lo stato non conosce,
+come un `Nominativo_9` inventato; restano nel testo. Lo stato è la chiave: chi lo
+possiede può ripristinare ogni etichetta. Si veda la [guida alle API](API_SPEC.md#restoring-the-originals).
 
 ## Test
 

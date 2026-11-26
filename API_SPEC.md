@@ -121,3 +121,24 @@ Three rules govern matching and substitution.
 - An absent entity retains its row and any assigned placeholder. New entities receive unused placeholders. The report records matches and substitutions for the current revision.
 
 The saved state contains original values and quoted passages. Treat it as source material when storing or sharing it.
+
+## Restoring the originals
+
+A pseudonymized document can go to a service that must not learn who is involved, such as a language model, and come back as new text that uses the tags. `restore` puts the originals back, using the state of the run that made the tags.
+
+```python
+state = {"people": [{"name": "Marta Zappacosta", "role": "ricorrente", "placeholder": "Parte_7"}]}
+output, report = anonymize("Marta Zappacosta firma.", state=state)
+# Parte_7 firma.
+answer = "Parte_7 può impugnare l'avviso entro sessanta giorni."   # written with the tags
+text, restoration = restore(answer, report.state)
+# Marta Zappacosta può impugnare l'avviso entro sessanta giorni.
+restoration.restored   # {'Parte_7': 1}
+restoration.unknown    # []
+```
+
+- A person comes back as one spelling, whichever form the source used: the row's `name`, or its first alias that is not in capitals when the name came from a heading. A datum comes back as its `value`, and a passage redacted on its own as its quote.
+- Tags are read as whole words, in any letter case and with the `\_` Markdown writers use for an underscore. A tag in capitals gets its original in capitals. Grammar written around a tag is left alone.
+- A tag-shaped word the state does not know, such as an invented `Nominativo_9`, stays in place and is listed in `unknown`.
+
+Restore each text with the state of the document whose tags it uses. Passing one document's `people` and `data` as the next document's state gives both documents the same tags, and the latest state then restores either. Whoever holds the state can restore every tag, so the rule above about storing it applies with full force.

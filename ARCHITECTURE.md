@@ -221,9 +221,10 @@ placeholder can be any nonempty string. Its prefix is never used to infer a type
 After applying anchored exceptions, `_render` joins untouched slices and final
 replacements in one pass.
 
-`Report.mapping` maps a value to its emitted tag when that value has one tag in
-this revision. Two individually redacted copies can have different tags. Use
-`Report.decisions` for the complete list of substitutions and offsets.
+`Report.state` is the record of a run, and `Report.decisions` the complete list of
+substitutions and offsets. `Report.mapping` is only a summary for reading, derived from
+the decisions: each original value replaced in this revision with its tag, one entry
+per entity. A value given two tags (two individually redacted copies) is left out.
 
 ### 6. Verify without rewriting
 
@@ -365,6 +366,15 @@ the JSON-shaped configuration, engine version and report schema. A sidecar-backe
 output is skipped only when all five still match. Explicit resume without a sidecar is
 based only on output existence and is counted as unvalidated in the summary. Sidecars
 contain original PII and are excluded by `.gitignore`.
+
+## Restoring the originals
+
+`restore.py` stands outside the pipeline. It reads only the state, never the source,
+and runs no detector: the text it receives was written by someone else, usually a
+language model, and only the tags in it are known. Each tag maps to one original, so
+a person tagged from several surface forms comes back as one spelling. A tag is read
+as a whole word, in any case and with Markdown's `\_`. A tag-shaped word the state
+does not know is reported, not guessed.
 
 ## Why there is no document router
 

@@ -63,6 +63,11 @@ REPORT_SCHEMA_VERSION = 4
 class Report:
     """Auditable result metadata for one document.
 
+    ``state`` is the record of the run: every person and datum with its decision and
+    tag, and the decisions about single passages. Save it to review, replay or
+    `restore`. ``mapping`` is a summary for reading, derived from ``decisions``: one
+    original value per tag replaced in this text, leaving out a value given two tags.
+
     Replacement/decision offsets refer to normalized input; residual offsets refer to
     returned output. When ``sanitize`` is true, normalized input differs from raw text.
     ``unresolved`` lists occurrence decisions that could not be located uniquely.
@@ -850,8 +855,8 @@ def anonymize(raw: str, config: Config | None = None, *,
     >>> out, report = anonymize("Il sig. Mario Rossi, C.F. RSSMRA80A01H501U, ricorre.")
     >>> "Mario Rossi" in out
     False
-    >>> report.mapping["RSSMRA80A01H501U"]
-    'CF_1'
+    >>> [(row["value"], row["placeholder"]) for row in report.state["data"]]
+    [('RSSMRA80A01H501U', 'CF_1')]
     """
     if config is not None and overrides:
         raise TypeError("pass either `config` or keyword overrides, not both")

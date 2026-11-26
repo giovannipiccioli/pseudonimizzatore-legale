@@ -25,19 +25,27 @@ print(output)
 Il ricorrente Nominativo_1, C.F. CF_1, è rappresentato dall'avv. Nominativo_2.
 ```
 
-The returned `report` explains what happened:
+The returned `report` records what happened. Its `state` lists every person and datum
+found, with the decision taken and the tag assigned:
 
 ```python
-print(report.mapping)
-# {
-#   'Mario Rossi': 'Nominativo_1',
-#   'RSSMRA80A01H501U': 'CF_1',
-#   'Laura Bianchi': 'Nominativo_2'
-# }
+print(report.state["people"])
+# [{'name': 'Mario Rossi', 'role': 'ricorrente', 'action': 'redact', 'id': 'p1',
+#   'placeholder': 'Nominativo_1'},
+#  {'name': 'Laura Bianchi', 'role': 'avvocato', 'action': 'redact', 'id': 'p2',
+#   'placeholder': 'Nominativo_2'}]
+
+print(report.state["data"])
+# [{'value': 'RSSMRA80A01H501U', 'type': 'cf', 'action': 'redact', 'id': 'd1',
+#   'placeholder': 'CF_1'}]
 
 print(report.status)
 # passed_checks
 ```
+
+The state is the record to keep. Edit it to correct the result, pass it back with a new
+version of the text, or use it to [restore the originals](#restore-the-originals) in a
+text written with the tags.
 
 > [!IMPORTANT]
 > This is pseudonymization, not a guarantee of anonymity. `passed_checks` only means
@@ -159,7 +167,9 @@ Rossella Benatti insiste. La Benatti ricorre.
 
 output, report = anonymize(decision)
 print(output)
-print(report.mapping)
+print(report.state["people"])
+# [{'name': 'BENATTI ROSSELLA', 'role': 'ricorrente', 'action': 'redact', 'id': 'p1',
+#   'placeholder': 'Nominativo_1', 'aliases': ['Rossella Benatti']}]
 ```
 
 Judicial protection is span-local. A judge named `ROSSI MARIO` cannot globally shield
@@ -170,15 +180,18 @@ a different party named `ROSSI LUCIA`.
 The most useful fields are:
 
 - `status`: `passed_checks`, `needs_review`, or `not_run`;
-- `mapping`: original sensitive values to emitted tags;
-- `decisions`: accepted keep/redact decisions and their evidence;
+- `state`: the record of the run, one row per person or datum with its decision and
+  tag, plus the decisions about single passages. Save it to review, replay or restore;
 - `residuals`: possible personal data still present in the returned output;
 - `warnings`: conflicting evidence that requires review;
+- `decisions`: every accepted keep/redact decision, with its offsets and evidence;
 - `replacement_spans`: normalized-input offsets of actual replacements;
+- `mapping`: a summary for reading, one original value per tag replaced in this text.
+  A value given two tags is left out; keep `state`, not this;
 - `risk`: compatibility triage score; prefer `status` and concrete findings.
 
-`mapping` and batch `*.map.json` files contain the original sensitive values. Treat
-them as sensitive data. Sidecars are excluded by `.gitignore`.
+`state`, `mapping` and batch `*.map.json` files contain the original sensitive values.
+Treat them as sensitive data. Sidecars are excluded by `.gitignore`.
 
 ## Add optional NER
 
@@ -286,6 +299,23 @@ assert text == "Ricorrente_1 firma."
 Use `report.state` as the starting point for review. Pass the edited state back
 as `state=` to replay custom placeholders and individual choices after
 changing the source text. The [API guide](API_SPEC.md) walks through a meeting note and a legal document.
+
+## Restore the originals
+
+A text written with the tags, such as a language model's answer about the
+pseudonymized document, gets its originals back from the same state:
+
+```python
+from pseudonimizzatore_legale import anonymize, restore
+
+output, report = anonymize("Il ricorrente Mario Rossi, C.F. RSSMRA80A01H501U, ricorre.")
+text, restoration = restore("Nominativo_1 (CF_1) può impugnare l'avviso.", report.state)
+assert text == "Mario Rossi (RSSMRA80A01H501U) può impugnare l'avviso."
+```
+
+`restoration.unknown` lists tag-shaped words the state does not know, such as an
+invented `Nominativo_9`; they stay in the text. The state is the key: whoever holds it
+can restore every tag. See the [API guide](API_SPEC.md#restoring-the-originals).
 
 ## Tests
 

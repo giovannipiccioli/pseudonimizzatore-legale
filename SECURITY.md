@@ -14,8 +14,9 @@ synthetic input that demonstrates the problem.
 
 - Document text is processed locally. Optional NER may download model files on first
   use, but the library does not send document content to a hosted inference service.
-- `Report.mapping` and `*.map.json` sidecars contain original sensitive values and must
-  be protected like the source document.
+- `Report.state`, `Report.mapping` and `*.map.json` sidecars contain original sensitive
+  values and must be protected like the source document. The state is enough to restore
+  every tag with `restore`.
 - Pseudonymized output may remain personal data and must not be treated as automatically
   safe to publish.
 - `passed_checks` is a heuristic result, not a security guarantee.

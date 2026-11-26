@@ -23,8 +23,10 @@ and one for short free-form input, with a limit worth reading about first:
 A review tool can call `analyze` to detect and tag, then `render` to rewrite and
 verify. Pass `report.state` back as `state=` to reuse metadata and review decisions.
 
-The substitution is **one-way by design** — there is no de-pseudonymization path, and
-nothing is persisted that would allow one unless you explicitly request a sidecar.
+The engine stores nothing unless you ask for batch sidecars. `report.state` holds
+each tag with its original, and `restore(text, report.state)` puts the originals back
+into a text written with the tags, such as a model's answer about the pseudonymized
+document. Whoever holds the state can restore, so store it like the source document.
 This is pseudonymization, not anonymization: the output is still personal data.
 
 See README.md to get started, ARCHITECTURE.md for how and why it works.
@@ -34,6 +36,7 @@ from .constraints import TextAnchor
 from .core import Analysis, Report, analyze, anonymize, normalize, render
 from .labels import DATA_PREFIXES, ROLE_PREFIXES
 from .model import Decision, EntityRecord, Mention, ResidualFinding
+from .restore import Restoration, restore
 from ._version import __version__
 
 __all__ = [
@@ -43,6 +46,8 @@ __all__ = [
     "analyze",
     "render",
     "normalize",
+    "restore",
+    "Restoration",
     "Analysis",
     "DATA_PREFIXES",
     "ROLE_PREFIXES",
